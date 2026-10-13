@@ -1,5 +1,18 @@
-/* The main menu is removed, so its empty slot would collapse and let the properties panel ride up
-   into the toolbar row. Reserve the hamburger trigger's height to keep the panel below the toolbar. */
-.excalidraw .App-menu_top__left > :first-child {
-  min-height: var(--default-button-size);
+/* Without a host <MainMenu>, Excalidraw renders its default one and there's no option to disable it.
+   Hide the hamburger but keep its box, so the properties panel stays below the toolbar row. */
+.excalidraw .main-menu-trigger {
+  visibility: hidden;
+}
+
+/* Excalidraw has no option to omit the Library sidebar trigger or the help button, so hide them. */
+.excalidraw .default-sidebar-trigger,
+.excalidraw .help-icon {
+  display: none;
+}
+
+/* Zen mode keeps the toolbar, zoom controls and an "Exit zen mode" button; hide them for a bare canvas. */
+.excalidraw .App-toolbar-container.zen-mode,
+.excalidraw .layer-ui__wrapper__footer-left--transition-left,
+.excalidraw .layer-ui__wrapper .disable-zen-mode {
+  display: none;
 }

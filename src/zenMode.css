@@ -1,0 +1,4 @@
+[data-zen] .excalidraw--mobile .App-top-bar,
+[data-zen] .excalidraw--mobile .App-bottom-bar {
+  display: none;
+}
