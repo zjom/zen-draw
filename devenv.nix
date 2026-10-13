@@ -52,9 +52,6 @@ in
   env = lib.optionalAttrs isLinux {
     # TLS for WebKit (fetching images by URL, etc.)
     GIO_MODULE_DIR = "${pkgs.glib-networking}/lib/gio/modules/";
-    # Without this, WebKitGTK renders a blank window on many
-    # Wayland/NVIDIA setups.
-    WEBKIT_DISABLE_DMABUF_RENDERER = "1";
   };
 
   enterShell = lib.optionalString isLinux ''
