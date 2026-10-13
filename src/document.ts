@@ -125,6 +125,6 @@ export class DocumentController {
 
   private updateTitle() {
     const name = this.path?.split(/[\\/]/).pop() ?? "Untitled";
-    void getCurrentWindow().setTitle(`${this.dirty ? "• " : ""}${name} — simple-whiteboard`);
+    void getCurrentWindow().setTitle(`${this.dirty ? "• " : ""}${name} — zen-draw`);
   }
 }

@@ -14,8 +14,8 @@
     in
     {
       packages = forAllSystems (pkgs: {
-        simple-whiteboard = pkgs.callPackage ./package.nix { };
-        default = self.packages.${pkgs.stdenv.hostPlatform.system}.simple-whiteboard;
+        zen-draw = pkgs.callPackage ./package.nix { };
+        default = self.packages.${pkgs.stdenv.hostPlatform.system}.zen-draw;
       });
 
       apps = forAllSystems (pkgs: {
@@ -26,7 +26,7 @@
       });
 
       overlays.default = final: _prev: {
-        simple-whiteboard = final.callPackage ./package.nix { };
+        zen-draw = final.callPackage ./package.nix { };
       };
     };
 }

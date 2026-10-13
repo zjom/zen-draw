@@ -2,7 +2,7 @@ use std::{collections::HashMap, fs, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-const APP_DIR: &str = "simple-whiteboard";
+const APP_DIR: &str = "zen-draw";
 const CONFIG_FILE: &str = "config.toml";
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -26,7 +26,7 @@ struct LoadedConfig {
     config: Config,
 }
 
-/// `$XDG_CONFIG_HOME/simple-whiteboard`, falling back to `~/.config/simple-whiteboard`.
+/// `$XDG_CONFIG_HOME/zen-draw`, falling back to `~/.config/zen-draw`.
 /// Deliberately the same on every OS rather than the platform-native config dir.
 fn config_dir() -> Option<PathBuf> {
     std::env::var_os("XDG_CONFIG_HOME")
@@ -50,7 +50,7 @@ fn load_config() -> Result<LoadedConfig, String> {
     Ok(LoadedConfig { path: Some(path.display().to_string()), config })
 }
 
-/// The first non-flag CLI argument, so `simple-whiteboard foo.excalidraw` opens a file.
+/// The first non-flag CLI argument, so `zen-draw foo.excalidraw` opens a file.
 #[tauri::command]
 fn initial_file() -> Option<String> {
     std::env::args().skip(1).find(|a| !a.starts_with('-'))

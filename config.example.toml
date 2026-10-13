@@ -1,5 +1,5 @@
-# Copy to $XDG_CONFIG_HOME/simple-whiteboard/config.toml
-# (or ~/.config/simple-whiteboard/config.toml if XDG_CONFIG_HOME is unset; same on every OS).
+# Copy to $XDG_CONFIG_HOME/zen-draw/config.toml
+# (or ~/.config/zen-draw/config.toml if XDG_CONFIG_HOME is unset; same on every OS).
 
 # Shortcut syntax: "p", "shift+p", "alt+1", "cmd+z,ctrl+z" (comma = alternatives).
 # "mod+x" means cmd+x on macOS and ctrl+x elsewhere. Binding a tool replaces its

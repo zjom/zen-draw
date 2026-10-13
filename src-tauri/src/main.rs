@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    simple_whiteboard_lib::run()
+    zen_draw_lib::run()
 }

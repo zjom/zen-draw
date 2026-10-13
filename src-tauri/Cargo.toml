@@ -1,10 +1,10 @@
 [package]
-name = "simple-whiteboard"
+name = "zen-draw"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "simple_whiteboard_lib"
+name = "zen_draw_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

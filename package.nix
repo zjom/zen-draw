@@ -13,7 +13,7 @@
 }:
 
 rustPlatform.buildRustPackage (finalAttrs: {
-  pname = "simple-whiteboard";
+  pname = "zen-draw";
   version = "0.1.0";
 
   src = lib.fileset.toSource {
@@ -61,13 +61,13 @@ rustPlatform.buildRustPackage (finalAttrs: {
   # Tauri's generated entry has no field code, so opening a file from a file manager
   # would launch an empty window instead of passing the file.
   postInstall = ''
-    substituteInPlace $out/share/applications/simple-whiteboard.desktop \
-      --replace-fail "Exec=simple-whiteboard" "Exec=simple-whiteboard %f"
+    substituteInPlace $out/share/applications/zen-draw.desktop \
+      --replace-fail "Exec=zen-draw" "Exec=zen-draw %f"
   '';
 
   meta = {
     description = "A minimal offline whiteboard: Excalidraw in a Tauri shell";
-    mainProgram = "simple-whiteboard";
+    mainProgram = "zen-draw";
     platforms = lib.platforms.linux;
   };
 })

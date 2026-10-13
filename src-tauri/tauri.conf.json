@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "simple-whiteboard",
+  "productName": "zen-draw",
   "version": "0.1.0",
-  "identifier": "com.zjom.simple-whiteboard",
+  "identifier": "com.zjom.zen-draw",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "simple-whiteboard",
+        "title": "zen-draw",
         "width": 1280,
         "height": 800,
         "dragDropEnabled": false
