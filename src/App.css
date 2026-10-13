@@ -16,3 +16,8 @@
 .excalidraw .layer-ui__wrapper .disable-zen-mode {
   display: none;
 }
+
+/* Toggle zen mode instantly; Excalidraw's slide-out animation leaves ghost frames of the panels. */
+.excalidraw .layer-ui__wrapper .zen-mode-transition {
+  transition: none;
+}
