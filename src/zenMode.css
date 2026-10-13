@@ -1,4 +1,15 @@
-[data-zen] .excalidraw--mobile .App-top-bar,
-[data-zen] .excalidraw--mobile .App-bottom-bar {
+[data-zen] .excalidraw--mobile .App-top-bar {
   display: none;
+}
+[data-zen] .excalidraw--mobile .App-toolbar-content {
+  display: none;
+}
+
+/* Hide the bottom bar with `visibility` rather than `display`, so its "Scroll back to content"
+   button can opt back in and stay where Excalidraw positions it, like in desktop zen mode. */
+[data-zen] .excalidraw--mobile .App-bottom-bar {
+  visibility: hidden;
+}
+[data-zen] .excalidraw--mobile .scroll-back-to-content {
+  visibility: visible;
 }
