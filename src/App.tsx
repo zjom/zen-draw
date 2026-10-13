@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AppConfig } from "./config";
 import { DocumentController } from "./document";
 import { installShortcuts, shortcutLabel } from "./shortcuts";
+import { syncToolHighlight } from "./toolHighlight";
 
 // File handling goes through Tauri (see document.ts), not Excalidraw's browser download/upload.
 const uiOptions: UIOptions = {
@@ -25,6 +26,7 @@ export function App({ config }: { config: AppConfig }) {
         "app.save": () => void doc.save(),
         "app.save-as": () => void doc.saveAs(),
       }),
+      syncToolHighlight(api),
     ];
     return () => cleanups.forEach((fn) => fn());
   }, [api, config, doc]);
