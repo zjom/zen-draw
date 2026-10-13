@@ -1,26 +1,15 @@
 # Copy to $XDG_CONFIG_HOME/simple-whiteboard/config.toml
 # (or ~/.config/simple-whiteboard/config.toml if XDG_CONFIG_HOME is unset; same on every OS).
 
-# Required for release builds (the canvas is hidden ~5s after start without one).
-# Dev builds (`npm run tauri dev`) work without a key. Alternatively set
-# VITE_TLDRAW_LICENSE_KEY when building.
-# license_key = "..."
-
-# Shortcut syntax is tldraw's: "p", "shift+p", "alt+1", "cmd+z,ctrl+z" (comma = alternatives).
-# "mod+x" is shorthand for "cmd+x,ctrl+x". An empty string removes a binding.
-# Unknown ids are reported in the devtools console.
+# Shortcut syntax: "p", "shift+p", "alt+1", "cmd+z,ctrl+z" (comma = alternatives).
+# "mod+x" means cmd+x on macOS and ctrl+x elsewhere. Binding a tool replaces its
+# default keys; an empty string removes them. Unknown ids are reported in the devtools console.
 
 [keys.tools]
-# Ids: select hand eraser draw arrow line frame text asset note laser embed highlight,
-#      plus one per geo shape: rectangle ellipse triangle diamond star cloud arrow-right ...
-# draw = "p"
+# Ids: selection rectangle diamond ellipse arrow line freedraw text image eraser hand frame laser
+# freedraw = "d"
 # laser = ""
 
 [keys.actions]
-# App actions: app.open app.save app.save-as
+# Ids: app.open app.save app.save-as (Excalidraw's own shortcuts can't be rebound)
 # app.save = "mod+s"
-# A few tldraw ones: undo redo select-all delete duplicate group ungroup zoom-in zoom-out
-#   zoom-to-fit zoom-to-100 toggle-grid toggle-dark-mode toggle-focus-mode export-as-png ...
-#   (full list: grep 'id: "' node_modules/tldraw/dist-esm/lib/ui/context/actions.mjs)
-# toggle-grid = "shift+g"
-# zoom-to-fit = "shift+1,home"

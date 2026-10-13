@@ -4,6 +4,15 @@ import { createRoot } from 'react-dom/client'
 import { App } from './App'
 import { AppConfig, DEFAULT_CONFIG, loadConfig } from './config'
 
+declare global {
+  interface Window {
+    EXCALIDRAW_ASSET_PATH?: string | string[]
+  }
+}
+
+// Serve fonts from the bundle (copied by vite.config.ts) instead of Excalidraw's CDN.
+window.EXCALIDRAW_ASSET_PATH = '/'
+
 async function main() {
   let config: AppConfig = DEFAULT_CONFIG
   try {

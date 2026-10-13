@@ -8,12 +8,10 @@ const CONFIG_FILE: &str = "config.toml";
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 struct Config {
-    /// tldraw license key. Required for release builds; dev builds run without one.
-    license_key: Option<String>,
     keys: Keys,
 }
 
-/// Maps tldraw tool/action ids to keyboard shortcuts. An empty string unbinds.
+/// Maps Excalidraw tool ids and app action ids to keyboard shortcuts. An empty string unbinds.
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 struct Keys {
@@ -52,7 +50,7 @@ fn load_config() -> Result<LoadedConfig, String> {
     Ok(LoadedConfig { path: Some(path.display().to_string()), config })
 }
 
-/// The first non-flag CLI argument, so `simple-whiteboard foo.tldr` opens a file.
+/// The first non-flag CLI argument, so `simple-whiteboard foo.excalidraw` opens a file.
 #[tauri::command]
 fn initial_file() -> Option<String> {
     std::env::args().skip(1).find(|a| !a.starts_with('-'))

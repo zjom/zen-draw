@@ -35,9 +35,9 @@
     ],
     "fileAssociations": [
       {
-        "ext": ["tldr"],
-        "name": "tldraw document",
-        "mimeType": "application/vnd.tldraw+json",
+        "ext": ["excalidraw"],
+        "name": "Excalidraw drawing",
+        "mimeType": "application/vnd.excalidraw+json",
         "role": "Editor"
       }
     ]
