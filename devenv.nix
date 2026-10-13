@@ -35,13 +35,16 @@ in
     pnpm.enable = true;
   };
 
+  languages.typescript = {
+    enable = true;
+  };
+
   packages =
     (with pkgs; [
       oxfmt
       oxlint
       vscode-langservers-extracted
-      typescript-language-server
-
+      tailwindcss-language-server
       pkg-config
     ])
     ++ lib.optionals isLinux (linuxLibs ++ [ pkgs.xdg-utils ]);
