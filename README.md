@@ -12,8 +12,16 @@ npm run tauri dev
 npm run tauri build  # release bundles in src-tauri/target/release/bundle
 ```
 
-Open a file from the command line with `simple-whiteboard drawing.excalidraw`, or from the
-main menu (Open / Save / Save as, default `Ctrl/Cmd+O`, `+S`, `+Shift+S`).
+With Nix (Linux):
+
+```sh
+nix run .    # or `nix build`; result/bin/simple-whiteboard
+```
+
+The flake also exposes `overlays.default`. After changing `package-lock.json`, update the
+`npmDeps` hash in `package.nix`.
+
+Open a file from the command line with `simple-whiteboard drawing.excalidraw`, or with hotkeys Open / Save / Save as, default `Ctrl/Cmd+O`, `+S`, `+Shift+S`.
 
 ## Configuration
 
