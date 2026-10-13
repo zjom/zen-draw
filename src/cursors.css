@@ -1,0 +1,18 @@
+/* See cursors.ts. Static cursors used by tldraw's UI chrome: */
+.sw-native-cursors .tl-container {
+  --tl-cursor-default: default;
+  --tl-cursor-pointer: pointer;
+  --tl-cursor-cross: crosshair;
+  --tl-cursor-comment: crosshair;
+  --tl-cursor-move: move;
+  --tl-cursor-grab: grab;
+  --tl-cursor-grabbing: grabbing;
+  --tl-cursor-text: text;
+  --tl-cursor-zoom-in: zoom-in;
+  --tl-cursor-zoom-out: zoom-out;
+}
+
+/* The canvas cursor, which tldraw sets inline (with rotation) and we mirror in --sw-cursor. */
+.sw-native-cursors .tl-container .tl-canvas {
+  cursor: var(--sw-cursor, default);
+}

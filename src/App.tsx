@@ -12,6 +12,7 @@ import {
 } from 'tldraw'
 import 'tldraw/tldraw.css'
 import { AppConfig, expandKbd } from './config'
+import { syncNativeCursor } from './cursors'
 import { DocumentController } from './document'
 
 // Bundle fonts/icons/translations instead of fetching them from tldraw's CDN.
@@ -82,7 +83,14 @@ export function App({ config }: { config: AppConfig }) {
         assetUrls={assetUrls}
         overrides={overrides}
         components={components}
-        onMount={(editor) => doc.attach(editor)}
+        onMount={(editor) => {
+          const detachDoc = doc.attach(editor)
+          const stopCursor = syncNativeCursor(editor)
+          return () => {
+            detachDoc()
+            stopCursor()
+          }
+        }}
       />
     </div>
   )
