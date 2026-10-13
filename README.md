@@ -20,4 +20,3 @@ main menu (Open / Save / Save as, default `Ctrl/Cmd+O`, `+S`, `+Shift+S`).
 `$XDG_CONFIG_HOME/simple-whiteboard/config.toml`, falling back to
 `~/.config/simple-whiteboard/config.toml`. The same path is used on Linux, macOS and Windows.
 See [`config.example.toml`](config.example.toml).
-
