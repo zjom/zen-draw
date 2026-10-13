@@ -36,11 +36,8 @@ rustPlatform.buildRustPackage (finalAttrs: {
   npmDeps = fetchNpmDeps {
     name = "${finalAttrs.pname}-${finalAttrs.version}-npm-deps";
     inherit (finalAttrs) src;
-    hash = "sha256-MBW03At8MM2GRn/3UZD5YKFbmK6PpJ5M/MwQSr++L1o=";
+    hash = "sha256-XQtpwso/jFLuQGmlpqQMMLdzQInx94buxv+e7S4Qn6Q=";
   };
-  # Excalidraw's nested Radix deps declare React <=18 peers; without this, npm tries to
-  # re-resolve them against the (offline) registry instead of trusting the lockfile.
-  npmFlags = [ "--legacy-peer-deps" ];
 
   nativeBuildInputs = [
     # Runs `cargo tauri build` and installs the resulting bundle.
