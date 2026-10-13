@@ -1,10 +1,11 @@
-import { Excalidraw, MainMenu } from "@excalidraw/excalidraw";
+import { Excalidraw } from "@excalidraw/excalidraw";
 import "@excalidraw/excalidraw/index.css";
+import "./App.css";
 import type { ExcalidrawImperativeAPI, UIOptions } from "@excalidraw/excalidraw/types";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AppConfig } from "./config";
 import { DocumentController } from "./document";
-import { installShortcuts, shortcutLabel } from "./shortcuts";
+import { installShortcuts } from "./shortcuts";
 import { syncToolHighlight } from "./toolHighlight";
 
 // File handling goes through Tauri (see document.ts), not Excalidraw's browser download/upload.
@@ -33,36 +34,7 @@ export function App({ config }: { config: AppConfig }) {
 
   return (
     <div ref={containerRef} style={{ position: "fixed", inset: 0 }}>
-      <Excalidraw excalidrawAPI={setApi} UIOptions={uiOptions}>
-        <MainMenu>
-          <MainMenu.Item
-            onSelect={() => void doc.open()}
-            shortcut={shortcutLabel(config, "app.open")}
-          >
-            Open…
-          </MainMenu.Item>
-          <MainMenu.Item
-            onSelect={() => void doc.save()}
-            shortcut={shortcutLabel(config, "app.save")}
-          >
-            Save
-          </MainMenu.Item>
-          <MainMenu.Item
-            onSelect={() => void doc.saveAs()}
-            shortcut={shortcutLabel(config, "app.save-as")}
-          >
-            Save as…
-          </MainMenu.Item>
-          <MainMenu.Separator />
-          <MainMenu.DefaultItems.SaveAsImage />
-          <MainMenu.DefaultItems.SearchMenu />
-          <MainMenu.DefaultItems.Help />
-          <MainMenu.DefaultItems.ClearCanvas />
-          <MainMenu.Separator />
-          <MainMenu.DefaultItems.ToggleTheme />
-          <MainMenu.DefaultItems.ChangeCanvasBackground />
-        </MainMenu>
-      </Excalidraw>
+      <Excalidraw excalidrawAPI={setApi} UIOptions={uiOptions} theme="dark"></Excalidraw>
     </div>
   );
 }

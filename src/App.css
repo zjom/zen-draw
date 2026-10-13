@@ -1,0 +1,5 @@
+/* The main menu is removed, so its empty slot would collapse and let the properties panel ride up
+   into the toolbar row. Reserve the hamburger trigger's height to keep the panel below the toolbar. */
+.excalidraw .App-menu_top__left > :first-child {
+  min-height: var(--default-button-size);
+}
