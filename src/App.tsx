@@ -3,7 +3,6 @@ import "@excalidraw/excalidraw/index.css";
 import type { ExcalidrawImperativeAPI, UIOptions } from "@excalidraw/excalidraw/types";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AppConfig } from "./config";
-import { nativeCursors } from "./cursors";
 import { DocumentController } from "./document";
 import { installShortcuts, shortcutLabel } from "./shortcuts";
 
