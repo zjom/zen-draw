@@ -7,6 +7,7 @@ import { AppConfig } from "./config";
 import { DocumentController } from "./document";
 import { installShortcuts } from "./shortcuts";
 import { syncToolHighlight } from "./toolHighlight";
+import { ToolIndicator } from "./ToolIndicator";
 import { syncZenMode } from "./zenMode";
 
 // File handling goes through Tauri (see document.ts), not Excalidraw's browser download/upload.
@@ -45,6 +46,7 @@ export function App({ config }: { config: AppConfig }) {
         initialData={initialData}
         theme="dark"
       ></Excalidraw>
+      {api && containerRef.current && <ToolIndicator api={api} container={containerRef.current} />}
     </div>
   );
 }
