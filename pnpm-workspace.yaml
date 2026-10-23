@@ -1,0 +1,14 @@
+packages:
+  - "excalidraw-app"
+  - "packages/*"
+  - "examples/*"
+
+allowBuilds:
+  core-js: false
+  esbuild: true
+  protobufjs: false
+
+overrides:
+  strip-ansi: "6.0.1"
+
+saveExact: true

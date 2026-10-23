@@ -60,11 +60,19 @@
   "repository": "https://github.com/excalidraw/excalidraw",
   "scripts": {
     "gen:types": "rimraf types && tsc",
-    "build:esm": "rimraf dist && node ../../scripts/buildBase.js && yarn gen:types"
+    "build:esm": "rimraf dist && node ../../scripts/buildBase.js && pnpm run gen:types"
   },
   "dependencies": {
-    "@excalidraw/common": "0.18.0",
-    "@excalidraw/math": "0.18.0",
-    "@excalidraw/fractional-indexing": "3.3.0"
+    "@excalidraw/common": "workspace:*",
+    "@excalidraw/fractional-indexing": "workspace:*",
+    "@excalidraw/math": "workspace:*",
+    "lodash.throttle": "4.1.1",
+    "perfect-freehand": "1.2.0",
+    "points-on-curve": "1.0.1",
+    "roughjs": "4.6.4"
+  },
+  "devDependencies": {
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
   }
 }

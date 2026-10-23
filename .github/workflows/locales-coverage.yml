@@ -14,6 +14,8 @@ jobs:
         with:
           token: ${{ secrets.PUSH_TRANSLATIONS_COVERAGE_PAT }}
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -21,7 +23,7 @@ jobs:
 
       - name: Create report file
         run: |
-          yarn locales-coverage
+          pnpm locales-coverage
           FILE_CHANGED=$(git diff packages/excalidraw/locales/percentages.json)
           if [ ! -z "${FILE_CHANGED}" ]; then
             git config --global user.name 'Excalidraw Bot'
