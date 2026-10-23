@@ -1,25 +1,30 @@
 # zen-draw
 
-A minimal offline whiteboard: [Excalidraw](https://excalidraw.com) in a [Tauri](https://tauri.app) shell,
-with keyboard shortcuts configured from `$XDG_CONFIG_HOME`.
+A minimal offline whiteboard: zenboard (the Excalidraw fork in this repository) in a
+[Tauri](https://tauri.app) shell, with keyboard shortcuts configured from `$XDG_CONFIG_HOME`.
+
+zen-draw builds against the source in `../packages`, so a change to the editor shows up
+in zen-draw without a package build.
 
 ## Develop
 
+Run these commands in the repository root:
+
 ```sh
-devenv shell         # or install Rust, Node 26 and the Tauri prerequisites yourself
-npm install
-npm run tauri dev
-npm run tauri build  # release bundles in src-tauri/target/release/bundle
+devenv shell         # or install Rust, Node 26, pnpm and the Tauri prerequisites yourself
+pnpm install
+pnpm zen-draw:dev
+pnpm zen-draw:build  # release bundles in zen-draw/src-tauri/target/release/bundle
 ```
 
-With Nix (Linux):
+With Nix (Linux), also in the repository root:
 
 ```sh
 nix run .    # or `nix build`; result/bin/zen-draw
 ```
 
-The flake also exposes `overlays.default`. After changing `package-lock.json`, update the
-`npmDeps` hash in `package.nix`.
+The flake also exposes `overlays.default`. After a change to `pnpm-lock.yaml`, update the
+`pnpmDeps` hash in `package.nix`.
 
 Open a file from the command line with `zen-draw drawing.excalidraw`, or with hotkeys Open / Save / Save as, default `Ctrl/Cmd+O`, `+S`, `+Shift+S`.
 

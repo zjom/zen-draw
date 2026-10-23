@@ -80,7 +80,8 @@ export class DocumentController {
         captureUpdate: CaptureUpdateAction.NEVER,
       });
       api.history.clear();
-      api.scrollToContent(undefined, { fitToContent: true, animate: false });
+      const elements = api.getSceneElements();
+      if (elements.length) api.setViewport({ target: elements, fit: "scale-down", animation: false });
       this.markSaved(path);
     } catch (e) {
       await message(String(e), { title: "Could not open file", kind: "error" });

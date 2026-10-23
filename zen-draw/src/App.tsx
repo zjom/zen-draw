@@ -1,5 +1,4 @@
 import { Excalidraw } from "@excalidraw/excalidraw";
-import "@excalidraw/excalidraw/index.css";
 import "./App.css";
 import type { ExcalidrawImperativeAPI, UIOptions } from "@excalidraw/excalidraw/types";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -41,7 +40,7 @@ export function App({ config }: { config: AppConfig }) {
   return (
     <div ref={containerRef} style={{ position: "fixed", inset: 0 }}>
       <Excalidraw
-        excalidrawAPI={setApi}
+        onExcalidrawAPI={setApi}
         UIOptions={uiOptions}
         initialData={initialData}
         theme="dark"

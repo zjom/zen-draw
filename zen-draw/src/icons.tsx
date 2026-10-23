@@ -203,7 +203,7 @@ const laserPointerToolIcon = createIcon(
   20,
 );
 
-export const toolIcons: Record<ToolType, ReactNode> = {
+export const toolIcons: Partial<Record<ToolType, ReactNode>> = {
   selection: SelectionIcon,
   rectangle: RectangleIcon,
   diamond: DiamondIcon,

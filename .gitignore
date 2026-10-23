@@ -27,3 +27,10 @@ dev-dist
 html
 meta*.json
 .claude
+
+# Nix and devenv
+result
+.direnv
+.devenv*
+devenv.local.nix
+devenv.local.yaml

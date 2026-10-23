@@ -2,8 +2,10 @@ packages:
   - "excalidraw-app"
   - "packages/*"
   - "examples/*"
+  - "zen-draw"
 
 allowBuilds:
+  '@parcel/watcher': false
   core-js: false
   esbuild: true
   protobufjs: false

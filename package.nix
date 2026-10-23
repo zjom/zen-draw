@@ -1,10 +1,11 @@
 {
   lib,
   rustPlatform,
-  fetchNpmDeps,
+  fetchPnpmDeps,
   cargo-tauri,
   nodejs_26,
-  npmHooks,
+  pnpm_12,
+  pnpmConfigHook,
   pkg-config,
   wrapGAppsHook3,
   glib-networking,
@@ -19,31 +20,42 @@ rustPlatform.buildRustPackage (finalAttrs: {
   src = lib.fileset.toSource {
     root = ./.;
     fileset = lib.fileset.unions [
-      ./index.html
       ./package.json
-      ./package-lock.json
+      ./pnpm-lock.yaml
+      ./pnpm-workspace.yaml
       ./tsconfig.json
-      ./vite.config.ts
-      ./src
-      ./src-tauri
+      ./packages
+      ./zen-draw
+      # pnpm reads every workspace manifest, also for a filtered install.
+      ./excalidraw-app/package.json
+      ./examples/with-nextjs/package.json
+      ./examples/with-script-in-browser/package.json
     ];
   };
 
-  cargoRoot = "src-tauri";
+  cargoRoot = "zen-draw/src-tauri";
   buildAndTestSubdir = finalAttrs.cargoRoot;
-  cargoLock.lockFile = ./src-tauri/Cargo.lock;
+  cargoLock.lockFile = ./zen-draw/src-tauri/Cargo.lock;
 
-  npmDeps = fetchNpmDeps {
-    name = "${finalAttrs.pname}-${finalAttrs.version}-npm-deps";
-    inherit (finalAttrs) src;
-    hash = "sha256-XQtpwso/jFLuQGmlpqQMMLdzQInx94buxv+e7S4Qn6Q=";
+  # zen-draw and the workspace packages that it depends on. The library source also imports
+  # @excalidraw/utils, but no package declares that dependency.
+  pnpmWorkspaces = [
+    "zen-draw..."
+    "@excalidraw/utils..."
+  ];
+  pnpmDeps = fetchPnpmDeps {
+    inherit (finalAttrs) pname version src pnpmWorkspaces;
+    pnpm = pnpm_12;
+    fetcherVersion = 4;
+    hash = "sha256-RlCRyYxkiJur+DF6oIMmB/XKL2HyS8iwfHkCfRMaQA4=";
   };
 
   nativeBuildInputs = [
     # Runs `cargo tauri build` and installs the resulting bundle.
     cargo-tauri.hook
     nodejs_26
-    npmHooks.npmConfigHook
+    pnpm_12
+    pnpmConfigHook
     pkg-config
     wrapGAppsHook3
   ];

@@ -69,11 +69,13 @@
     "start": "pnpm --dir ./excalidraw-app run start",
     "start:production": "pnpm --dir ./excalidraw-app run start:production",
     "start:example": "pnpm run build:packages && pnpm --dir ./examples/with-script-in-browser run start",
+    "zen-draw:dev": "pnpm --dir ./zen-draw run tauri dev",
+    "zen-draw:build": "pnpm --dir ./zen-draw run tauri build",
     "test:all": "pnpm run test:typecheck && pnpm run test:code && pnpm run test:other && pnpm run test:app --watch=false",
     "test:app": "vitest",
     "test:code": "eslint --max-warnings=0 --ext .js,.ts,.tsx .",
     "test:other": "pnpm run prettier --list-different",
-    "test:typecheck": "tsc",
+    "test:typecheck": "tsc && pnpm --dir ./zen-draw exec tsc",
     "test:update": "pnpm run test:app --update --watch=false",
     "test": "pnpm run test:app",
     "test:coverage": "vitest --coverage",
@@ -90,8 +92,8 @@
     "release:test": "node scripts/release.js --tag=test",
     "release:next": "node scripts/release.js --tag=next",
     "release:latest": "node scripts/release.js --tag=latest",
-    "rm:build": "rimraf --glob excalidraw-app/build excalidraw-app/dist excalidraw-app/dev-dist packages/*/dist packages/*/build examples/*/build examples/*/dist",
-    "rm:node_modules": "rimraf --glob node_modules excalidraw-app/node_modules packages/*/node_modules",
+    "rm:build": "rimraf --glob excalidraw-app/build excalidraw-app/dist excalidraw-app/dev-dist packages/*/dist packages/*/build examples/*/build examples/*/dist zen-draw/dist",
+    "rm:node_modules": "rimraf --glob node_modules excalidraw-app/node_modules packages/*/node_modules examples/*/node_modules zen-draw/node_modules",
     "clean-install": "pnpm run rm:node_modules && pnpm install"
   }
 }
