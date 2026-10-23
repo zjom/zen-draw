@@ -1,13 +1,14 @@
-FROM --platform=${BUILDPLATFORM} node:24@sha256:8530f76a96d88820d288761f022e318970dda93d01536919fbc16076b7983e63 AS build
+FROM --platform=${BUILDPLATFORM} node:26@sha256:a98e6fda54fdbb22d4238054cca9a2a113bcd1191c09193a535aae22f400aa8e AS build
 
 WORKDIR /opt/node_app
 
 COPY . .
 
+# Node.js 25 and later do not include Corepack.
+RUN npm install --global pnpm@12.9.0
+
 # do not ignore optional dependencies:
 # Error: Cannot find module @rollup/rollup-linux-x64-gnu
-RUN corepack enable
-
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
     npm_config_target_arch=${TARGETARCH} pnpm install --frozen-lockfile --filter "excalidraw-app..."
 

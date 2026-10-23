@@ -7,7 +7,7 @@
   "main": "./dist/prod/index.js",
   "module": "./dist/prod/index.js",
   "engines": {
-    "node": "^14.13.1 || >=16.0.0"
+    "node": ">=26"
   },
   "scripts": {
     "gen:types": "rimraf types && tsc",

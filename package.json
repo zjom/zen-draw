@@ -11,7 +11,7 @@
     "@types/chai": "4.3.0",
     "@types/jest": "27.4.0",
     "@types/lodash.throttle": "4.1.7",
-    "@types/node": "22.13.10",
+    "@types/node": "26.6.5",
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
     "@types/socket.io-client": "3.0.0",
@@ -48,7 +48,7 @@
     "which": "4.0.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=26"
   },
   "homepage": ".",
   "prettier": "@excalidraw/prettier-config",
