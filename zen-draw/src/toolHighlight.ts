@@ -1,4 +1,5 @@
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
+
 import "./toolHighlight.css";
 
 /**
@@ -11,7 +12,9 @@ import "./toolHighlight.css";
 export function syncToolHighlight(api: ExcalidrawImperativeAPI): () => void {
   // Runs after every commit, so remounted toolbars are picked up too.
   return api.onChange(() => {
-    for (const input of document.querySelectorAll<HTMLInputElement>(".ToolIcon_type_radio")) {
+    for (const input of document.querySelectorAll<HTMLInputElement>(
+      ".ToolIcon_type_radio",
+    )) {
       input.nextElementSibling?.toggleAttribute("data-checked", input.checked);
     }
   });

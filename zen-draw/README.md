@@ -1,10 +1,8 @@
 # zen-draw
 
-A minimal offline whiteboard: zenboard (the Excalidraw fork in this repository) in a
-[Tauri](https://tauri.app) shell, with keyboard shortcuts configured from `$XDG_CONFIG_HOME`.
+A minimal offline whiteboard: zenboard (the Excalidraw fork in this repository) in a [Tauri](https://tauri.app) shell, with keyboard shortcuts configured from `$XDG_CONFIG_HOME`.
 
-zen-draw builds against the source in `../packages`, so a change to the editor shows up
-in zen-draw without a package build.
+zen-draw builds against the source in `../packages`, so a change to the editor shows up in zen-draw without a package build.
 
 ## Develop
 
@@ -23,13 +21,10 @@ With Nix (Linux), also in the repository root:
 nix run .    # or `nix build`; result/bin/zen-draw
 ```
 
-The flake also exposes `overlays.default`. After a change to `pnpm-lock.yaml`, update the
-`pnpmDeps` hash in `package.nix`.
+The flake also exposes `overlays.default`. After a change to `pnpm-lock.yaml`, update the `pnpmDeps` hash in `package.nix`.
 
 Open a file from the command line with `zen-draw drawing.excalidraw`, or with hotkeys Open / Save / Save as, default `Ctrl/Cmd+O`, `+S`, `+Shift+S`.
 
 ## Configuration
 
-`$XDG_CONFIG_HOME/zen-draw/config.toml`, falling back to
-`~/.config/zen-draw/config.toml`. The same path is used on Linux, macOS and Windows.
-See [`config.example.toml`](config.example.toml).
+`$XDG_CONFIG_HOME/zen-draw/config.toml`, falling back to `~/.config/zen-draw/config.toml`. The same path is used on Linux, macOS and Windows. See [`config.example.toml`](config.example.toml).

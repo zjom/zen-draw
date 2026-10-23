@@ -1,4 +1,5 @@
 import { fileURLToPath } from "node:url";
+
 import { defineConfig, type Alias } from "vite";
 import react from "@vitejs/plugin-react";
 
@@ -9,8 +10,14 @@ const packagesDir = fileURLToPath(new URL("../packages/", import.meta.url));
 /** Resolves `@excalidraw/<name>` and its subpaths to the workspace source, like excalidraw-app. */
 function sourceAlias(name: string, entry: string, dir = ""): Alias[] {
   return [
-    { find: new RegExp(`^@excalidraw/${name}$`), replacement: `${packagesDir}${name}/${entry}` },
-    { find: new RegExp(`^@excalidraw/${name}/(.*)$`), replacement: `${packagesDir}${name}/${dir}$1` },
+    {
+      find: new RegExp(`^@excalidraw/${name}$`),
+      replacement: `${packagesDir}${name}/${entry}`,
+    },
+    {
+      find: new RegExp(`^@excalidraw/${name}/(.*)$`),
+      replacement: `${packagesDir}${name}/${dir}$1`,
+    },
   ];
 }
 
@@ -20,9 +27,14 @@ export default defineConfig({
   resolve: {
     alias: [
       ...sourceAlias("excalidraw", "index.tsx"),
-      ...["common", "element", "math", "utils", "fractional-indexing", "laser-pointer"].flatMap(
-        (name) => sourceAlias(name, "src/index.ts", "src/"),
-      ),
+      ...[
+        "common",
+        "element",
+        "math",
+        "utils",
+        "fractional-indexing",
+        "laser-pointer",
+      ].flatMap((name) => sourceAlias(name, "src/index.ts", "src/")),
     ],
   },
   clearScreen: false,

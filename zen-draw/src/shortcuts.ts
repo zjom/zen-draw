@@ -1,5 +1,6 @@
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
-import { AppConfig } from "./config";
+
+import type { AppConfig } from "./config";
 
 type ToolType = Parameters<ExcalidrawImperativeAPI["setActiveTool"]>[0]["type"];
 
@@ -21,7 +22,7 @@ const DEFAULT_TOOL_KEYS: Partial<Record<ToolType, string[]>> = {
 };
 
 export const APP_ACTIONS = ["app.open", "app.save", "app.save-as"] as const;
-export type AppAction = (typeof APP_ACTIONS)[number];
+export type AppAction = typeof APP_ACTIONS[number];
 
 const DEFAULT_ACTION_KEYS: Record<AppAction, string> = {
   "app.open": "mod+o",
@@ -85,7 +86,10 @@ function matches(combos: Combo[], e: KeyboardEvent): boolean {
 
 function isTyping(e: KeyboardEvent): boolean {
   const t = e.target as HTMLElement | null;
-  return !!t && (t.isContentEditable || t.tagName === "INPUT" || t.tagName === "TEXTAREA");
+  return (
+    !!t &&
+    (t.isContentEditable || t.tagName === "INPUT" || t.tagName === "TEXTAREA")
+  );
 }
 
 /**
@@ -105,8 +109,9 @@ export function installShortcuts(
     handlers.push({ combos: parse(kbd), run: actions[id] });
   }
   for (const id of Object.keys(config.keys.actions)) {
-    if (!(APP_ACTIONS as readonly string[]).includes(id))
+    if (!(APP_ACTIONS as readonly string[]).includes(id)) {
       console.warn(`config: unknown action id "${id}"`);
+    }
   }
 
   for (const [id, kbd] of Object.entries(config.keys.tools)) {
@@ -117,26 +122,39 @@ export function installShortcuts(
     }
     blocked.push(...parse(defaults.join(",")));
     const type = id as ToolType;
-    handlers.push({ combos: parse(kbd), run: () => api.setActiveTool({ type } as never) });
+    handlers.push({
+      combos: parse(kbd),
+      run: () => api.setActiveTool({ type } as never),
+    });
   }
 
   const onKeyDown = (e: KeyboardEvent) => {
-    if (isTyping(e)) return;
+    if (isTyping(e)) {
+      return;
+    }
     const handler = handlers.find((h) => matches(h.combos, e));
-    if (!handler && !matches(blocked, e)) return;
+    if (!handler && !matches(blocked, e)) {
+      return;
+    }
     e.preventDefault();
     e.stopImmediatePropagation();
     handler?.run();
   };
   // Capture phase on window runs before Excalidraw's own listeners.
   window.addEventListener("keydown", onKeyDown, { capture: true });
-  return () => window.removeEventListener("keydown", onKeyDown, { capture: true });
+  return () =>
+    window.removeEventListener("keydown", onKeyDown, { capture: true });
 }
 
 /** Human-readable label for an app action's first shortcut, e.g. `Ctrl+Shift+S`. */
-export function shortcutLabel(config: AppConfig, id: AppAction): string | undefined {
+export function shortcutLabel(
+  config: AppConfig,
+  id: AppAction,
+): string | undefined {
   const combo = parse(config.keys.actions[id] ?? DEFAULT_ACTION_KEYS[id])[0];
-  if (!combo) return undefined;
+  if (!combo) {
+    return undefined;
+  }
   const mods = [
     combo.ctrl && "Ctrl",
     combo.meta && (isMac ? "⌘" : "Meta"),

@@ -4,10 +4,12 @@ import {
   loadFromBlob,
   serializeAsJSON,
 } from "@excalidraw/excalidraw";
-import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
+
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { ask, message, open, save } from "@tauri-apps/plugin-dialog";
+
+import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 
 const FILTERS = [{ name: "Excalidraw", extensions: ["excalidraw"] }];
 
@@ -25,21 +27,29 @@ export class DocumentController {
     let disposed = false;
     const cleanups: (() => void)[] = [];
 
-    this.savedVersion = hashElementsVersion(api.getSceneElementsIncludingDeleted());
+    this.savedVersion = hashElementsVersion(
+      api.getSceneElementsIncludingDeleted(),
+    );
     cleanups.push(
       api.onChange((elements) => {
-        if (hashElementsVersion(elements) !== this.savedVersion) this.markDirty();
+        if (hashElementsVersion(elements) !== this.savedVersion) {
+          this.markDirty();
+        }
       }),
     );
 
     void getCurrentWindow()
       .onCloseRequested(async (event) => {
-        if (!(await this.confirmDiscard())) event.preventDefault();
+        if (!(await this.confirmDiscard())) {
+          event.preventDefault();
+        }
       })
       .then((unlisten) => (disposed ? unlisten() : cleanups.push(unlisten)));
 
     void invoke<string | null>("initial_file").then((path) => {
-      if (path && !disposed) void this.load(path);
+      if (path && !disposed) {
+        void this.load(path);
+      }
     });
 
     this.updateTitle();
@@ -51,28 +61,50 @@ export class DocumentController {
   }
 
   async open() {
-    if (!(await this.confirmDiscard())) return;
-    const path = await open({ filters: FILTERS, multiple: false, directory: false });
-    if (path) await this.load(path);
+    if (!(await this.confirmDiscard())) {
+      return;
+    }
+    const path = await open({
+      filters: FILTERS,
+      multiple: false,
+      directory: false,
+    });
+    if (path) {
+      await this.load(path);
+    }
   }
 
   async save() {
-    if (!this.path) return this.saveAs();
+    if (!this.path) {
+      return this.saveAs();
+    }
     await this.writeTo(this.path);
   }
 
   async saveAs() {
-    const path = await save({ filters: FILTERS, defaultPath: this.path ?? "untitled.excalidraw" });
-    if (path) await this.writeTo(path);
+    const path = await save({
+      filters: FILTERS,
+      defaultPath: this.path ?? "untitled.excalidraw",
+    });
+    if (path) {
+      await this.writeTo(path);
+    }
   }
 
   private async load(path: string) {
     const api = this.api;
-    if (!api) return;
+    if (!api) {
+      return;
+    }
     try {
       const json = await invoke<string>("read_file", { path });
-      const scene = await loadFromBlob(new Blob([json], { type: "application/json" }), null, null);
-      const { viewBackgroundColor, gridSize, gridStep, gridModeEnabled } = scene.appState;
+      const scene = await loadFromBlob(
+        new Blob([json], { type: "application/json" }),
+        null,
+        null,
+      );
+      const { viewBackgroundColor, gridSize, gridStep, gridModeEnabled } =
+        scene.appState;
       api.addFiles(Object.values(scene.files));
       api.updateScene({
         elements: scene.elements,
@@ -81,7 +113,13 @@ export class DocumentController {
       });
       api.history.clear();
       const elements = api.getSceneElements();
-      if (elements.length) api.setViewport({ target: elements, fit: "scale-down", animation: false });
+      if (elements.length) {
+        api.setViewport({
+          target: elements,
+          fit: "scale-down",
+          animation: false,
+        });
+      }
       this.markSaved(path);
     } catch (e) {
       await message(String(e), { title: "Could not open file", kind: "error" });
@@ -90,10 +128,17 @@ export class DocumentController {
 
   private async writeTo(path: string) {
     const api = this.api;
-    if (!api) return;
+    if (!api) {
+      return;
+    }
     try {
       const elements = api.getSceneElementsIncludingDeleted();
-      const contents = serializeAsJSON(elements, api.getAppState(), api.getFiles(), "local");
+      const contents = serializeAsJSON(
+        elements,
+        api.getAppState(),
+        api.getFiles(),
+        "local",
+      );
       await invoke("write_file", { path, contents });
       this.markSaved(path);
     } catch (e) {
@@ -102,7 +147,9 @@ export class DocumentController {
   }
 
   private async confirmDiscard(): Promise<boolean> {
-    if (!this.dirty) return true;
+    if (!this.dirty) {
+      return true;
+    }
     return ask("You have unsaved changes. Discard them?", {
       title: "Unsaved changes",
       kind: "warning",
@@ -114,18 +161,24 @@ export class DocumentController {
   private markSaved(path: string) {
     this.path = path;
     this.dirty = false;
-    this.savedVersion = hashElementsVersion(this.api?.getSceneElementsIncludingDeleted() ?? []);
+    this.savedVersion = hashElementsVersion(
+      this.api?.getSceneElementsIncludingDeleted() ?? [],
+    );
     this.updateTitle();
   }
 
   private markDirty() {
-    if (this.dirty) return;
+    if (this.dirty) {
+      return;
+    }
     this.dirty = true;
     this.updateTitle();
   }
 
   private updateTitle() {
     const name = this.path?.split(/[\\/]/).pop() ?? "Untitled";
-    void getCurrentWindow().setTitle(`${this.dirty ? "• " : ""}${name} — zen-draw`);
+    void getCurrentWindow().setTitle(
+      `${this.dirty ? "• " : ""}${name} — zen-draw`,
+    );
   }
 }

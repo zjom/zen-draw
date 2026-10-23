@@ -9,6 +9,9 @@ export interface AppConfig {
 
 export const DEFAULT_CONFIG: AppConfig = { keys: { tools: {}, actions: {} } };
 
-export async function loadConfig(): Promise<{ path: string | null; config: AppConfig }> {
+export async function loadConfig(): Promise<{
+  path: string | null;
+  config: AppConfig;
+}> {
   return invoke("load_config");
 }

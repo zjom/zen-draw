@@ -1,13 +1,21 @@
 import { Excalidraw } from "@excalidraw/excalidraw";
-import "./App.css";
-import type { ExcalidrawImperativeAPI, UIOptions } from "@excalidraw/excalidraw/types";
+
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AppConfig } from "./config";
+
+import type {
+  ExcalidrawImperativeAPI,
+  UIOptions,
+} from "@excalidraw/excalidraw/types";
+
+import "./App.css";
+
 import { DocumentController } from "./document";
 import { installShortcuts } from "./shortcuts";
 import { syncToolHighlight } from "./toolHighlight";
 import { ToolIndicator } from "./ToolIndicator";
 import { syncZenMode } from "./zenMode";
+
+import type { AppConfig } from "./config";
 
 // File handling goes through Tauri (see document.ts), not Excalidraw's browser download/upload.
 const uiOptions: UIOptions = {
@@ -23,7 +31,9 @@ export function App({ config }: { config: AppConfig }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!api || !containerRef.current) return;
+    if (!api || !containerRef.current) {
+      return;
+    }
     const cleanups = [
       doc.attach(api),
       installShortcuts(config, api, {
@@ -45,7 +55,9 @@ export function App({ config }: { config: AppConfig }) {
         initialData={initialData}
         theme="dark"
       ></Excalidraw>
-      {api && containerRef.current && <ToolIndicator api={api} container={containerRef.current} />}
+      {api && containerRef.current && (
+        <ToolIndicator api={api} container={containerRef.current} />
+      )}
     </div>
   );
 }

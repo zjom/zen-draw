@@ -3,6 +3,7 @@
 // (MIT); keep in sync with the installed version's toolbar.
 
 import type { ToolType } from "@excalidraw/excalidraw/types";
+
 import type { ReactNode, SVGProps } from "react";
 
 type Opts = {
@@ -11,9 +12,19 @@ type Opts = {
 } & SVGProps<SVGSVGElement>;
 
 const createIcon = (d: ReactNode, opts: number | Opts = 512) => {
-  const { width = 512, height = width, ...rest } = typeof opts === "number" ? { width: opts } : opts;
+  const {
+    width = 512,
+    height = width,
+    ...rest
+  } = typeof opts === "number" ? { width: opts } : opts;
   return (
-    <svg aria-hidden="true" focusable="false" role="img" viewBox={`0 0 ${width} ${height}`} {...rest}>
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      role="img"
+      viewBox={`0 0 ${width} ${height}`}
+      {...rest}
+    >
       {d}
     </svg>
   );
