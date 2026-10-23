@@ -1,0 +1,15 @@
+# Copy to $XDG_CONFIG_HOME/zen-draw/config.toml
+# (or ~/.config/zen-draw/config.toml if XDG_CONFIG_HOME is unset; same on every OS).
+
+# Shortcut syntax: "p", "shift+p", "alt+1", "cmd+z,ctrl+z" (comma = alternatives).
+# "mod+x" means cmd+x on macOS and ctrl+x elsewhere. Binding a tool replaces its
+# default keys; an empty string removes them. Unknown ids are reported in the devtools console.
+
+[keys.tools]
+# Ids: selection rectangle diamond ellipse arrow line freedraw text image eraser hand frame laser
+# freedraw = "d"
+# laser = ""
+
+[keys.actions]
+# Ids: app.open app.save app.save-as (Excalidraw's own shortcuts can't be rebound)
+# app.save = "mod+s"
