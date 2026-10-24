@@ -23,8 +23,12 @@ nix run .    # or `nix build`; result/bin/zen-draw
 
 The flake also exposes `overlays.default`. After a change to `pnpm-lock.yaml`, update the `pnpmDeps` hash in `package.nix`.
 
-Open a file from the command line with `zen-draw drawing.excalidraw`, or with hotkeys Open / Save / Save as, default `Ctrl/Cmd+O`, `+S`, `+Shift+S`.
+Open a file from the command line with `zen-draw drawing.excalidraw`, or with the commands Open / Save / Save as (default `Ctrl/Cmd+O`, `+S`, `+Shift+S`, also in the command palette, `Ctrl/Cmd+/`).
 
 ## Configuration
 
 `$XDG_CONFIG_HOME/zen-draw/config.toml`, falling back to `~/.config/zen-draw/config.toml`. The same path is used on Linux, macOS and Windows. See [`config.example.toml`](config.example.toml).
+
+The `[keys]` table maps command IDs to key combinations, for example `"tool.freedraw" = "d"`. The IDs are `tool.<name>`, the zenboard action names (for example `undo`), `ui.<name>` and `host.open`, `host.save`, `host.saveAs`. An empty string removes the key combinations of a command.
+
+The old format (`[keys.tools]` and `[keys.actions]`) is no longer accepted. Move each entry into `[keys]`: `<tool> = ...` in `[keys.tools]` becomes `"tool.<tool>" = ...`, and `app.open`, `app.save`, `app.save-as` become `host.open`, `host.save`, `host.saveAs`.

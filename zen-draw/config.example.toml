@@ -1,15 +1,25 @@
 # Copy to $XDG_CONFIG_HOME/zen-draw/config.toml
 # (or ~/.config/zen-draw/config.toml if XDG_CONFIG_HOME is unset; same on every OS).
 
-# Shortcut syntax: "p", "shift+p", "alt+1", "cmd+z,ctrl+z" (comma = alternatives).
-# "mod+x" means cmd+x on macOS and ctrl+x elsewhere. Binding a tool replaces its
-# default keys; an empty string removes them. Unknown ids are reported in the devtools console.
+# [keys] maps a command ID to key combinations. A key combination replaces all
+# default key combinations of the command, and is removed from any other command
+# that used it. An empty string removes all key combinations of the command.
+# Unknown IDs are reported in the devtools console.
+#
+# Syntax: "p", "shift+p", "alt+1", "cmd+z,ctrl+z" (comma = alternatives).
+# Modifiers: mod ctrl cmd meta alt option shift. "mod" is cmd on macOS and ctrl elsewhere.
+# Key names: escape enter tab space delete backspace arrowup arrowdown arrowleft
+# arrowright plus minus comma.
+#
+# Command IDs:
+#   tool.<name>  selection rectangle diamond ellipse arrow line freedraw text image
+#                eraser hand frame laser stickynote lasso bucketfill autoshape
+#   host.open host.save host.saveAs  (default mod+o, mod+s, mod+shift+s)
+#   ui.commandPalette ui.imageExport ui.toolLock
+#   editor actions by name, e.g. undo redo zoomIn zoomOut resetZoom group ungroup
+#   duplicateSelection deleteSelectedElements toggleTheme gridMode
 
-[keys.tools]
-# Ids: selection rectangle diamond ellipse arrow line freedraw text image eraser hand frame laser
-# freedraw = "d"
-# laser = ""
-
-[keys.actions]
-# Ids: app.open app.save app.save-as (Excalidraw's own shortcuts can't be rebound)
-# app.save = "mod+s"
+[keys]
+# "tool.freedraw" = "d"
+# "tool.laser" = ""
+# "host.saveAs" = "mod+alt+s"

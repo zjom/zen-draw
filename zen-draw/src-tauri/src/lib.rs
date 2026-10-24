@@ -11,13 +11,9 @@ struct Config {
     keys: Keys,
 }
 
-/// Maps Excalidraw tool ids and app action ids to keyboard shortcuts. An empty string unbinds.
-#[derive(Debug, Default, Serialize, Deserialize)]
-#[serde(default, deny_unknown_fields)]
-struct Keys {
-    tools: HashMap<String, String>,
-    actions: HashMap<String, String>,
-}
+/// Maps zenboard command ids (`tool.*`, action names, `ui.*`, `host.*`) to key combinations.
+/// An empty string removes all key combinations of the command.
+type Keys = HashMap<String, String>;
 
 #[derive(Serialize)]
 struct LoadedConfig {

@@ -247,6 +247,23 @@ keymap: {
 2. The `pnpm test:update` command completes without failed tests.
 3. No action in the default keymap has a `keyTest` function.
 
+### 5.9 Results
+
+Phase 1 is on the `zenboard/phase-1` branch. These results are different from sections 5.2 to 5.6, or are not in those sections:
+
+1. `components/App.commands.ts` (`AppCommands`, `app.commands`) contains the command registry, the effective keymap and the dispatch. `ActionManager.handleKeyDown` calls `AppCommands.handleKeyDown` first. Then it runs the `keyTest` actions of fixed keys (`finalize` and `deselect`).
+2. Symbols: if `event.key` is equal to the symbol, the event can have Shift without Shift in the key combination (`?` is Shift+/ on a US layout). If `event.key` is not equal, zenboard compares `event.code` with the US layout, with Shift equal (`mod+alt+[` on macOS, where `event.key` is `“`). A match on `event.key` wins over a match on `event.code`.
+3. Digits also match on `event.key` and on `Numpad0` to `Numpad9`.
+4. The host commands are part of the conflict rules: the `keys` of a host command remove the key combination from the default of a different command.
+5. `mod+p` is a default key combination of `ui.commandPalette`. Before, `mod+p` showed a toast with the key combination of the command palette.
+6. The `clearCanvas` command opens the confirmation dialog, as `mod+delete` and the command palette did before.
+7. `copy` and `paste` are not in the keymap, because the browser handles these keys (clipboard events). The labels show `mod+c` and `mod+v` (`NATIVE_KEYS`).
+8. These keys stay hard-coded in `App.onKeyDown`: `s`, `g` and `shift+f` (popups of the properties panel), `i`, `shift+s` and `shift+g` (eyedropper), `mod+v` (paste as plain text with shift). Phase 2 or Phase 3 removes or replaces them with the properties panel.
+9. In the text editor, a host command with Ctrl or Cmd ends the editing and then runs. This replaces the `saveToActiveFile` and `saveFileToDisk` keys in the text editor.
+10. The command palette lists the host commands that have a `run` function.
+11. The `[ring]` table of zen-draw (section 9.1 step 4) is not done. Phase 2 adds it with the `toolRing` prop.
+12. zen-draw uses `handleKeyboardGlobally`, so that the keymap also works when the canvas does not have the focus.
+
 ## 6. Phase 2: `ZenLayerUI`, tool ring and removals
 
 ### 6.1 `ZenLayerUI`

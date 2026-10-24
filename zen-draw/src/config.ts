@@ -1,13 +1,11 @@
 import { invoke } from "@tauri-apps/api/core";
 
 export interface AppConfig {
-  keys: {
-    tools: Record<string, string>;
-    actions: Record<string, string>;
-  };
+  /** command ID → key combinations, e.g. `"tool.freedraw" = "d"` */
+  keys: Record<string, string>;
 }
 
-export const DEFAULT_CONFIG: AppConfig = { keys: { tools: {}, actions: {} } };
+export const DEFAULT_CONFIG: AppConfig = { keys: {} };
 
 export async function loadConfig(): Promise<{
   path: string | null;
