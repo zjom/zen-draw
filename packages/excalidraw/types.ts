@@ -1494,6 +1494,10 @@ export interface ExcalidrawImperativeAPI {
     /** whether the scene changed after the last `load` or `markSaved` */
     isDirty: () => boolean;
     markSaved: () => void;
+    /** e.g. after a failed write: call `markSaved` right after `serialize`,
+     * so that a change during the write keeps the scene dirty, and
+     * `markDirty` if the write fails */
+    markDirty: () => void;
   };
   onDirtyChange: (callback: (dirty: boolean) => void) => UnsubscribeCallback;
   onPointerDown: (

@@ -80,7 +80,7 @@ export class DocumentController {
     try {
       const json = await invoke<string>("read_file", { path });
       await api.scene.load(json);
-      this.markSaved(path);
+      this.setPath(path);
     } catch (e) {
       await message(String(e), { title: "Could not open file", kind: "error" });
     }
@@ -91,11 +91,15 @@ export class DocumentController {
     if (!api) {
       return;
     }
+    const contents = api.scene.serialize();
+    // saved as of the serialization: a change during the write keeps the
+    // scene dirty
+    api.scene.markSaved();
     try {
-      const contents = api.scene.serialize();
       await invoke("write_file", { path, contents });
-      this.markSaved(path);
+      this.setPath(path);
     } catch (e) {
+      api.scene.markDirty();
       await message(String(e), { title: "Could not save file", kind: "error" });
     }
   }
@@ -112,9 +116,10 @@ export class DocumentController {
     });
   }
 
-  private markSaved(path: string) {
+  /** the scene is saved to (or loaded from) the path; `scene.load` and
+   * `writeTo` mark the scene as saved */
+  private setPath(path: string) {
     this.path = path;
-    this.api?.scene.markSaved();
     this.updateTitle();
   }
 

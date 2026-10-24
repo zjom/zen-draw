@@ -447,6 +447,7 @@ Phase 4 is on the `zenboard/phase-4` branch. These results are different from se
 7. `scene.load` marks the scene as saved before the update commits. `AppDocument` keeps the grid of the loaded scene, so that the commit does not make the scene dirty. `scene.load` does not wait for the commit, because a wait would block in a test (`act` flushes the updates only after the promise resolves).
 8. `scene.serialize` does not include the deleted elements. Before, zen-draw saved the deleted elements.
 9. zen-draw: `DocumentController` uses `scene.load`, `scene.serialize`, `scene.isDirty`, `scene.markSaved` and `onDirtyChange` (section 9.1 step 7). The `dirty` field, the `savedVersion` field and the `hashElementsVersion` calls are removed.
+10. The `scene.markDirty` method is not in section 8. A host calls `scene.markSaved` immediately after `scene.serialize`, so that a change during the write keeps the scene dirty. If the write fails, the host calls `scene.markDirty`. zen-draw does this.
 
 ## 9. Phase 5: changes to zen-draw
 

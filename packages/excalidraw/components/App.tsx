@@ -833,6 +833,7 @@ class App extends React.Component<AppProps, AppState> {
         serialize: this.document.serialize,
         isDirty: this.document.isDirty,
         markSaved: this.document.markSaved,
+        markDirty: this.document.markDirty,
       },
       onPointerDown: (cb) => this.onPointerDownEmitter.on(cb),
       onPointerUp: (cb) => this.onPointerUpEmitter.on(cb),

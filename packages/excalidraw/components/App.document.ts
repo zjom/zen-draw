@@ -68,6 +68,11 @@ export class AppDocument {
     this.setDirty(false);
   };
 
+  /** e.g. the host marked the scene as saved before a write that failed */
+  markDirty = () => {
+    this.setDirty(true);
+  };
+
   /** subscribes `callback` to the changes of the dirty state */
   subscribe = (callback: (dirty: boolean) => void): UnsubscribeCallback =>
     this.onDirtyChange.on(callback);

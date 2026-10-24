@@ -154,6 +154,14 @@ describe("scene API", () => {
       expect(onDirtyChange.mock.calls).toEqual([[true], [false]]);
     });
 
+    it("is dirty after markDirty()", () => {
+      const onDirtyChange = vi.fn();
+      api().onDirtyChange(onDirtyChange);
+      api().scene.markDirty();
+      expect(api().scene.isDirty()).toBe(true);
+      expect(onDirtyChange.mock.calls).toEqual([[true]]);
+    });
+
     it("is not dirty after a change of the selection", () => {
       const rectangle = addRectangle();
       api().scene.markSaved();
