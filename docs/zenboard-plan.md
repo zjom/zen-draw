@@ -396,6 +396,7 @@ Phase 3 is on the `zenboard/phase-3` branch. These results are different from se
 4. The style ring opens only if one or more elements are selected and no text is in edit. The command palette and `commands.execute("ui.styleRing")` open a sticky style ring at the pointer.
 5. The properties, in this order: stroke color, background color, opacity, stroke width, stroke style, fill style, sloppiness, edges, font family, font size, text alignment, start arrowhead, end arrowhead, arrow type and layer order. The arrow type is not in section 7.
 6. The sub-rings contain these values:
+
    - Opacity: 100, 90, 75, 50, 25 and 10 percent.
    - Font family: the three default fonts. The other fonts are not available.
    - Arrowheads: none, arrow, triangle, triangle outline, circle, circle outline, diamond and bar. The cardinality arrowheads are not available.
@@ -403,6 +404,7 @@ Phase 3 is on the `zenboard/phase-3` branch. These results are different from se
    - Fill style: hachure, cross-hatch and solid. Zigzag is not available.
 
    The vertical alignment of text is not a property of the style ring.
+
 7. A sub-ring marks the current value of the selected elements.
 8. A color slice opens `ColorPickerPopupContent` (now exported from `ColorPicker.tsx`) in `StyleRingColorPicker`. The picker is open while `appState.openPopup` is `elementStroke` or `elementBackground`. Thus the hard-coded `s` and `g` keys (section 5.9 item 8) open the color picker again, at the pointer.
 9. `ZenLayerUI` renders the eyedropper (`ZenEyeDropper`, a copy of the eyedropper code in `LayerUI`). The eyedropper button of the color picker and the `i`, `shift+s` and `shift+g` keys work again. The `shift+f` key (the font family popup) still does nothing visible.
@@ -431,6 +433,20 @@ onDirtyChange: (callback: (dirty: boolean) => void) => UnsubscribeCallback;
 2. The default value of `fitToContent` is true. The default value of `resetHistory` is true.
 3. The scene is dirty if the store records one or more durable increments after the last call to `markSaved`. This rule also includes a change of the background color and a change of the grid.
 4. An undo to the saved state does not make the scene clean. The current element hash in zen-draw has the same behavior.
+
+### 8.1 Results
+
+Phase 4 is on the `zenboard/phase-4` branch. These results are different from section 8, or are not in section 8:
+
+1. `components/App.document.ts` (`AppDocument`, `app.document`) contains the document API.
+2. The store also records a change of the selection as a durable increment. Thus the scene is dirty only if a durable increment changes the elements or `viewBackgroundColor`. A change of the selection does not make the scene dirty.
+3. The store does not observe the grid. `App.componentDidUpdate` calls `AppDocument.onStateUpdate`, which makes the scene dirty if `gridSize`, `gridStep` or `gridModeEnabled` changes. A change of the `gridModeEnabled` prop also makes the scene dirty.
+4. An update with `CaptureUpdateAction.NEVER` does not make the scene dirty.
+5. `scene.load` also clears the selection, the editing group and the open popup, and closes the rings. It accepts the same data as `loadFromBlob`, also a PNG or an SVG with an embedded scene. For invalid data, the promise rejects and the scene does not change.
+6. `scene.load` fits the viewport only if the scene has one or more elements.
+7. `scene.load` marks the scene as saved before the update commits. `AppDocument` keeps the grid of the loaded scene, so that the commit does not make the scene dirty. `scene.load` does not wait for the commit, because a wait would block in a test (`act` flushes the updates only after the promise resolves).
+8. `scene.serialize` does not include the deleted elements. Before, zen-draw saved the deleted elements.
+9. zen-draw: `DocumentController` uses `scene.load`, `scene.serialize`, `scene.isDirty`, `scene.markSaved` and `onDirtyChange` (section 9.1 step 7). The `dirty` field, the `savedVersion` field and the `hashElementsVersion` calls are removed.
 
 ## 9. Phase 5: changes to zen-draw
 
