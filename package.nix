@@ -26,9 +26,6 @@ rustPlatform.buildRustPackage (finalAttrs: {
       ./tsconfig.json
       ./packages
       ./zen-draw
-      # pnpm reads every workspace manifest, also for a filtered install.
-      ./examples/with-nextjs/package.json
-      ./examples/with-script-in-browser/package.json
     ];
   };
 
@@ -46,7 +43,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     inherit (finalAttrs) pname version src pnpmWorkspaces;
     pnpm = pnpm_12;
     fetcherVersion = 4;
-    hash = "sha256-+BSLxYsZmUa1MtUyf5uyODVoSSGQeQByQYgUL9trs54=";
+    hash = "sha256-v/5einvh6yEhNYN8+9qvYOsGSlnaULIk+f1rWgQvs2M=";
   };
 
   nativeBuildInputs = [

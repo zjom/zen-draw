@@ -9,10 +9,6 @@
   "engines": {
     "node": ">=26"
   },
-  "scripts": {
-    "gen:types": "rimraf types && tsc",
-    "build:esm": "rimraf dist && node ../../scripts/buildBase.js && pnpm run gen:types"
-  },
   "keywords": [
     "fractional",
     "indexing",

@@ -26,9 +26,5 @@
   "license": "MIT",
   "publishConfig": {
     "access": "public"
-  },
-  "scripts": {
-    "gen:types": "rimraf types && tsc",
-    "build:esm": "rimraf dist && node ../../scripts/buildBase.js && pnpm run gen:types"
   }
 }

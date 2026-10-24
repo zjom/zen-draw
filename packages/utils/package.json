@@ -60,17 +60,10 @@
     "roughjs": "4.6.4"
   },
   "devDependencies": {
-    "cross-env": "7.0.3",
     "fonteditor-core": "2.4.0",
     "jest-diff": "29.7.0",
-    "typescript": "7.0.2",
-    "wawoff2": "2.0.1",
-    "which": "4.0.0"
+    "typescript": "7.0.2"
   },
   "bugs": "https://github.com/excalidraw/excalidraw/issues",
-  "repository": "https://github.com/excalidraw/excalidraw",
-  "scripts": {
-    "gen:types": "rimraf types && tsc",
-    "build:esm": "rimraf dist && node ../../scripts/buildUtils.js && pnpm run gen:types"
-  }
+  "repository": "https://github.com/excalidraw/excalidraw"
 }

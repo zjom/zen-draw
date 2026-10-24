@@ -6,7 +6,6 @@ zenboard is a fork of Excalidraw. It is a **monorepo** with a clear separation b
 
 - **`packages/excalidraw/`** - Main React component library published to npm as `@excalidraw/excalidraw`
 - **`packages/`** - Core packages: `@excalidraw/common`, `@excalidraw/element`, `@excalidraw/math`, `@excalidraw/utils`
-- **`examples/`** - Integration examples (NextJS, browser script)
 - **`zen-draw/`** - Desktop whiteboard (Tauri) that is the primary consumer of the library. It builds against the source in `packages/` (see `zen-draw/vite.config.ts`)
 
 ## Branches

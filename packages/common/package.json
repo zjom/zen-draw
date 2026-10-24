@@ -52,10 +52,6 @@
   },
   "bugs": "https://github.com/excalidraw/excalidraw/issues",
   "repository": "https://github.com/excalidraw/excalidraw",
-  "scripts": {
-    "gen:types": "rimraf types && tsc",
-    "build:esm": "rimraf dist && node ../../scripts/buildBase.js && pnpm run gen:types"
-  },
   "dependencies": {
     "@braintree/sanitize-url": "6.0.2",
     "es6-promise-pool": "2.5.0",
