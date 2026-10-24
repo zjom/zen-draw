@@ -11,3 +11,4 @@ dev-dist
 coverage
 .devenv/
 zen-draw/src-tauri/target/
+zen-draw/src-tauri/gen/
