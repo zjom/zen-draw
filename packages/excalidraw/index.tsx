@@ -110,7 +110,6 @@ const ExcalidrawBase = (props: ExcalidrawProps) => {
     children,
     validateEmbeddable,
     renderEmbeddable,
-    aiEnabled,
     showDeprecatedFonts,
     renderScrollbars,
     viewportStatusFrame,
@@ -256,7 +255,7 @@ const ExcalidrawBase = (props: ExcalidrawProps) => {
           onDuplicate={onDuplicate}
           validateEmbeddable={validateEmbeddable}
           renderEmbeddable={renderEmbeddable}
-          aiEnabled={aiEnabled !== false}
+          aiEnabled={false}
           showDeprecatedFonts={showDeprecatedFonts}
           renderScrollbars={renderScrollbars}
           viewportStatusFrame={viewportStatusFrame}
@@ -506,17 +505,6 @@ export { Stats } from "./components/Stats";
 
 export { DefaultSidebar } from "./components/DefaultSidebar";
 export { TTDDialog } from "./components/TTDDialog/TTDDialog";
-export { TTDDialogTrigger } from "./components/TTDDialog/TTDDialogTrigger";
-export {
-  TTDStreamFetch,
-  parseSSEStream,
-} from "./components/TTDDialog/utils/TTDStreamFetch";
-export type { StreamChunk } from "./components/TTDDialog/utils/TTDStreamFetch";
-export type {
-  TTDPersistenceAdapter,
-  SavedChat,
-  SavedChats,
-} from "./components/TTDDialog/types";
 
 export type {
   ViewportStatusFrame,
@@ -534,7 +522,6 @@ export {
 
 export { elementsOverlappingBBox } from "@excalidraw/element";
 
-export { DiagramToCodePlugin } from "./components/DiagramToCodePlugin/DiagramToCodePlugin";
 export { getDataURL } from "./data/blob";
 export { isElementLink } from "@excalidraw/element";
 
