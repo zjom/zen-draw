@@ -353,6 +353,23 @@ Rules for the removals:
 3. No toolbar, menu, footer or help text appears on the canvas.
 4. The `pnpm test:typecheck` command and the `pnpm test:update` command complete without errors.
 
+### 6.6 Results
+
+Phase 2 is on the `zenboard/phase-2` branch. These results are different from sections 6.1 to 6.5, or are not in those sections:
+
+1. `LayerUI` stays. Most upstream tests use the toolbar, the menus or the properties panel of `LayerUI`. `setupTests.ts` calls `setLegacyLayerUI(true)` (`components/zen/legacyLayerUI.ts`), so that `App` renders `LayerUI` in the upstream tests. The tests of `ZenLayerUI` (`tests/zenLayerUI.test.tsx`) turn this off. The tool ring does not open while `LayerUI` renders, so a right-drag pans in the upstream tests.
+2. Because `LayerUI` stays, these components stay (rule 1 of section 6.4): `Toolbar`, `MobileMenu`, the footer, `HelpButton`, `HintViewer`, the main menu with the Socials group, the properties panel, `UserList` and `ElementCanvasButton` (`MagicButton.tsx`). `ZenLayerUI` does not render them.
+3. `components/App.toolRing.ts` (`AppToolRing`, `app.toolRing`) contains the ring logic. `AppPan` opens the ring when a secondary-button drag passes 5 px. If the ring cannot open (view mode, a forced tool from `props.activeTool`, a non-interactive editor), the drag pans as before.
+4. `ui.toolRing` is a built-in press command. `commands.execute("ui.toolRing")` and the command palette open a sticky ring at the pointer. The digit keys 1 to 9 select a slice of a sticky ring, because the default ring has 9 slices (8 items and the "more" slice).
+5. A slice of a tool runs `setActiveTool` directly: a tool slice does not toggle back and does not cycle the arrow type, as the key combinations of the tools do.
+6. The removed props are not in `ExcalidrawProps`. `App` still reads them from `AppProps`, where they are always unset: `isCollaborating` (false), `onPointerUpdate`, `onUserFollow`, `userToFollow`, `currentUserControls`, `libraryReturnUrl`, `zenModeEnabled` and `aiEnabled` (false). `AppProps.aiEnabled` also hides the magic frame UI.
+7. Also removed: `api.onUserFollow`, `LiveCollaborationTrigger`, `DiagramToCodePlugin`, `TTDDialogTrigger`, the AI chat files of the TTD dialog, `WelcomeScreen`, the export option `saveFileToDisk` and the `UIOptions.canvasActions` options `loadScene` and `saveToActiveFile`.
+8. `LayerUI` changed in two places only: its default main menu and its overwrite confirmation no longer contain the removed file actions.
+9. The command palette always offers Mermaid to diagram. Before, `aiEnabled` controlled it.
+10. `ZenLayerUI` also renders the help dialog (`?`), because the help dialog shows the effective keymap.
+11. `ZenLayerUI` does not render the eyedropper, the popups of the properties panel or the stats. The hard-coded keys of these features (section 5.9 item 8) do nothing visible. Phase 3 replaces them with the style ring.
+12. zen-draw: the `[ring]` table (section 9.1 step 4) maps to the `toolRing` prop. A missing list keeps the default.
+
 ## 7. Phase 3: style ring
 
 1. Add the `ui.styleRing` command. The `ui.styleRing` command has no default key combination.
