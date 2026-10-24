@@ -120,6 +120,20 @@ Do each step in a separate commit. After each step, run the type check, the test
 4. The `pnpm zen-draw:build` command and the `nix build` command complete without errors.
 5. The `grep -rl yarn --exclude-dir=node_modules .` command finds only change logs.
 
+### 4.6 Results
+
+Phase 0 is on the `zenboard/phase-0` branch. These results are different from sections 4.2 to 4.4, or are not in those sections:
+
+1. TypeScript 7 does not provide the classic compiler API. typescript-eslint and vite-plugin-checker need that API. The root package therefore has two TypeScript packages:
+   - `typescript` is an alias of `@typescript/typescript6`. The tools load the compiler API from this package.
+   - `typescript-native` is TypeScript 7. This package provides the `tsc` binary.
+2. zen-draw does not use the built packages. Vite aliases in `zen-draw/vite.config.ts` resolve `@excalidraw/*` to the source in `packages/`. Vite bundles the fonts from the source.
+3. The library source imports `@excalidraw/utils`, but no package declares this dependency. The Nix build therefore also installs the dependencies of `@excalidraw/utils` (`pnpmWorkspaces` in `package.nix`).
+4. All packages use React 19.0.0. The Radix problem that made zen-draw use React 18 did not occur in the builds or in the tests. The problem can occur only at runtime. A manual test of zen-draw is necessary.
+5. Vitest 5 showed that some `ORIG_ID` assertions in the tests always passed. Vitest 3 ignored symbol keys in `expect.objectContaining()`. The commit of the Vite 8 upgrade removes or corrects these assertions.
+6. Known problem: after the `pnpm build:packages` command, the `pnpm test:typecheck` command fails in `MermaidToExcalidraw.test.tsx`. The type declarations of `@excalidraw/mermaid-to-excalidraw` import `@excalidraw/excalidraw/element/transform`. This import resolves only after a package build. This problem also occurs on the `master` branch.
+7. Condition 1 of section 10.3 needs a manual test: the `pnpm zen-draw:dev` command must start zen-draw.
+
 ## 5. Phase 1: keymap and commands
 
 ### 5.1 Current state
