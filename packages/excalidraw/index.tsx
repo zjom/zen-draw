@@ -21,7 +21,6 @@ import App, {
 import { InitializeApp } from "./components/InitializeApp";
 import Footer from "./components/footer/FooterCenter";
 import MainMenu from "./components/main-menu/MainMenu";
-import WelcomeScreen from "./components/welcome-screen/WelcomeScreen";
 import { defaultLang } from "./i18n";
 import {
   useAppStateValue as _useAppStateValue,
@@ -487,7 +486,6 @@ export {
   ExcalidrawAPIContext,
 } from "./components/App";
 
-export { WelcomeScreen };
 export { Stats } from "./components/Stats";
 
 export { DefaultSidebar } from "./components/DefaultSidebar";
