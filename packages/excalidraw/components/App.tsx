@@ -825,7 +825,6 @@ class App extends React.Component<AppProps, AppState> {
       onPointerDown: (cb) => this.onPointerDownEmitter.on(cb),
       onPointerUp: (cb) => this.onPointerUpEmitter.on(cb),
       onScrollChange: (cb) => this.onScrollChangeEmitter.on(cb),
-      onUserFollow: (cb) => this.onUserFollowEmitter.on(cb),
       onStateChange: this.onStateChange,
       onEvent: this.onEvent,
     };

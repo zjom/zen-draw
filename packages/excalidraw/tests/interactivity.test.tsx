@@ -1324,7 +1324,6 @@ describe("interaction={{ enabled: { embeds / interactiveContent } }}", () => {
 describe("interaction={{ enabled: { tools } }}", () => {
   const onPointerDownSpy = vi.fn();
   const onPointerUpSpy = vi.fn();
-  const onPointerUpdateSpy = vi.fn();
 
   const renderWithInteraction = async (
     interaction: ExcalidrawProps["interaction"],
@@ -1336,7 +1335,6 @@ describe("interaction={{ enabled: { tools } }}", () => {
         handleKeyboardGlobally={true}
         onPointerDown={onPointerDownSpy}
         onPointerUp={onPointerUpSpy}
-        onPointerUpdate={onPointerUpdateSpy}
         initialData={{
           elements: [
             API.createElement({
@@ -1366,7 +1364,6 @@ describe("interaction={{ enabled: { tools } }}", () => {
         handleKeyboardGlobally={true}
         onPointerDown={onPointerDownSpy}
         onPointerUp={onPointerUpSpy}
-        onPointerUpdate={onPointerUpdateSpy}
       />,
     );
   };
@@ -1374,7 +1371,6 @@ describe("interaction={{ enabled: { tools } }}", () => {
   beforeEach(() => {
     onPointerDownSpy.mockClear();
     onPointerUpSpy.mockClear();
-    onPointerUpdateSpy.mockClear();
     mockBoundingClientRect();
   });
 
@@ -1408,31 +1404,6 @@ describe("interaction={{ enabled: { tools } }}", () => {
     expect(h.state.selectedElementIds).toEqual({});
     expect([h.state.scrollX, h.state.scrollY]).toEqual([scrollX, scrollY]);
     expect(h.elements.length).toBe(1);
-  });
-
-  it("laser: pointer positions broadcast via onPointerUpdate", async () => {
-    await renderWithInteraction({ enabled: { tools: { laser: true } } });
-
-    act(() => {
-      h.app.setActiveTool({ type: "laser" });
-    });
-
-    // between strokes (plain hover)
-    mouse.moveTo(50, 50);
-    expect(onPointerUpdateSpy).toHaveBeenCalled();
-    expect(onPointerUpdateSpy.mock.calls.at(-1)![0].pointer.tool).toBe("laser");
-
-    // during a stroke
-    onPointerUpdateSpy.mockClear();
-    mouse.downAt(30, 30);
-    mouse.moveTo(60, 60);
-    mouse.upAt(60, 60);
-    expect(
-      onPointerUpdateSpy.mock.calls.some(
-        ([payload]) => payload.button === "down",
-      ),
-    ).toBe(true);
-    expect(onPointerUpdateSpy.mock.calls.at(-1)![0].button).toBe("up");
   });
 
   it("custom: onPointerDown/onPointerUp keep dispatching when enabled", async () => {
@@ -1479,7 +1450,6 @@ describe("interaction={{ enabled: { tools } }}", () => {
     mouse.upAt(80, 80);
     expect(h.state.selectedElementIds).toEqual({});
     expect(onPointerDownSpy).not.toHaveBeenCalled();
-    expect(onPointerUpdateSpy).not.toHaveBeenCalled();
 
     // a custom tool isn't covered by `tools.laser` — the switch itself is
     // refused
@@ -1553,7 +1523,6 @@ describe("interaction={{ enabled: { tools } }}", () => {
     mouse.upAt(80, 80);
     expect(h.app.laserTrails.localTrail.hasCurrentTrail).toBe(false);
     expect(onPointerDownSpy).not.toHaveBeenCalled();
-    expect(onPointerUpdateSpy).not.toHaveBeenCalled();
   });
 
   it("container gets the excalidraw--tools class only while the active tool is enabled", async () => {

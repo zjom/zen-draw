@@ -1,12 +1,7 @@
 import React from "react";
 import { fireEvent } from "@testing-library/react";
-import { vi } from "vitest";
 
-import {
-  CURSOR_TYPE,
-  POINTER_BUTTON,
-  viewportCoordsToSceneCoords,
-} from "@excalidraw/common";
+import { CURSOR_TYPE, POINTER_BUTTON } from "@excalidraw/common";
 
 import { Excalidraw } from "../index";
 
@@ -92,71 +87,6 @@ describe("secondary-button pan", () => {
     expect(menu).not.toBe(null);
     expect(menu!.left).toBe(104 - h.state.offsetLeft);
     expect(menu!.top).toBe(102 - h.state.offsetTop);
-  });
-
-  it.each([false, true])(
-    "pauses pointer broadcasts until pan release (viewModeEnabled=%s)",
-    (viewModeEnabled) => {
-      const onPointerUpdate = vi.fn();
-      GlobalTestState.renderResult.rerender(
-        <Excalidraw onPointerUpdate={onPointerUpdate} />,
-      );
-      API.setAppState({ viewModeEnabled });
-      fireEvent.pointerDown(canvas(), at(100, 100));
-      fireEvent.pointerMove(canvas(), at(103, 104));
-      fireEvent.pointerMove(canvas(), at(106, 100));
-      fireEvent.pointerMove(canvas(), at(140, 135));
-      expect(onPointerUpdate).not.toHaveBeenCalled();
-
-      // The release can be beyond the last delivered pointer move.
-      const released = { ...at(150, 145), buttons: 0 };
-      fireEvent.pointerUp(canvas(), released);
-
-      expect(onPointerUpdate).toHaveBeenCalledTimes(1);
-      expect(onPointerUpdate).toHaveBeenLastCalledWith(
-        expect.objectContaining({
-          pointer: {
-            ...viewportCoordsToSceneCoords(released, h.state),
-            tool: "pointer",
-          },
-          button: "up",
-        }),
-      );
-
-      const hovered = { ...released, clientX: 160, clientY: 155 };
-      fireEvent.pointerMove(canvas(), hovered);
-      expect(onPointerUpdate).toHaveBeenCalledTimes(2);
-      expect(onPointerUpdate).toHaveBeenLastCalledWith(
-        expect.objectContaining({
-          pointer: {
-            ...viewportCoordsToSceneCoords(hovered, h.state),
-            tool: "pointer",
-          },
-          button: "up",
-        }),
-      );
-    },
-  );
-
-  it("does not broadcast an old pan release after a new press", () => {
-    const onPointerUpdate = vi.fn();
-    GlobalTestState.renderResult.rerender(
-      <Excalidraw onPointerUpdate={onPointerUpdate} />,
-    );
-    fireEvent.pointerDown(canvas(), at(100, 100));
-    fireEvent.pointerMove(canvas(), at(106, 100));
-    fireEvent.pointerMove(canvas(), at(140, 135));
-
-    const nextPress = { ...at(150, 145), button: 0, buttons: 1 };
-    try {
-      // A new press cleans up the pan if its pointerup was missed.
-      fireEvent.pointerDown(canvas(), nextPress);
-      expect(onPointerUpdate).toHaveBeenLastCalledWith(
-        expect.objectContaining({ button: "down" }),
-      );
-    } finally {
-      fireEvent.pointerUp(canvas(), { ...nextPress, buttons: 0 });
-    }
   });
 
   it("opens the context menu on release when not dragged (contextmenu on mousedown)", () => {

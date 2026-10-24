@@ -105,7 +105,7 @@ interface LayerUIProps {
   scrollBackToContentUIEnabled: boolean;
   isCollaborating: boolean;
   generateLinkForSelection?: AppProps["generateLinkForSelection"];
-  currentUserControls?: ExcalidrawProps["currentUserControls"];
+  currentUserControls?: AppProps["currentUserControls"];
 }
 
 const DefaultMainMenu: React.FC<{

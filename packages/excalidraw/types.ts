@@ -920,12 +920,6 @@ export interface ExcalidrawProps {
    * Invoked once the initial scene is loaded.
    */
   onInitialize?: (api: ExcalidrawImperativeAPI) => void;
-  isCollaborating?: boolean;
-  onPointerUpdate?: (payload: {
-    pointer: { x: number; y: number; tool: "pointer" | "laser" };
-    button: "down" | "up";
-    pointersMap: Gesture["pointers"];
-  }) => void;
   onPaste?: (
     data: ClipboardData,
     event: ClipboardEvent | null,
@@ -1070,7 +1064,6 @@ export interface ExcalidrawProps {
     pointerDownState: PointerDownState,
   ) => void;
   onScrollChange?: (scrollX: number, scrollY: number, zoom: Zoom) => void;
-  onUserFollow?: (payload: OnUserFollowedPayload) => void;
   children?: React.ReactNode;
   validateEmbeddable?:
     | boolean
@@ -1085,22 +1078,6 @@ export interface ExcalidrawProps {
   showDeprecatedFonts?: boolean;
   renderScrollbars?: boolean;
   viewportStatusFrame?: ViewportStatusFrame | null;
-  /**
-   * Rendered inside the UserList "who's here" dropdown (desktop) and inline
-   * in the mobile menu's collaborators section, below a divider. Accepts a
-   * render function — called with `isMobile` so hosts can render different
-   * UI for each surface — in addition to a plain node.
-   */
-  currentUserControls?:
-    | React.ReactNode
-    | ((isMobile: boolean) => React.ReactNode);
-  /**
-   * The user being followed on the canvas, if any. Controlled by the host —
-   * the editor never sets it; it emits follow/unfollow intents via
-   * `onUserFollow` (prop or imperative API) and renders the followed
-   * user's avatar highlight from this value.
-   */
-  userToFollow?: UserToFollow | null;
   /**
    * Called before exporting to a file.
    *
@@ -1206,8 +1183,20 @@ export type AppProps = Merge<
     imageOptions: Required<ImageOptions>;
     detectScroll: boolean;
     handleKeyboardGlobally: boolean;
-    isCollaborating: boolean;
     children?: React.ReactNode;
+    // zenboard removes the collaboration: the props below are not in
+    // ExcalidrawProps, and are always unset (`isCollaborating` is false)
+    isCollaborating: boolean;
+    onPointerUpdate?: (payload: {
+      pointer: { x: number; y: number; tool: "pointer" | "laser" };
+      button: "down" | "up";
+      pointersMap: Gesture["pointers"];
+    }) => void;
+    onUserFollow?: (payload: OnUserFollowedPayload) => void;
+    currentUserControls?:
+      | React.ReactNode
+      | ((isMobile: boolean) => React.ReactNode);
+    userToFollow?: UserToFollow | null;
     /** zenboard removes the AI features: always `false` */
     aiEnabled: boolean;
   }
@@ -1515,9 +1504,6 @@ export interface ExcalidrawImperativeAPI {
   ) => UnsubscribeCallback;
   onScrollChange: (
     callback: (scrollX: number, scrollY: number, zoom: Zoom) => void,
-  ) => UnsubscribeCallback;
-  onUserFollow: (
-    callback: (payload: OnUserFollowedPayload) => void,
   ) => UnsubscribeCallback;
   onStateChange: InstanceType<typeof App>["onStateChange"];
   onEvent: InstanceType<typeof App>["onEvent"];
