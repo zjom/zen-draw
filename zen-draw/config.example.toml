@@ -58,13 +58,15 @@
 # mode = "system"
 
 [theme.dark]
-# accent = "#7aa2f7"
-# surface = "#1f2335"
-# text = "#c0caf5"
-# border = "#3b4261"
-# canvas = "#1a1b26"
-# grid = "#24283b"
-# grid-bold = "#2f3549"
+# accent = "#6e94b2"
+# surface = "#1c1c24"
+# text = "#cdcdcd"
+# border = "#878787"
+# canvas = "#141415"
+# grid = "#252530"
+# grid-bold = "#333738"
 
 [theme.dark.vars]
-# "color-danger" = "#f7768e"
+# "color-danger" = "#d8647e"
+# "color-warning" = "#f3be7c"
+# "color-success-contrast" = "#7fa563"
