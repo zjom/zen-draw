@@ -19,6 +19,7 @@ import type {
   SocketId,
   PendingExcalidrawElements,
 } from "../types";
+import type { ThemeCanvasColors } from "../renderer/helpers";
 import type { RoughCanvas } from "roughjs/bin/canvas";
 import type { Drawable } from "roughjs/bin/core";
 
@@ -41,6 +42,8 @@ export type StaticCanvasRenderConfig = {
   elementsPendingErasure: ElementsPendingErasure;
   pendingFlowchartNodes: PendingExcalidrawElements | null;
   theme: AppState["theme"];
+  /** host overrides of canvas colors, never used when exporting */
+  themeCanvasColors?: ThemeCanvasColors;
   elementRenderOverrides?: ElementRenderOverrides;
 };
 

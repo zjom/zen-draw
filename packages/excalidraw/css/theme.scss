@@ -81,6 +81,11 @@
 
   --color-selection: #6965db;
 
+  // Canvas colors a host can set (unset by default). They are shown as is,
+  // without the dark-mode filter, and never used when exporting.
+  // --canvas-background-color: shown while the scene uses the default background
+  // --grid-color, --grid-bold-color
+
   --color-icon-white: #fff;
 
   --color-primary: #6965db;

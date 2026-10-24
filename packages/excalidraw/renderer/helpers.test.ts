@@ -1,6 +1,10 @@
-import { COLOR_WHITE } from "@excalidraw/common";
+import { COLOR_WHITE, THEME, applyDarkModeFilter } from "@excalidraw/common";
 
-import { bootstrapCanvas } from "./helpers";
+import {
+  bootstrapCanvas,
+  getDisplayedViewBackground,
+  getThemeCanvasColors,
+} from "./helpers";
 
 const setup = () => {
   const canvas = document.createElement("canvas");
@@ -86,5 +90,36 @@ describe("bootstrapCanvas background painting", () => {
     const { clearRect, fillRect } = run(undefined);
     expect(clearRect).toHaveBeenCalledTimes(1);
     expect(fillRect).not.toHaveBeenCalled();
+  });
+});
+
+describe("theme canvas colors", () => {
+  it("reads the CSS variables and leaves out unset ones", () => {
+    const element = document.createElement("div");
+    element.style.setProperty("--canvas-background-color", "#1a1b26");
+    element.style.setProperty("--grid-color", " #24283b ");
+    document.body.appendChild(element);
+    expect(getThemeCanvasColors(element)).toEqual({
+      background: "#1a1b26",
+      grid: "#24283b",
+      gridBold: undefined,
+    });
+    element.remove();
+    expect(getThemeCanvasColors(null)).toEqual({});
+  });
+
+  it("shows the theme background only over the default background", () => {
+    expect(getDisplayedViewBackground("#FFFFFF", THEME.DARK, "#1a1b26")).toBe(
+      "#1a1b26",
+    );
+    expect(getDisplayedViewBackground("#ffc9c9", THEME.LIGHT, "#1a1b26")).toBe(
+      "#ffc9c9",
+    );
+    expect(getDisplayedViewBackground("#ffc9c9", THEME.DARK, "#1a1b26")).toBe(
+      applyDarkModeFilter("#ffc9c9"),
+    );
+    expect(getDisplayedViewBackground(COLOR_WHITE, THEME.DARK)).toBe(
+      applyDarkModeFilter(COLOR_WHITE),
+    );
   });
 });

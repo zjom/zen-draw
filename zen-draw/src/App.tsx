@@ -1,9 +1,11 @@
-import { Excalidraw } from "@excalidraw/excalidraw";
+import { Excalidraw, THEME } from "@excalidraw/excalidraw";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 import { useEffect, useMemo, useState } from "react";
 
 import type { HostCommands } from "@excalidraw/excalidraw";
 import type {
+  AppState,
   ExcalidrawImperativeAPI,
   UIOptions,
 } from "@excalidraw/excalidraw/types";
@@ -11,16 +13,25 @@ import type {
 import { DocumentController } from "./document";
 import { toKeymap, toToolRing } from "./shortcuts";
 
-import type { AppConfig } from "./config";
+import type { AppConfig, ThemeMode } from "./config";
 
 // File handling goes through Tauri (see document.ts), not Excalidraw's browser download/upload.
 const uiOptions: UIOptions = {
   canvasActions: { export: false },
 };
 
+const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+type Theme = AppState["theme"];
+
+const resolveMode = (mode: ThemeMode = "dark"): Theme =>
+  mode === "system" ? (systemDark.matches ? THEME.DARK : THEME.LIGHT) : mode;
+
 export function App({ config }: { config: AppConfig }) {
   const doc = useMemo(() => new DocumentController(), []);
   const [api, setApi] = useState<ExcalidrawImperativeAPI | null>(null);
+  // toggleTheme changes it until the next start or system theme change
+  const [theme, setTheme] = useState(() => resolveMode(config.theme.mode));
   const keymap = useMemo(() => toKeymap(config), [config]);
   const toolRing = useMemo(() => toToolRing(config), [config]);
   const commands = useMemo<HostCommands>(
@@ -35,6 +46,20 @@ export function App({ config }: { config: AppConfig }) {
     }),
     [doc],
   );
+
+  useEffect(() => {
+    if (config.theme.mode !== "system") {
+      return;
+    }
+    const onChange = () => setTheme(resolveMode("system"));
+    systemDark.addEventListener("change", onChange);
+    return () => systemDark.removeEventListener("change", onChange);
+  }, [config.theme.mode]);
+
+  // the native window decorations follow the editor theme
+  useEffect(() => {
+    void getCurrentWindow().setTheme(theme);
+  }, [theme]);
 
   useEffect(() => {
     if (!api) {
@@ -53,7 +78,8 @@ export function App({ config }: { config: AppConfig }) {
         toolRing={toolRing}
         // the keymap also works when the focus is outside the canvas
         handleKeyboardGlobally
-        theme="dark"
+        theme={theme}
+        onThemeChange={(next) => setTheme(resolveMode(next))}
       ></Excalidraw>
     </div>
   );

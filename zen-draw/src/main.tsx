@@ -5,6 +5,7 @@ import { createRoot } from "react-dom/client";
 import { App } from "./App";
 
 import { DEFAULT_CONFIG, loadConfig } from "./config";
+import { applyThemeCss } from "./theme";
 
 import type { AppConfig } from "./config";
 
@@ -21,6 +22,8 @@ async function main() {
       kind: "error",
     });
   }
+
+  applyThemeCss(config);
 
   createRoot(document.getElementById("root")!).render(
     <StrictMode>

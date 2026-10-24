@@ -10,6 +10,50 @@ const CONFIG_FILE: &str = "config.toml";
 struct Config {
     keys: Keys,
     ring: Ring,
+    theme: Theme,
+}
+
+#[derive(Debug, Default, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+struct Theme {
+    /// A missing mode keeps the default (dark).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    mode: Option<ThemeMode>,
+    light: Palette,
+    dark: Palette,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+enum ThemeMode {
+    Light,
+    Dark,
+    System,
+}
+
+/// The colors of one theme mode, as shown on screen. A missing color keeps the default.
+/// The frontend checks the values.
+#[derive(Debug, Default, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields, rename_all = "kebab-case")]
+struct Palette {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    accent: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    surface: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    text: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    border: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    selection: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    canvas: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    grid: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    grid_bold: Option<String>,
+    /// Any Excalidraw CSS variable, without the leading `--`.
+    vars: HashMap<String, String>,
 }
 
 /// The command ids of the tool ring (at most 8 each). A missing list keeps the default.

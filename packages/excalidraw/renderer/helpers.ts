@@ -15,6 +15,50 @@ export const getSelectionColor = (element: Element | null | undefined) =>
     getComputedStyle(element).getPropertyValue("--color-selection").trim()) ||
   DEFAULT_SELECTION_COLOR;
 
+/** Canvas colors a host can set as CSS variables, shown as is (no dark-mode filter). */
+export type ThemeCanvasColors = {
+  /** `--canvas-background-color`, shown while the scene uses the default background */
+  background?: string;
+  /** `--grid-color` */
+  grid?: string;
+  /** `--grid-bold-color` */
+  gridBold?: string;
+};
+
+/**
+ * Reads the theme's canvas colors from the computed style of any element
+ * inside the editor container. Unset variables are left out.
+ */
+export const getThemeCanvasColors = (
+  element: Element | null | undefined,
+): ThemeCanvasColors => {
+  if (!element) {
+    return {};
+  }
+  const style = getComputedStyle(element);
+  const read = (name: string) =>
+    style.getPropertyValue(name).trim() || undefined;
+  return {
+    background: read("--canvas-background-color"),
+    grid: read("--grid-color"),
+    gridBold: read("--grid-bold-color"),
+  };
+};
+
+/**
+ * The color the canvas background is shown with: the theme's background
+ * while the scene uses the default (white) one, else the scene's own color,
+ * dark-mode filtered.
+ */
+export const getDisplayedViewBackground = (
+  viewBackgroundColor: string,
+  theme: AppState["theme"] | undefined,
+  themeBackground?: string,
+) =>
+  themeBackground && viewBackgroundColor.toLowerCase() === COLOR_WHITE
+    ? themeBackground
+    : applyDarkModeFilter(viewBackgroundColor, theme === THEME.DARK);
+
 export const fillCircle = (
   context: CanvasRenderingContext2D,
   cx: number,
@@ -78,6 +122,7 @@ export const bootstrapCanvas = ({
   theme,
   isExporting,
   viewBackgroundColor,
+  themeBackgroundColor,
 }: {
   canvas: HTMLCanvasElement;
   scale: number;
@@ -86,6 +131,8 @@ export const bootstrapCanvas = ({
   theme?: AppState["theme"];
   isExporting?: StaticCanvasRenderConfig["isExporting"];
   viewBackgroundColor?: StaticCanvasAppState["viewBackgroundColor"];
+  /** see `getDisplayedViewBackground` */
+  themeBackgroundColor?: string;
 }): CanvasRenderingContext2D => {
   const context = canvas.getContext("2d")!;
 
@@ -112,9 +159,10 @@ export const bootstrapCanvas = ({
       // stale color from a previous draw. Seed a sane default so corrupted
       // values fall back to white instead of painting garbage.
       context.fillStyle = COLOR_WHITE;
-      context.fillStyle = applyDarkModeFilter(
+      context.fillStyle = getDisplayedViewBackground(
         viewBackgroundColor,
-        theme === THEME.DARK,
+        theme,
+        themeBackgroundColor,
       );
       context.fillRect(0, 0, normalizedWidth, normalizedHeight);
       context.restore();

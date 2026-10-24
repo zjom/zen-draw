@@ -8,6 +8,7 @@ import type {
 } from "@excalidraw/element/types";
 
 import { isRenderThrottlingEnabled } from "../../reactUtils";
+import { getThemeCanvasColors } from "../../renderer/helpers";
 import { renderStaticScene } from "../../renderer/staticScene";
 
 import type {
@@ -65,7 +66,11 @@ const StaticCanvas = (props: StaticCanvasProps) => {
         allElementsMap: props.allElementsMap,
         visibleElements: props.visibleElements,
         appState: props.appState,
-        renderConfig: props.renderConfig,
+        renderConfig: {
+          ...props.renderConfig,
+          // read after commit, so the theme class of this render applies
+          themeCanvasColors: getThemeCanvasColors(wrapper),
+        },
       },
       isRenderThrottlingEnabled(),
     );

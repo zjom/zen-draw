@@ -34,3 +34,33 @@
 #          "tool.arrow", "tool.line", "tool.freedraw", "tool.text"]
 # more = ["tool.eraser", "tool.hand", "tool.frame", "tool.image",
 #         "tool.laser", "tool.stickynote", "tool.lasso", "tool.bucketfill"]
+
+# [theme] sets the colors. "mode" is "light", "dark" (default) or "system" (follows
+# the OS). The toggleTheme command switches the mode until the next start.
+# [theme.light] and [theme.dark] set the colors of each mode. Colors are as shown on
+# screen (any CSS color); a missing color keeps the default. Invalid values are
+# reported in the devtools console.
+#   accent     buttons, active ring slices, focus; also the selection unless set
+#   surface    ring slices, palette, dialogs, inputs
+#   text       text and icons
+#   border     borders of rings, dialogs, inputs
+#   selection  selection box and lasso
+#   canvas     canvas background, while the document uses the default (white) one;
+#              not used in exports
+#   grid grid-bold  grid lines (gridMode command)
+# [theme.<mode>.vars] sets any Excalidraw CSS variable, without the leading "--"
+# (see packages/excalidraw/css/theme.scss). It overrides the colors above.
+[theme]
+# mode = "system"
+
+[theme.dark]
+# accent = "#7aa2f7"
+# surface = "#1f2335"
+# text = "#c0caf5"
+# border = "#3b4261"
+# canvas = "#1a1b26"
+# grid = "#24283b"
+# grid-bold = "#2f3549"
+
+[theme.dark.vars]
+# "color-danger" = "#f7768e"

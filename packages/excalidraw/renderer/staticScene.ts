@@ -53,6 +53,7 @@ import type {
   StaticSceneRenderConfig,
 } from "../scene/types";
 import type { StaticCanvasAppState, Zoom } from "../types";
+import type { ThemeCanvasColors } from "./helpers";
 
 const GridLineColor = {
   [THEME.LIGHT]: {
@@ -75,6 +76,7 @@ const strokeGrid = (
   scrollY: number,
   zoom: Zoom,
   theme: StaticCanvasRenderConfig["theme"],
+  themeColors: ThemeCanvasColors | undefined,
   width: number,
   height: number,
   scale: number,
@@ -114,6 +116,9 @@ const strokeGrid = (
     };
   };
 
+  const boldColor = themeColors?.gridBold ?? GridLineColor[theme].bold;
+  const regularColor = themeColors?.grid ?? GridLineColor[theme].regular;
+
   context.save();
 
   // vertical lines
@@ -131,9 +136,7 @@ const strokeGrid = (
 
     context.beginPath();
     context.setLineDash(isBold ? [] : lineDash);
-    context.strokeStyle = isBold
-      ? GridLineColor[theme].bold
-      : GridLineColor[theme].regular;
+    context.strokeStyle = isBold ? boldColor : regularColor;
     context.moveTo(position, offsetY - gridSize);
     context.lineTo(position, Math.ceil(offsetY + height + gridSize * 2));
     context.stroke();
@@ -152,9 +155,7 @@ const strokeGrid = (
 
     context.beginPath();
     context.setLineDash(isBold ? [] : lineDash);
-    context.strokeStyle = isBold
-      ? GridLineColor[theme].bold
-      : GridLineColor[theme].regular;
+    context.strokeStyle = isBold ? boldColor : regularColor;
     context.moveTo(offsetX - gridSize, position);
     context.lineTo(Math.ceil(offsetX + width + gridSize * 2), position);
     context.stroke();
@@ -304,6 +305,9 @@ const _renderStaticScene = ({
     theme: appState.theme,
     isExporting,
     viewBackgroundColor: appState.viewBackgroundColor,
+    themeBackgroundColor: isExporting
+      ? undefined
+      : renderConfig.themeCanvasColors?.background,
   });
 
   // Apply zoom
@@ -319,6 +323,7 @@ const _renderStaticScene = ({
       appState.scrollY,
       appState.zoom,
       renderConfig.theme,
+      isExporting ? undefined : renderConfig.themeCanvasColors,
       normalizedWidth / appState.zoom.value,
       normalizedHeight / appState.zoom.value,
       scale,

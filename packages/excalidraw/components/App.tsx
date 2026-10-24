@@ -69,7 +69,6 @@ import {
   getDateTime,
   isShallowEqual,
   arrayToMap,
-  applyDarkModeFilter,
   AppEventBus,
   type EXPORT_IMAGE_TYPES,
   CLASSES,
@@ -358,6 +357,10 @@ import { withBatchedUpdates, withBatchedUpdatesThrottled } from "../reactUtils";
 import { isOverScrollBars } from "../scene/scrollbars";
 import { LassoTrail } from "../lasso";
 import { EraserTrail } from "../eraser";
+import {
+  getDisplayedViewBackground,
+  getThemeCanvasColors,
+} from "../renderer/helpers";
 import { getShortcutKey } from "../shortcut";
 
 import {
@@ -2240,9 +2243,11 @@ class App extends React.Component<AppProps, AppState> {
               }
             }}
             style={{
-              background: applyDarkModeFilter(
+              background: getDisplayedViewBackground(
                 this.state.viewBackgroundColor,
-                isDarkTheme,
+                this.state.theme,
+                getThemeCanvasColors(this.excalidrawContainerRef.current)
+                  .background,
               ),
               zIndex: 2,
               border: "none",
