@@ -118,6 +118,30 @@ fn config_dir() -> Option<PathBuf> {
     dirs::config_dir().map(|d| d.join(APP_DIR))
 }
 
+/// `$XDG_CONFIG_HOME/zen-draw`, falling back to `~/.config/zen-draw`.
+#[cfg(target_os = "macos")]
+fn xdg_config_dir() -> Option<PathBuf> {
+    std::env::var_os("XDG_CONFIG_HOME")
+        .map(PathBuf::from)
+        // The XDG spec says relative paths must be ignored.
+        .filter(|p| p.is_absolute())
+        .or_else(|| dirs::home_dir().map(|h| h.join(".config")))
+        .map(|d| d.join(APP_DIR))
+}
+
+/// The config file in the config dir. On macOS, the XDG file is used if it exists,
+/// so a config shared with Linux in `~/.config` works too.
+fn default_config_file() -> Option<PathBuf> {
+    #[cfg(target_os = "macos")]
+    if let Some(file) = xdg_config_dir()
+        .map(|d| d.join(CONFIG_FILE))
+        .filter(|f| f.exists())
+    {
+        return Some(file);
+    }
+    config_dir().map(|d| d.join(CONFIG_FILE))
+}
+
 /// The config file and whether it was given explicitly.
 /// `--config-file` takes precedence over `$ZENDRAW_CONFIG_FILE`, which takes precedence over the config dir.
 fn config_path(args: &Args) -> Option<(PathBuf, bool)> {
@@ -129,7 +153,7 @@ fn config_path(args: &Args) -> Option<(PathBuf, bool)> {
                 .map(PathBuf::from)
         })
         .map(|p| (p, true))
-        .or_else(|| config_dir().map(|d| (d.join(CONFIG_FILE), false)))
+        .or_else(|| default_config_file().map(|f| (f, false)))
 }
 
 #[tauri::command]

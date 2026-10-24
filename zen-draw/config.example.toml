@@ -1,6 +1,7 @@
 # Copy to config.toml in the zen-draw config directory:
 #   Linux    $XDG_CONFIG_HOME/zen-draw (or ~/.config/zen-draw)
-#   macOS    ~/Library/Application Support/zen-draw
+#   macOS    ~/.config/zen-draw if config.toml exists there, otherwise
+#            ~/Library/Application Support/zen-draw
 #   Windows  %APPDATA%\zen-draw
 # or point --config-file or ZENDRAW_CONFIG_FILE at it (flag > env > config directory).
 
