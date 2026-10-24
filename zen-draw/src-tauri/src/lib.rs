@@ -1,4 +1,9 @@
-use std::{collections::HashMap, fs, path::PathBuf};
+use std::{
+    collections::HashMap,
+    fs,
+    io::Write,
+    path::{Path, PathBuf},
+};
 
 use serde::{Deserialize, Serialize};
 
@@ -79,6 +84,8 @@ struct LoadedConfig {
 
 const CONFIG_FILE_ENV: &str = "ZENDRAW_CONFIG_FILE";
 const CONFIG_FILE_FLAG: &str = "--config-file";
+/// Written to the config dir when it has no config file.
+const EXAMPLE_CONFIG: &str = include_str!("../../config.example.toml");
 
 /// The parsed command line: `zen-draw [--config-file <path>] [file]`.
 #[derive(Debug, Default, PartialEq)]
@@ -168,14 +175,34 @@ fn load_config() -> Result<LoadedConfig, String> {
     let path = std::path::absolute(&path).unwrap_or(path);
     let config = match fs::read_to_string(&path) {
         Ok(text) => toml::from_str(&text).map_err(|e| format!("{}: {e}", path.display()))?,
-        // A missing file in the config dir means no config, but a file asked for by name must exist.
-        Err(e) if e.kind() == std::io::ErrorKind::NotFound && !explicit => Config::default(),
+        // A missing file in the config dir gets the example, but a file asked for by name must exist.
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound && !explicit => {
+            if let Err(e) = write_example_config(&path) {
+                eprintln!(
+                    "could not write the example config to {}: {e}",
+                    path.display()
+                );
+            }
+            toml::from_str(EXAMPLE_CONFIG).map_err(|e| format!("example config: {e}"))?
+        }
         Err(e) => return Err(format!("{}: {e}", path.display())),
     };
     Ok(LoadedConfig {
         path: Some(path.display().to_string()),
         config,
     })
+}
+
+fn write_example_config(path: &Path) -> std::io::Result<()> {
+    if let Some(dir) = path.parent() {
+        fs::create_dir_all(dir)?;
+    }
+    // `create_new` so a file created since the read is not overwritten.
+    fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(path)?
+        .write_all(EXAMPLE_CONFIG.as_bytes())
 }
 
 /// A bad command line is reported by `load_config`.
@@ -239,6 +266,23 @@ mod tests {
     #[test]
     fn config_file_value_is_not_the_file() {
         assert_eq!(parse(&["--config-file", "c.toml"]).unwrap().file, None);
+    }
+
+    #[test]
+    fn example_config_parses() {
+        toml::from_str::<Config>(EXAMPLE_CONFIG).unwrap();
+    }
+
+    #[test]
+    fn writes_the_example_once() {
+        let dir = std::env::temp_dir().join(format!("zen-draw-test-{}", std::process::id()));
+        let path = dir.join(APP_DIR).join(CONFIG_FILE);
+        write_example_config(&path).unwrap();
+        assert_eq!(fs::read_to_string(&path).unwrap(), EXAMPLE_CONFIG);
+        fs::write(&path, "[keys]").unwrap();
+        assert!(write_example_config(&path).is_err());
+        assert_eq!(fs::read_to_string(&path).unwrap(), "[keys]");
+        fs::remove_dir_all(dir).unwrap();
     }
 
     #[test]

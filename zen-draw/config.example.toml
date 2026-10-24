@@ -1,9 +1,10 @@
-# Copy to config.toml in the zen-draw config directory:
+# zen-draw writes this file to config.toml in its config directory on start if that
+# file is missing and no --config-file or ZENDRAW_CONFIG_FILE is given:
 #   Linux    $XDG_CONFIG_HOME/zen-draw (or ~/.config/zen-draw)
 #   macOS    ~/.config/zen-draw if config.toml exists there, otherwise
 #            ~/Library/Application Support/zen-draw
 #   Windows  %APPDATA%\zen-draw
-# or point --config-file or ZENDRAW_CONFIG_FILE at it (flag > env > config directory).
+# --config-file and ZENDRAW_CONFIG_FILE select another file (flag > env > config directory).
 
 # [keys] maps a command ID to key combinations. A key combination replaces all
 # default key combinations of the command, and is removed from any other command
@@ -58,15 +59,15 @@
 # mode = "system"
 
 [theme.dark]
-# accent = "#6e94b2"
-# surface = "#1c1c24"
-# text = "#cdcdcd"
-# border = "#878787"
-# canvas = "#141415"
-# grid = "#252530"
-# grid-bold = "#333738"
+accent = "#6e94b2"
+surface = "#1c1c24"
+text = "#cdcdcd"
+border = "#878787"
+canvas = "#141415"
+grid = "#252530"
+grid-bold = "#333738"
 
 [theme.dark.vars]
-# "color-danger" = "#d8647e"
-# "color-warning" = "#f3be7c"
-# "color-success-contrast" = "#7fa563"
+"color-danger" = "#d8647e"
+"color-warning" = "#f3be7c"
+"color-success-contrast" = "#7fa563"
