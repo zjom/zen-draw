@@ -386,6 +386,29 @@ Phase 2 is on the `zenboard/phase-2` branch. These results are different from se
 7. A color property opens the existing color picker in a `PropertiesPopover` component at the position of the slice.
 8. A change from the style ring makes one entry in the undo history.
 
+### 7.1 Results
+
+Phase 3 is on the `zenboard/phase-3` branch. These results are different from section 7, or are not in section 7:
+
+1. `components/App.ring.ts` (`AppRing`) contains the ring logic that the two rings share. `AppToolRing` and `AppStyleRing` (`components/App.styleRing.tsx`) extend `AppRing`. A slice is data: an ID, a label, an icon, an `active` flag, and a `run` function or a `subRing` function. `components/zen/Ring.tsx` renders the two rings.
+2. A release on a slice that has a sub-ring opens the sub-ring at the same center, as a sticky ring. This applies to the two rings. Before, a release on the "more" slice of the tool ring closed the tool ring. The test ID of the "more" slice is now `tool-ring-slice-more`.
+3. A right-drag starts on the selection if it starts on a selected element or in the bounds of all selected elements. If the style ring cannot open, the right-drag opens the tool ring.
+4. The style ring opens only if one or more elements are selected and no text is in edit. The command palette and `commands.execute("ui.styleRing")` open a sticky style ring at the pointer.
+5. The properties, in this order: stroke color, background color, opacity, stroke width, stroke style, fill style, sloppiness, edges, font family, font size, text alignment, start arrowhead, end arrowhead, arrow type and layer order. The arrow type is not in section 7.
+6. The sub-rings contain these values:
+   - Opacity: 100, 90, 75, 50, 25 and 10 percent.
+   - Font family: the three default fonts. The other fonts are not available.
+   - Arrowheads: none, arrow, triangle, triangle outline, circle, circle outline, diamond and bar. The cardinality arrowheads are not available.
+   - Layer order: the four actions `sendToBack`, `sendBackward`, `bringForward` and `bringToFront`.
+   - Fill style: hachure, cross-hatch and solid. Zigzag is not available.
+
+   The vertical alignment of text is not a property of the style ring.
+7. A sub-ring marks the current value of the selected elements.
+8. A color slice opens `ColorPickerPopupContent` (now exported from `ColorPicker.tsx`) in `StyleRingColorPicker`. The picker is open while `appState.openPopup` is `elementStroke` or `elementBackground`. Thus the hard-coded `s` and `g` keys (section 5.9 item 8) open the color picker again, at the pointer.
+9. `ZenLayerUI` renders the eyedropper (`ZenEyeDropper`, a copy of the eyedropper code in `LayerUI`). The eyedropper button of the color picker and the `i`, `shift+s` and `shift+g` keys work again. The `shift+f` key (the font family popup) still does nothing visible.
+10. Each value runs its action once with `CaptureUpdateAction.IMMEDIATELY`, so that each change makes one entry in the undo history. In the color picker, each picked color makes one entry.
+11. zen-draw: `README.md` and `config.example.toml` describe the style ring and the `ui.toolRing` and `ui.styleRing` commands.
+
 ## 8. Phase 4: document API
 
 ```ts
