@@ -263,7 +263,6 @@ import {
   actionSendToBack,
   actionToggleGridMode,
   actionToggleStats,
-  actionToggleZenMode,
   actionUnbindText,
   actionBindText,
   actionUngroup,
@@ -11123,7 +11122,6 @@ class App extends React.Component<AppProps, AppState> {
         return [
           ...options,
           actionToggleGridMode,
-          actionToggleZenMode,
           actionToggleViewMode,
           actionToggleStats,
         ];
@@ -11143,7 +11141,6 @@ class App extends React.Component<AppProps, AppState> {
         actionToggleObjectsSnapMode,
         actionToggleArrowBinding,
         actionToggleMidpointSnapping,
-        actionToggleZenMode,
         actionToggleViewMode,
         actionToggleStats,
       ];

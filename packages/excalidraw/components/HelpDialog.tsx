@@ -297,7 +297,6 @@ export const HelpDialog = ({ onClose }: { onClose?: () => void }) => {
               label={t("helpDialog.movePageLeftRight")}
               shortcuts={["Shift+PgUp/PgDn"]}
             />
-            <CommandShortcut label={t("buttons.zenMode")} command="zenMode" />
             <CommandShortcut
               label={t("buttons.objectsSnapMode")}
               command="objectsSnapMode"

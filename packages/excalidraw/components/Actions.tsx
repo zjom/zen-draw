@@ -4,15 +4,13 @@ import { Popover } from "radix-ui";
 
 import { CLASSES } from "@excalidraw/common";
 
-import { isArrowElement } from "@excalidraw/element";
+import { CaptureUpdateAction, isArrowElement } from "@excalidraw/element";
 
 import type {
   ExcalidrawElement,
   NonDeletedElementsMap,
   NonDeletedSceneElementsMap,
 } from "@excalidraw/element/types";
-
-import { actionToggleZenMode } from "../actions";
 
 import { t } from "../i18n";
 import { getTargetElements } from "../scene";
@@ -921,7 +919,12 @@ export const ExitZenModeButton = ({
     className={clsx("disable-zen-mode", {
       "disable-zen-mode--visible": showExitZenModeBtn,
     })}
-    onClick={() => actionManager.executeAction(actionToggleZenMode)}
+    onClick={() =>
+      actionManager.updater({
+        appState: { zenModeEnabled: false },
+        captureUpdate: CaptureUpdateAction.EVENTUALLY,
+      })
+    }
   >
     {t("buttons.exitZenMode")}
   </button>

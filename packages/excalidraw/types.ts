@@ -1027,7 +1027,6 @@ export interface ExcalidrawProps {
   activeTool?:
     | { type: Exclude<ToolType, "image"> }
     | { type: "custom"; customType: string };
-  zenModeEnabled?: boolean;
   gridModeEnabled?: boolean;
   objectsSnapModeEnabled?: boolean;
   theme?: Theme;
@@ -1188,6 +1187,9 @@ export type AppProps = Merge<
       | React.ReactNode
       | ((isMobile: boolean) => React.ReactNode);
     userToFollow?: UserToFollow | null;
+    /** zenboard has no zen mode prop (ZenLayerUI is always minimal):
+     * always unset. `AppState.zenModeEnabled` stays for old files. */
+    zenModeEnabled?: boolean;
     /** zenboard removes the sharing: always unset */
     libraryReturnUrl?: string;
     /** zenboard removes the AI features: always `false` */

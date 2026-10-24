@@ -82,7 +82,6 @@ export const getDefaultKeymap = (
   toggleTheme: ["alt+shift+d"],
   toggleShortcuts: ["?"],
   gridMode: ["mod+'"],
-  zenMode: ["alt+z"],
   objectsSnapMode: ["alt+s"],
   stats: ["alt+/"],
   viewMode: ["alt+r"],
