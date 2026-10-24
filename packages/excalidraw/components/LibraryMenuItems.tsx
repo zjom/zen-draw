@@ -43,12 +43,7 @@ import { Button } from "./Button";
 
 import type { ExcalidrawLibraryIds } from "../data/types";
 
-import type {
-  ExcalidrawProps,
-  LibraryItem,
-  LibraryItems,
-  UIAppState,
-} from "../types";
+import type { AppProps, LibraryItem, LibraryItems, UIAppState } from "../types";
 
 // using an odd number of items per batch so the rendering creates an irregular
 // pattern which looks more organic
@@ -74,7 +69,7 @@ export default function LibraryMenuItems({
   pendingElements: LibraryItem["elements"];
   onInsertLibraryItems: (libraryItems: LibraryItems) => void;
   onAddToLibrary: (elements: LibraryItem["elements"]) => void;
-  libraryReturnUrl: ExcalidrawProps["libraryReturnUrl"];
+  libraryReturnUrl: AppProps["libraryReturnUrl"];
   theme: UIAppState["theme"];
   id: string;
   selectedItems: LibraryItem["id"][];

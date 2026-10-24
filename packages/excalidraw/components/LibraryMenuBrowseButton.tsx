@@ -2,14 +2,14 @@ import { VERSIONS } from "@excalidraw/common";
 
 import { t } from "../i18n";
 
-import type { ExcalidrawProps, UIAppState } from "../types";
+import type { AppProps, UIAppState } from "../types";
 
 const LibraryMenuBrowseButton = ({
   theme,
   id,
   libraryReturnUrl,
 }: {
-  libraryReturnUrl: ExcalidrawProps["libraryReturnUrl"];
+  libraryReturnUrl: AppProps["libraryReturnUrl"];
   theme: UIAppState["theme"];
   id: string;
 }) => {

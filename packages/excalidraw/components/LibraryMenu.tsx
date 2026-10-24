@@ -49,9 +49,9 @@ import "./LibraryMenu.scss";
 import type {
   LibraryItems,
   LibraryItem,
-  ExcalidrawProps,
   UIAppState,
   AppClassProperties,
+  AppProps,
 } from "../types";
 import type Library from "../data/library";
 
@@ -78,7 +78,7 @@ const LibraryMenuContent = memo(
     onInsertLibraryItems: (libraryItems: LibraryItems) => void;
     onAddToLibrary: () => void;
     setAppState: React.Component<any, UIAppState>["setState"];
-    libraryReturnUrl: ExcalidrawProps["libraryReturnUrl"];
+    libraryReturnUrl: AppProps["libraryReturnUrl"];
     library: Library;
     id: string;
     theme: UIAppState["theme"];

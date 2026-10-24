@@ -1030,7 +1030,6 @@ export interface ExcalidrawProps {
   zenModeEnabled?: boolean;
   gridModeEnabled?: boolean;
   objectsSnapModeEnabled?: boolean;
-  libraryReturnUrl?: string;
   theme?: Theme;
   // @TODO come with better API before v0.18.0
   name?: string;
@@ -1116,11 +1115,6 @@ export type SceneData = {
 
 export type ExportOpts = {
   saveFileToDisk?: boolean;
-  onExportToBackend?: (
-    exportedElements: readonly NonDeletedExcalidrawElement[],
-    appState: UIAppState,
-    files: BinaryFiles,
-  ) => void;
   renderCustomUI?: (
     exportedElements: readonly NonDeletedExcalidrawElement[],
     appState: UIAppState,
@@ -1197,6 +1191,8 @@ export type AppProps = Merge<
       | React.ReactNode
       | ((isMobile: boolean) => React.ReactNode);
     userToFollow?: UserToFollow | null;
+    /** zenboard removes the sharing: always unset */
+    libraryReturnUrl?: string;
     /** zenboard removes the AI features: always `false` */
     aiEnabled: boolean;
   }
