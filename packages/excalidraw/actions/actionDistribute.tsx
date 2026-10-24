@@ -2,7 +2,7 @@ import { getNonDeletedElements } from "@excalidraw/element";
 
 import { isFrameLikeElement } from "@excalidraw/element";
 
-import { CODES, KEYS, arrayToMap } from "@excalidraw/common";
+import { arrayToMap } from "@excalidraw/common";
 
 import { updateFrameMembershipOfSelectedElements } from "@excalidraw/element";
 
@@ -25,8 +25,6 @@ import {
 import { t } from "../i18n";
 
 import { isSomeElementSelected } from "../scene";
-
-import { getShortcutKey } from "../shortcut";
 
 import { register } from "./register";
 
@@ -84,17 +82,15 @@ export const distributeHorizontally = register({
       captureUpdate: CaptureUpdateAction.IMMEDIATELY,
     };
   },
-  keyTest: (event) =>
-    !event[KEYS.CTRL_OR_CMD] && event.altKey && event.code === CODES.H,
   PanelComponent: ({ elements, appState, updateData, app }) => (
     <IconButton
       hidden={!enableActionGroup(appState, app)}
       type="button"
       icon={DistributeHorizontallyIcon}
       onClick={() => updateData(null)}
-      title={`${t("labels.distributeHorizontally")} — ${getShortcutKey(
-        "Alt+H",
-      )}`}
+      title={`${t(
+        "labels.distributeHorizontally",
+      )} — ${app.commands.getShortcut("distributeHorizontally")}`}
       aria-label={t("labels.distributeHorizontally")}
       visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}
     />
@@ -115,15 +111,15 @@ export const distributeVertically = register({
       captureUpdate: CaptureUpdateAction.IMMEDIATELY,
     };
   },
-  keyTest: (event) =>
-    !event[KEYS.CTRL_OR_CMD] && event.altKey && event.code === CODES.V,
   PanelComponent: ({ elements, appState, updateData, app }) => (
     <IconButton
       hidden={!enableActionGroup(appState, app)}
       type="button"
       icon={DistributeVerticallyIcon}
       onClick={() => updateData(null)}
-      title={`${t("labels.distributeVertically")} — ${getShortcutKey("Alt+V")}`}
+      title={`${t("labels.distributeVertically")} — ${app.commands.getShortcut(
+        "distributeVertically",
+      )}`}
       aria-label={t("labels.distributeVertically")}
       visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}
     />

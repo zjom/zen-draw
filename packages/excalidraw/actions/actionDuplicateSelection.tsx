@@ -1,6 +1,5 @@
 import {
   DEFAULT_GRID_SIZE,
-  KEYS,
   MOBILE_ACTION_BUTTON_BG,
   arrayToMap,
 } from "@excalidraw/common";
@@ -22,7 +21,6 @@ import { DuplicateIcon } from "../components/icons";
 
 import { t } from "../i18n";
 import { isSomeElementSelected } from "../scene";
-import { getShortcutKey } from "../shortcut";
 
 import { useStylesPanelMode } from "../components/App";
 
@@ -115,7 +113,6 @@ export const actionDuplicateSelection = register({
       captureUpdate: CaptureUpdateAction.IMMEDIATELY,
     };
   },
-  keyTest: (event) => event[KEYS.CTRL_OR_CMD] && event.key === KEYS.D,
   PanelComponent: ({ elements, appState, updateData, app }) => {
     const isMobile = useStylesPanelMode() === "mobile";
 
@@ -123,8 +120,8 @@ export const actionDuplicateSelection = register({
       <IconButton
         type="button"
         icon={DuplicateIcon}
-        title={`${t("labels.duplicateSelection")} — ${getShortcutKey(
-          "CtrlOrCmd+D",
+        title={`${t("labels.duplicateSelection")} — ${app.commands.getShortcut(
+          "duplicateSelection",
         )}`}
         aria-label={t("labels.duplicateSelection")}
         onClick={() => updateData(null)}

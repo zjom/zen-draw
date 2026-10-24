@@ -154,7 +154,7 @@ const ExtraToolsDropdown = ({
         <DropdownMenu.Item
           onSelect={() => app.setActiveTool({ type: "autoshape" })}
           icon={drawShapeToolIcon}
-          shortcut={getToolShortcut("autoshape")}
+          shortcut={getToolShortcut(app, "autoshape")}
           data-testid="toolbar-autoshape"
           selected={drawShapeToolSelected}
           disabled={isToolButtonDisabled(app, "autoshape")}

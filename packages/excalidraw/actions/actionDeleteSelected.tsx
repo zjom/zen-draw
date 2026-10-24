@@ -1,8 +1,4 @@
-import {
-  KEYS,
-  MOBILE_ACTION_BUTTON_BG,
-  updateActiveTool,
-} from "@excalidraw/common";
+import { MOBILE_ACTION_BUTTON_BG, updateActiveTool } from "@excalidraw/common";
 
 import { getNonDeletedElements } from "@excalidraw/element";
 import { fixBindingsAfterDeletion } from "@excalidraw/element";
@@ -316,9 +312,6 @@ export const actionDeleteSelected = register<{
         : CaptureUpdateAction.EVENTUALLY,
     };
   },
-  keyTest: (event, appState, elements) =>
-    (event.key === KEYS.BACKSPACE || event.key === KEYS.DELETE) &&
-    !event[KEYS.CTRL_OR_CMD],
   PanelComponent: ({ elements, appState, updateData, app }) => {
     const isMobile = useStylesPanelMode() === "mobile";
 

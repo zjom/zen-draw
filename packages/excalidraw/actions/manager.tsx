@@ -89,19 +89,74 @@ export class ActionManager {
   private isActionBlockedByViewportTransition = (action: Action) =>
     action.navigation === true && this.app.viewport.isLockedTransitionPending;
 
+  private isCanvasActionEnabled = (action: Action) => {
+    const canvasActions = this.app.props.UIOptions.canvasActions;
+    return action.name in canvasActions
+      ? !!canvasActions[action.name as keyof typeof canvasActions]
+      : true;
+  };
+
+  /** whether a key combination may run the action now */
+  isKeyboardEnabled = (action: Action) => {
+    if (!this.isCanvasActionEnabled(action)) {
+      return false;
+    }
+    // in the non-interactive editor, only navigation actions are allowed
+    // (when navigation itself is)
+    if (
+      !this.app.isInteractionEnabled() &&
+      !(this.app.isNavigationEnabled() && action.navigation === true)
+    ) {
+      return false;
+    }
+    if (this.getAppState().viewModeEnabled && action.viewMode !== true) {
+      return false;
+    }
+    return (
+      !action.keyCondition ||
+      action.keyCondition(
+        this.getAppState(),
+        this.getElementsIncludingDeleted(),
+        this.app,
+      )
+    );
+  };
+
+  /** runs the action of a key combination, see `isKeyboardEnabled` */
+  runFromKeyboard(action: Action, event: React.KeyboardEvent | KeyboardEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (this.isActionBlockedByViewportTransition(action)) {
+      return;
+    }
+
+    const elements = this.getElementsIncludingDeleted();
+    const appState = this.getAppState();
+
+    trackAction(action, "keyboard", appState, elements, this.app, null);
+
+    this.updater(action.perform(elements, appState, null, this.app));
+  }
+
+  /**
+   * Runs the command of the event: first the commands of the effective
+   * keymap (see `AppCommands`), then the actions of fixed keys (`keyTest`).
+   */
   handleKeyDown(event: React.KeyboardEvent | KeyboardEvent) {
     if (!this.app.isInteractionEnabled() && !this.app.isNavigationEnabled()) {
       return false;
     }
 
-    const canvasActions = this.app.props.UIOptions.canvasActions;
+    if (this.app.commands.handleKeyDown(event)) {
+      return true;
+    }
+
     const data = Object.values(this.actions)
       .sort((a, b) => (b.keyPriority || 0) - (a.keyPriority || 0))
       .filter(
         (action) =>
-          (action.name in canvasActions
-            ? canvasActions[action.name as keyof typeof canvasActions]
-            : true) &&
+          this.isCanvasActionEnabled(action) &&
           action.keyTest &&
           action.keyTest(
             event,
@@ -120,31 +175,11 @@ export class ActionManager {
 
     const action = data[0];
 
-    // in the non-interactive editor, only navigation actions are allowed
-    // (when navigation itself is)
-    if (!this.app.isInteractionEnabled() && action.navigation !== true) {
+    if (!this.isKeyboardEnabled(action)) {
       return false;
     }
 
-    if (this.getAppState().viewModeEnabled && action.viewMode !== true) {
-      return false;
-    }
-
-    if (this.isActionBlockedByViewportTransition(action)) {
-      event.preventDefault();
-      event.stopPropagation();
-      return true;
-    }
-
-    const elements = this.getElementsIncludingDeleted();
-    const appState = this.getAppState();
-    const value = null;
-
-    trackAction(action, "keyboard", appState, elements, this.app, null);
-
-    event.preventDefault();
-    event.stopPropagation();
-    this.updater(data[0].perform(elements, appState, value, this.app));
+    this.runFromKeyboard(action, event);
     return true;
   }
 

@@ -3,8 +3,6 @@ import {
   isEmbeddableElement,
 } from "@excalidraw/element";
 
-import { KEYS } from "@excalidraw/common";
-
 import { CaptureUpdateAction } from "@excalidraw/element";
 
 import { IconButton } from "../components/IconButton";
@@ -12,7 +10,6 @@ import { getContextMenuLabel } from "../components/hyperlink/Hyperlink";
 import { LinkIcon } from "../components/icons";
 import { t } from "../i18n";
 import { getSelectedElements } from "../scene";
-import { getShortcutKey } from "../shortcut";
 
 import { register } from "./register";
 
@@ -37,12 +34,11 @@ export const actionLink = register({
     };
   },
   trackEvent: { category: "hyperlink", action: "click" },
-  keyTest: (event) => event[KEYS.CTRL_OR_CMD] && event.key === KEYS.K,
   predicate: (elements, appState) => {
     const selectedElements = getSelectedElements(elements, appState);
     return selectedElements.length === 1;
   },
-  PanelComponent: ({ elements, appState, updateData }) => {
+  PanelComponent: ({ elements, appState, updateData, app }) => {
     const selectedElements = getSelectedElements(elements, appState);
 
     return (
@@ -56,7 +52,7 @@ export const actionLink = register({
           isEmbeddableElement(elements[0])
             ? t("labels.link.labelEmbed")
             : t("labels.link.label")
-        } - ${getShortcutKey("CtrlOrCmd+K")}`}
+        } - ${app.commands.getShortcut("hyperlink")}`}
         onSelect={() => updateData(null)}
         checked={selectedElements.length === 1 && !!selectedElements[0].link}
       />

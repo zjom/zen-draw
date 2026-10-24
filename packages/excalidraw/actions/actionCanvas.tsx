@@ -4,8 +4,6 @@ import {
   MIN_ZOOM,
   THEME,
   ZOOM_STEP,
-  CODES,
-  KEYS,
 } from "@excalidraw/common";
 
 import { getNonDeletedElements } from "@excalidraw/element";
@@ -38,7 +36,6 @@ import {
   getViewportForZoomWithScrollConstraints,
   zoomToFitBounds,
 } from "../viewport";
-import { getShortcutKey } from "../shortcut";
 
 import { register } from "./register";
 
@@ -152,11 +149,11 @@ export const actionZoomIn = register({
       captureUpdate: CaptureUpdateAction.EVENTUALLY,
     };
   },
-  PanelComponent: ({ updateData }) => {
+  PanelComponent: ({ updateData, app }) => {
     const zoomValue = useAppStateValue((appState) => appState.zoom.value);
     return (
       <Tooltip
-        label={`${t("buttons.zoomIn")} — ${getShortcutKey("CtrlOrCmd++")}`}
+        label={`${t("buttons.zoomIn")} — ${app.commands.getShortcut("zoomIn")}`}
         className="zoom-in-button-wrapper"
         delay
       >
@@ -166,7 +163,7 @@ export const actionZoomIn = register({
           icon={ZoomInIcon}
           aria-label={t("buttons.zoomIn")}
           // the shortcut used to reach AT via the (now removed) native title
-          aria-keyshortcuts={getShortcutKey("CtrlOrCmd++")}
+          aria-keyshortcuts={app.commands.getShortcut("zoomIn")}
           disabled={zoomValue >= MAX_ZOOM}
           onClick={() => {
             updateData(null);
@@ -175,9 +172,6 @@ export const actionZoomIn = register({
       </Tooltip>
     );
   },
-  keyTest: (event) =>
-    (event.code === CODES.EQUAL || event.code === CODES.NUM_ADD) &&
-    (event[KEYS.CTRL_OR_CMD] || event.shiftKey),
 });
 
 export const actionZoomOut = register({
@@ -206,11 +200,13 @@ export const actionZoomOut = register({
       captureUpdate: CaptureUpdateAction.EVENTUALLY,
     };
   },
-  PanelComponent: ({ updateData }) => {
+  PanelComponent: ({ updateData, app }) => {
     const zoomValue = useAppStateValue((appState) => appState.zoom.value);
     return (
       <Tooltip
-        label={`${t("buttons.zoomOut")} — ${getShortcutKey("CtrlOrCmd+-")}`}
+        label={`${t("buttons.zoomOut")} — ${app.commands.getShortcut(
+          "zoomOut",
+        )}`}
         className="zoom-out-button-wrapper"
         delay
       >
@@ -220,7 +216,7 @@ export const actionZoomOut = register({
           icon={ZoomOutIcon}
           aria-label={t("buttons.zoomOut")}
           // the shortcut used to reach AT via the (now removed) native title
-          aria-keyshortcuts={getShortcutKey("CtrlOrCmd+-")}
+          aria-keyshortcuts={app.commands.getShortcut("zoomOut")}
           disabled={zoomValue <= MIN_ZOOM}
           onClick={() => {
             updateData(null);
@@ -229,9 +225,6 @@ export const actionZoomOut = register({
       </Tooltip>
     );
   },
-  keyTest: (event) =>
-    (event.code === CODES.MINUS || event.code === CODES.NUM_SUBTRACT) &&
-    (event[KEYS.CTRL_OR_CMD] || event.shiftKey),
 });
 
 export const actionResetZoom = register({
@@ -287,9 +280,6 @@ export const actionResetZoom = register({
       </Tooltip>
     );
   },
-  keyTest: (event) =>
-    (event.code === CODES.ZERO || event.code === CODES.NUM_ZERO) &&
-    (event[KEYS.CTRL_OR_CMD] || event.shiftKey),
 });
 
 // under a viewport lock, zoom-to-fit targets the locked box rather than the
@@ -342,13 +332,6 @@ export const actionZoomToFitSelectionInViewport = register({
       },
     };
   },
-  // NOTE shift-2 should have been assigned actionZoomToFitSelection.
-  // TBD on how proceed
-  keyTest: (event) =>
-    event.code === CODES.TWO &&
-    event.shiftKey &&
-    !event.altKey &&
-    !event[KEYS.CTRL_OR_CMD],
 });
 
 export const actionZoomToFitSelection = register({
@@ -385,12 +368,6 @@ export const actionZoomToFitSelection = register({
       },
     };
   },
-  // NOTE this action should use shift-2 per figma, alas
-  keyTest: (event) =>
-    event.code === CODES.THREE &&
-    event.shiftKey &&
-    !event.altKey &&
-    !event[KEYS.CTRL_OR_CMD],
 });
 
 export const actionZoomToFit = register({
@@ -422,11 +399,6 @@ export const actionZoomToFit = register({
       },
     };
   },
-  keyTest: (event) =>
-    event.code === CODES.ONE &&
-    event.shiftKey &&
-    !event.altKey &&
-    !event[KEYS.CTRL_OR_CMD],
 });
 
 export const actionToggleTheme = register<AppState["theme"]>({
@@ -458,11 +430,6 @@ export const actionToggleTheme = register<AppState["theme"]>({
       captureUpdate: CaptureUpdateAction.EVENTUALLY,
     };
   },
-  keyTest: (event) =>
-    !event[KEYS.CTRL_OR_CMD] &&
-    event.altKey &&
-    event.shiftKey &&
-    event.code === CODES.D,
   predicate: (elements, appState, props, app) => {
     return !!app.props.UIOptions.canvasActions.toggleTheme;
   },

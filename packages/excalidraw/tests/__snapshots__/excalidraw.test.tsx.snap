@@ -196,11 +196,6 @@ exports[`<Excalidraw/> > Test UIOptions prop > Test canvasActions > should rende
           Open
         </span>
       </div>
-      <div
-        class="dropdown-menu-item__shortcut"
-      >
-        Ctrl+O
-      </div>
     </button>
     <button
       aria-label="Save to..."
@@ -675,7 +670,7 @@ exports[`<Excalidraw/> > Test UIOptions prop > Test canvasActions > should rende
       <div
         class="dropdown-menu-item__shortcut"
       >
-        Shift+Alt+D
+        Alt+Shift+D
       </div>
     </button>
     <div

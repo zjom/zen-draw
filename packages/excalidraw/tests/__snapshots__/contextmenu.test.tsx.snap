@@ -60,7 +60,6 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.cut",
         "name": "cut",
         "perform": [Function],
@@ -220,7 +219,6 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "keywords": [
           "png",
           "clipboard",
@@ -332,7 +330,6 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.copyStyles",
         "name": "copyStyles",
         "perform": [Function],
@@ -372,7 +369,6 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.pasteStyles",
         "name": "pasteStyles",
         "perform": [Function],
@@ -384,7 +380,6 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
       {
         "PanelComponent": [Function],
         "icon": [Function],
-        "keyTest": [Function],
         "label": "labels.group",
         "name": "group",
         "perform": [Function],
@@ -433,7 +428,6 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
       {
         "PanelComponent": [Function],
         "icon": [Function],
-        "keyTest": [Function],
         "label": "labels.ungroup",
         "name": "ungroup",
         "perform": [Function],
@@ -490,8 +484,6 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
             />
           </g>
         </svg>,
-        "keyPriority": 40,
-        "keyTest": [Function],
         "keywords": [
           "move down",
           "zindex",
@@ -537,8 +529,6 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
             />
           </g>
         </svg>,
-        "keyPriority": 40,
-        "keyTest": [Function],
         "keywords": [
           "move up",
           "zindex",
@@ -592,7 +582,6 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "keywords": [
           "move down",
           "zindex",
@@ -641,7 +630,6 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "keywords": [
           "move up",
           "zindex",
@@ -687,7 +675,6 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.flipHorizontal",
         "name": "flipHorizontal",
         "perform": [Function],
@@ -727,7 +714,6 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.flipVertical",
         "name": "flipVertical",
         "perform": [Function],
@@ -775,7 +761,6 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": [Function],
         "name": "hyperlink",
         "perform": [Function],
@@ -846,7 +831,6 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.duplicateSelection",
         "name": "duplicateSelection",
         "perform": [Function],
@@ -856,7 +840,7 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
       },
       {
         "icon": [Function],
-        "keyTest": [Function],
+        "keyCondition": [Function],
         "label": [Function],
         "name": "toggleElementLock",
         "perform": [Function],
@@ -884,7 +868,6 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
             strokeWidth="1.25"
           />
         </svg>,
-        "keyTest": [Function],
         "label": "labels.delete",
         "name": "deleteSelectedElements",
         "perform": [Function],
@@ -4907,7 +4890,6 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.cut",
         "name": "cut",
         "perform": [Function],
@@ -5067,7 +5049,6 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "keywords": [
           "png",
           "clipboard",
@@ -5179,7 +5160,6 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.copyStyles",
         "name": "copyStyles",
         "perform": [Function],
@@ -5219,7 +5199,6 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.pasteStyles",
         "name": "pasteStyles",
         "perform": [Function],
@@ -5231,7 +5210,6 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
       {
         "PanelComponent": [Function],
         "icon": [Function],
-        "keyTest": [Function],
         "label": "labels.group",
         "name": "group",
         "perform": [Function],
@@ -5280,7 +5258,6 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
       {
         "PanelComponent": [Function],
         "icon": [Function],
-        "keyTest": [Function],
         "label": "labels.ungroup",
         "name": "ungroup",
         "perform": [Function],
@@ -5337,8 +5314,6 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
             />
           </g>
         </svg>,
-        "keyPriority": 40,
-        "keyTest": [Function],
         "keywords": [
           "move down",
           "zindex",
@@ -5384,8 +5359,6 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
             />
           </g>
         </svg>,
-        "keyPriority": 40,
-        "keyTest": [Function],
         "keywords": [
           "move up",
           "zindex",
@@ -5439,7 +5412,6 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "keywords": [
           "move down",
           "zindex",
@@ -5488,7 +5460,6 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "keywords": [
           "move up",
           "zindex",
@@ -5534,7 +5505,6 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.flipHorizontal",
         "name": "flipHorizontal",
         "perform": [Function],
@@ -5574,7 +5544,6 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.flipVertical",
         "name": "flipVertical",
         "perform": [Function],
@@ -5622,7 +5591,6 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": [Function],
         "name": "hyperlink",
         "perform": [Function],
@@ -5693,7 +5661,6 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.duplicateSelection",
         "name": "duplicateSelection",
         "perform": [Function],
@@ -5703,7 +5670,7 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
       },
       {
         "icon": [Function],
-        "keyTest": [Function],
+        "keyCondition": [Function],
         "label": [Function],
         "name": "toggleElementLock",
         "perform": [Function],
@@ -5731,7 +5698,6 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
             strokeWidth="1.25"
           />
         </svg>,
-        "keyTest": [Function],
         "label": "labels.delete",
         "name": "deleteSelectedElements",
         "perform": [Function],
@@ -6141,7 +6107,6 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.cut",
         "name": "cut",
         "perform": [Function],
@@ -6301,7 +6266,6 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "keywords": [
           "png",
           "clipboard",
@@ -6413,7 +6377,6 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.copyStyles",
         "name": "copyStyles",
         "perform": [Function],
@@ -6453,7 +6416,6 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.pasteStyles",
         "name": "pasteStyles",
         "perform": [Function],
@@ -6465,7 +6427,6 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
       {
         "PanelComponent": [Function],
         "icon": [Function],
-        "keyTest": [Function],
         "label": "labels.group",
         "name": "group",
         "perform": [Function],
@@ -6514,7 +6475,6 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
       {
         "PanelComponent": [Function],
         "icon": [Function],
-        "keyTest": [Function],
         "label": "labels.ungroup",
         "name": "ungroup",
         "perform": [Function],
@@ -6571,8 +6531,6 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
             />
           </g>
         </svg>,
-        "keyPriority": 40,
-        "keyTest": [Function],
         "keywords": [
           "move down",
           "zindex",
@@ -6618,8 +6576,6 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
             />
           </g>
         </svg>,
-        "keyPriority": 40,
-        "keyTest": [Function],
         "keywords": [
           "move up",
           "zindex",
@@ -6673,7 +6629,6 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "keywords": [
           "move down",
           "zindex",
@@ -6722,7 +6677,6 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "keywords": [
           "move up",
           "zindex",
@@ -6768,7 +6722,6 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.flipHorizontal",
         "name": "flipHorizontal",
         "perform": [Function],
@@ -6808,7 +6761,6 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.flipVertical",
         "name": "flipVertical",
         "perform": [Function],
@@ -6856,7 +6808,6 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": [Function],
         "name": "hyperlink",
         "perform": [Function],
@@ -6927,7 +6878,6 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.duplicateSelection",
         "name": "duplicateSelection",
         "perform": [Function],
@@ -6937,7 +6887,7 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
       },
       {
         "icon": [Function],
-        "keyTest": [Function],
+        "keyCondition": [Function],
         "label": [Function],
         "name": "toggleElementLock",
         "perform": [Function],
@@ -6965,7 +6915,6 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
             strokeWidth="1.25"
           />
         </svg>,
-        "keyTest": [Function],
         "label": "labels.delete",
         "name": "deleteSelectedElements",
         "perform": [Function],
@@ -7438,7 +7387,6 @@ exports[`contextMenu element > shows context menu for canvas > [end of test] app
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "keywords": [
           "png",
           "clipboard",
@@ -7590,7 +7538,6 @@ exports[`contextMenu element > shows context menu for canvas > [end of test] app
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.selectAll",
         "name": "selectAll",
         "perform": [Function],
@@ -7704,7 +7651,6 @@ exports[`contextMenu element > shows context menu for canvas > [end of test] app
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "keywords": [
           "snap",
         ],
@@ -7751,7 +7697,6 @@ exports[`contextMenu element > shows context menu for canvas > [end of test] app
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "buttons.objectsSnapMode",
         "name": "objectsSnapMode",
         "perform": [Function],
@@ -7823,7 +7768,6 @@ exports[`contextMenu element > shows context menu for canvas > [end of test] app
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "buttons.zenMode",
         "name": "zenMode",
         "perform": [Function],
@@ -7866,7 +7810,6 @@ exports[`contextMenu element > shows context menu for canvas > [end of test] app
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.viewMode",
         "name": "viewMode",
         "perform": [Function],
@@ -7934,7 +7877,6 @@ exports[`contextMenu element > shows context menu for canvas > [end of test] app
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "keywords": [
           "edit",
           "attributes",
@@ -8128,7 +8070,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.cut",
         "name": "cut",
         "perform": [Function],
@@ -8288,7 +8229,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "keywords": [
           "png",
           "clipboard",
@@ -8400,7 +8340,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.copyStyles",
         "name": "copyStyles",
         "perform": [Function],
@@ -8440,7 +8379,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.pasteStyles",
         "name": "pasteStyles",
         "perform": [Function],
@@ -8452,7 +8390,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
       {
         "PanelComponent": [Function],
         "icon": [Function],
-        "keyTest": [Function],
         "label": "labels.group",
         "name": "group",
         "perform": [Function],
@@ -8501,7 +8438,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
       {
         "PanelComponent": [Function],
         "icon": [Function],
-        "keyTest": [Function],
         "label": "labels.ungroup",
         "name": "ungroup",
         "perform": [Function],
@@ -8558,8 +8494,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyPriority": 40,
-        "keyTest": [Function],
         "keywords": [
           "move down",
           "zindex",
@@ -8605,8 +8539,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyPriority": 40,
-        "keyTest": [Function],
         "keywords": [
           "move up",
           "zindex",
@@ -8660,7 +8592,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "keywords": [
           "move down",
           "zindex",
@@ -8709,7 +8640,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "keywords": [
           "move up",
           "zindex",
@@ -8755,7 +8685,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.flipHorizontal",
         "name": "flipHorizontal",
         "perform": [Function],
@@ -8795,7 +8724,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.flipVertical",
         "name": "flipVertical",
         "perform": [Function],
@@ -8843,7 +8771,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": [Function],
         "name": "hyperlink",
         "perform": [Function],
@@ -8914,7 +8841,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.duplicateSelection",
         "name": "duplicateSelection",
         "perform": [Function],
@@ -8924,7 +8850,7 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
       },
       {
         "icon": [Function],
-        "keyTest": [Function],
+        "keyCondition": [Function],
         "label": [Function],
         "name": "toggleElementLock",
         "perform": [Function],
@@ -8952,7 +8878,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             strokeWidth="1.25"
           />
         </svg>,
-        "keyTest": [Function],
         "label": "labels.delete",
         "name": "deleteSelectedElements",
         "perform": [Function],
@@ -9132,7 +9057,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.cut",
         "name": "cut",
         "perform": [Function],
@@ -9292,7 +9216,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "keywords": [
           "png",
           "clipboard",
@@ -9404,7 +9327,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.copyStyles",
         "name": "copyStyles",
         "perform": [Function],
@@ -9444,7 +9366,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.pasteStyles",
         "name": "pasteStyles",
         "perform": [Function],
@@ -9456,7 +9377,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
       {
         "PanelComponent": [Function],
         "icon": [Function],
-        "keyTest": [Function],
         "label": "labels.group",
         "name": "group",
         "perform": [Function],
@@ -9505,7 +9425,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
       {
         "PanelComponent": [Function],
         "icon": [Function],
-        "keyTest": [Function],
         "label": "labels.ungroup",
         "name": "ungroup",
         "perform": [Function],
@@ -9562,8 +9481,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyPriority": 40,
-        "keyTest": [Function],
         "keywords": [
           "move down",
           "zindex",
@@ -9609,8 +9526,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyPriority": 40,
-        "keyTest": [Function],
         "keywords": [
           "move up",
           "zindex",
@@ -9664,7 +9579,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "keywords": [
           "move down",
           "zindex",
@@ -9713,7 +9627,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "keywords": [
           "move up",
           "zindex",
@@ -9759,7 +9672,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.flipHorizontal",
         "name": "flipHorizontal",
         "perform": [Function],
@@ -9799,7 +9711,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.flipVertical",
         "name": "flipVertical",
         "perform": [Function],
@@ -9847,7 +9758,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": [Function],
         "name": "hyperlink",
         "perform": [Function],
@@ -9918,7 +9828,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             />
           </g>
         </svg>,
-        "keyTest": [Function],
         "label": "labels.duplicateSelection",
         "name": "duplicateSelection",
         "perform": [Function],
@@ -9928,7 +9837,7 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
       },
       {
         "icon": [Function],
-        "keyTest": [Function],
+        "keyCondition": [Function],
         "label": [Function],
         "name": "toggleElementLock",
         "perform": [Function],
@@ -9956,7 +9865,6 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
             strokeWidth="1.25"
           />
         </svg>,
-        "keyTest": [Function],
         "label": "labels.delete",
         "name": "deleteSelectedElements",
         "perform": [Function],

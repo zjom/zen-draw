@@ -14,7 +14,7 @@ import {
   replaceAllElementsInFrame,
 } from "@excalidraw/element";
 
-import { KEYS, randomId, arrayToMap } from "@excalidraw/common";
+import { randomId, arrayToMap } from "@excalidraw/common";
 
 import {
   getSelectedGroupIds,
@@ -41,8 +41,6 @@ import { UngroupIcon, GroupIcon } from "../components/icons";
 import { t } from "../i18n";
 
 import { isSomeElementSelected } from "../scene";
-
-import { getShortcutKey } from "../shortcut";
 
 import { selectGroupsForSelectedElements } from "../components/App.selection";
 
@@ -200,15 +198,13 @@ export const actionGroup = register({
     };
   },
   predicate: (elements, appState, _, app) => enableActionGroup(appState, app),
-  keyTest: (event) =>
-    !event.shiftKey && event[KEYS.CTRL_OR_CMD] && event.key === KEYS.G,
   PanelComponent: ({ elements, appState, updateData, app }) => (
     <IconButton
       hidden={!enableActionGroup(appState, app)}
       type="button"
       icon={<GroupIcon theme={appState.theme} />}
       onClick={() => updateData(null)}
-      title={`${t("labels.group")} — ${getShortcutKey("CtrlOrCmd+G")}`}
+      title={`${t("labels.group")} — ${app.commands.getShortcut("group")}`}
       aria-label={t("labels.group")}
       visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}
     ></IconButton>
@@ -304,19 +300,15 @@ export const actionUngroup = register({
       captureUpdate: CaptureUpdateAction.IMMEDIATELY,
     };
   },
-  keyTest: (event) =>
-    event.shiftKey &&
-    event[KEYS.CTRL_OR_CMD] &&
-    event.key === KEYS.G.toUpperCase(),
   predicate: (elements, appState) => getSelectedGroupIds(appState).length > 0,
 
-  PanelComponent: ({ elements, appState, updateData }) => (
+  PanelComponent: ({ elements, appState, updateData, app }) => (
     <IconButton
       type="button"
       hidden={getSelectedGroupIds(appState).length === 0}
       icon={<UngroupIcon theme={appState.theme} />}
       onClick={() => updateData(null)}
-      title={`${t("labels.ungroup")} — ${getShortcutKey("CtrlOrCmd+Shift+G")}`}
+      title={`${t("labels.ungroup")} — ${app.commands.getShortcut("ungroup")}`}
       aria-label={t("labels.ungroup")}
       visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}
     ></IconButton>

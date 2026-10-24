@@ -1,5 +1,3 @@
-import { KEYS, CODES, isDarwin } from "@excalidraw/common";
-
 import {
   moveOneLeft,
   moveOneRight,
@@ -16,7 +14,6 @@ import {
   SendToBackIcon,
 } from "../components/icons";
 import { t } from "../i18n";
-import { getShortcutKey } from "../shortcut";
 
 import { register } from "./register";
 
@@ -33,17 +30,14 @@ export const actionSendBackward = register({
       captureUpdate: CaptureUpdateAction.IMMEDIATELY,
     };
   },
-  keyPriority: 40,
-  keyTest: (event) =>
-    event[KEYS.CTRL_OR_CMD] &&
-    !event.shiftKey &&
-    event.code === CODES.BRACKET_LEFT,
-  PanelComponent: ({ updateData, appState }) => (
+  PanelComponent: ({ updateData, appState, app }) => (
     <button
       type="button"
       className="zIndexButton"
       onClick={() => updateData(null)}
-      title={`${t("labels.sendBackward")} — ${getShortcutKey("CtrlOrCmd+[")}`}
+      title={`${t("labels.sendBackward")} — ${app.commands.getShortcut(
+        "sendBackward",
+      )}`}
     >
       {SendBackwardIcon}
     </button>
@@ -63,17 +57,14 @@ export const actionBringForward = register({
       captureUpdate: CaptureUpdateAction.IMMEDIATELY,
     };
   },
-  keyPriority: 40,
-  keyTest: (event) =>
-    event[KEYS.CTRL_OR_CMD] &&
-    !event.shiftKey &&
-    event.code === CODES.BRACKET_RIGHT,
-  PanelComponent: ({ updateData, appState }) => (
+  PanelComponent: ({ updateData, appState, app }) => (
     <button
       type="button"
       className="zIndexButton"
       onClick={() => updateData(null)}
-      title={`${t("labels.bringForward")} — ${getShortcutKey("CtrlOrCmd+]")}`}
+      title={`${t("labels.bringForward")} — ${app.commands.getShortcut(
+        "bringForward",
+      )}`}
     >
       {BringForwardIcon}
     </button>
@@ -93,24 +84,14 @@ export const actionSendToBack = register({
       captureUpdate: CaptureUpdateAction.IMMEDIATELY,
     };
   },
-  keyTest: (event) =>
-    isDarwin
-      ? event[KEYS.CTRL_OR_CMD] &&
-        event.altKey &&
-        event.code === CODES.BRACKET_LEFT
-      : event[KEYS.CTRL_OR_CMD] &&
-        event.shiftKey &&
-        event.code === CODES.BRACKET_LEFT,
-  PanelComponent: ({ updateData, appState }) => (
+  PanelComponent: ({ updateData, appState, app }) => (
     <button
       type="button"
       className="zIndexButton"
       onClick={() => updateData(null)}
-      title={`${t("labels.sendToBack")} — ${
-        isDarwin
-          ? getShortcutKey("CtrlOrCmd+Alt+[")
-          : getShortcutKey("CtrlOrCmd+Shift+[")
-      }`}
+      title={`${t("labels.sendToBack")} — ${app.commands.getShortcut(
+        "sendToBack",
+      )}`}
     >
       {SendToBackIcon}
     </button>
@@ -131,24 +112,14 @@ export const actionBringToFront = register({
       captureUpdate: CaptureUpdateAction.IMMEDIATELY,
     };
   },
-  keyTest: (event) =>
-    isDarwin
-      ? event[KEYS.CTRL_OR_CMD] &&
-        event.altKey &&
-        event.code === CODES.BRACKET_RIGHT
-      : event[KEYS.CTRL_OR_CMD] &&
-        event.shiftKey &&
-        event.code === CODES.BRACKET_RIGHT,
-  PanelComponent: ({ updateData, appState }) => (
+  PanelComponent: ({ updateData, appState, app }) => (
     <button
       type="button"
       className="zIndexButton"
       onClick={(event) => updateData(null)}
-      title={`${t("labels.bringToFront")} — ${
-        isDarwin
-          ? getShortcutKey("CtrlOrCmd+Alt+]")
-          : getShortcutKey("CtrlOrCmd+Shift+]")
-      }`}
+      title={`${t("labels.bringToFront")} — ${app.commands.getShortcut(
+        "bringToFront",
+      )}`}
     >
       {BringToFrontIcon}
     </button>

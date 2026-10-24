@@ -2,8 +2,6 @@ import {
   DEFAULT_FONT_SIZE,
   DEFAULT_FONT_FAMILY,
   DEFAULT_TEXT_ALIGN,
-  CODES,
-  KEYS,
   getLineHeight,
   arrayToMap,
 } from "@excalidraw/common";
@@ -75,8 +73,6 @@ export const actionCopyStyles = register({
       captureUpdate: CaptureUpdateAction.EVENTUALLY,
     };
   },
-  keyTest: (event) =>
-    event[KEYS.CTRL_OR_CMD] && event.altKey && event.code === CODES.C,
 });
 
 export const actionPasteStyles = register({
@@ -226,6 +222,4 @@ export const actionPasteStyles = register({
       captureUpdate: CaptureUpdateAction.IMMEDIATELY,
     };
   },
-  keyTest: (event) =>
-    event[KEYS.CTRL_OR_CMD] && event.altKey && event.code === CODES.V,
 });

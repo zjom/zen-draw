@@ -289,7 +289,6 @@ import { actionTextAutoResize } from "../actions/actionTextAutoResize";
 import { actionToggleViewMode } from "../actions/actionToggleViewMode";
 import { ActionManager } from "../actions/manager";
 import { actions } from "../actions/register";
-import { getShortcutFromShortcutName } from "../actions/shortcuts";
 import { trackEvent } from "../analytics";
 import { getDefaultAppState, isEraserActive } from "../appState";
 import {
@@ -373,7 +372,6 @@ import ConvertElementTypePopup, {
   convertElementTypes,
 } from "./ConvertElementTypePopup";
 
-import { activeConfirmDialogAtom } from "./ActiveConfirmDialog";
 import { AppArrowText } from "./App.arrowText";
 import { AppClipboard } from "./App.clipboard";
 import { AppText } from "./App.text";
@@ -395,6 +393,7 @@ import {
 } from "./App.selection";
 import { AppSelectionTool } from "./App.selectionTool";
 import { AppWrap } from "./App.wrap";
+import { AppCommands } from "./App.commands";
 import BraveMeasureTextError from "./BraveMeasureTextError";
 import { ContextMenu, CONTEXT_MENU_SEPARATOR } from "./ContextMenu";
 import { activeEyeDropperAtom } from "./EyeDropper";
@@ -414,7 +413,7 @@ import { CursorHint, CursorHints } from "./CursorHint";
 import { MagicIcon, copyIcon, fullscreenIcon } from "./icons";
 import { AppStateObserver, type OnStateChange } from "./AppStateObserver";
 
-import { findShapeByKey, TOGGLE_TOOLS } from "./Tools";
+import { TOGGLE_TOOLS } from "./Tools";
 
 import UnlockPopup from "./UnlockPopup";
 
@@ -686,6 +685,7 @@ class App extends React.Component<AppProps, AppState> {
   public selection: AppSelection = new AppSelection(this);
   public selectionTool: AppSelectionTool = new AppSelectionTool(this);
   public wrap: AppWrap = new AppWrap(this);
+  public commands: AppCommands = new AppCommands(this);
 
   bindModeHandler: ReturnType<typeof setTimeout> | null = null;
 
@@ -796,6 +796,16 @@ class App extends React.Component<AppProps, AppState> {
       getName: this.getName,
       registerAction: (action: Action) => {
         this.actionManager.registerAction(action);
+        // an override can refer to the new action
+        this.commands.syncKeymap(true);
+      },
+      commands: {
+        execute: (id) => this.commands.execute(id),
+        list: this.commands.list,
+      },
+      keymap: {
+        get: this.commands.getKeymap,
+        conflicts: this.commands.getConflicts,
       },
       refresh: this.refresh,
       setToast: this.setToast,
@@ -897,6 +907,7 @@ class App extends React.Component<AppProps, AppState> {
     this.actionManager.registerAll(actions);
     this.actionManager.registerAction(createUndoAction(this.history));
     this.actionManager.registerAction(createRedoAction(this.history));
+    this.commands.syncKeymap();
 
     // in case internal editor APIs call this early, otherwise we need
     // to construct this in componentDidMount because componentWillUnmount
@@ -2308,6 +2319,8 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   public render() {
+    // before the UI renders the labels of the key combinations
+    this.commands.syncKeymap();
     const selectedElements = this.scene.getSelectedElements(this.state);
     const { renderTopRightUI, renderTopLeftUI, renderCustomStats } = this.props;
 
@@ -3198,6 +3211,7 @@ class App extends React.Component<AppProps, AppState> {
   // Lifecycle
 
   private onBlur = withBatchedUpdates(() => {
+    this.commands.releaseAll();
     this.pan.setSpaceHeld(false);
     this.modifiers.reset();
     this.setState({
@@ -5191,21 +5205,6 @@ class App extends React.Component<AppProps, AppState> {
         }
       }
 
-      if (
-        event[KEYS.CTRL_OR_CMD] &&
-        event.key === KEYS.P &&
-        !event.shiftKey &&
-        !event.altKey
-      ) {
-        this.setToast({
-          message: t("commandPalette.shortcutHint", {
-            shortcut: getShortcutFromShortcutName("commandPalette"),
-          }),
-        });
-        event.preventDefault();
-        return;
-      }
-
       if (event[KEYS.CTRL_OR_CMD] && event.key.toLowerCase() === KEYS.V) {
         this.clipboard.onPasteShortcut(event);
       }
@@ -5227,21 +5226,6 @@ class App extends React.Component<AppProps, AppState> {
         // or unless using arrows (to move between buttons)
         (isArrowKey(event.key) && isInputLike(event.target))
       ) {
-        return;
-      }
-
-      if (event.key === KEYS.QUESTION_MARK) {
-        this.setState({
-          openDialog: { name: "help" },
-        });
-        return;
-      } else if (
-        event.key.toLowerCase() === KEYS.E &&
-        event.shiftKey &&
-        event[KEYS.CTRL_OR_CMD]
-      ) {
-        event.preventDefault();
-        this.setState({ openDialog: { name: "imageExport" } });
         return;
       }
 
@@ -5271,89 +5255,20 @@ class App extends React.Component<AppProps, AppState> {
         }
       }
 
+      // the commands of the effective keymap (tools included), then the
+      // actions of fixed keys
       if (this.actionManager.handleKeyDown(event)) {
         return;
       }
 
-      // view mode hardcoded from upstream -> disable tool switching for now
-      const shouldPreventToolSwitching = this.props.viewModeEnabled === true;
-
       if (
-        !shouldPreventToolSwitching &&
+        // view mode hardcoded from upstream -> disable tool switching for now
+        this.props.viewModeEnabled !== true &&
         this.state.viewModeEnabled &&
         event.key === KEYS.ESCAPE
       ) {
         this.setActiveTool({ type: "selection" });
         return;
-      }
-
-      if (
-        !shouldPreventToolSwitching &&
-        !event.ctrlKey &&
-        !event.altKey &&
-        !event.metaKey &&
-        !this.state.newElement &&
-        !this.state.selectionElement &&
-        !this.state.selectedElementsAreBeingDragged
-      ) {
-        const shape = findShapeByKey(event.key, this, event.shiftKey);
-
-        if (this.state.viewModeEnabled && !oneOf(shape, ["laser", "hand"])) {
-          return;
-        }
-
-        if (shape) {
-          if (this.state.activeTool.type !== shape) {
-            trackEvent(
-              "toolbar",
-              shape,
-              `keyboard (${
-                this.editorInterface.formFactor === "phone"
-                  ? "mobile"
-                  : "desktop"
-              })`,
-            );
-          }
-          if (shape === "arrow" && this.state.activeTool.type === "arrow") {
-            const nextArrowType =
-              this.state.currentItemArrowType === ARROW_TYPE.sharp
-                ? ARROW_TYPE.round
-                : this.state.currentItemArrowType === ARROW_TYPE.round
-                ? ARROW_TYPE.elbow
-                : ARROW_TYPE.sharp;
-            this.setState({ currentItemArrowType: nextArrowType });
-            this.cursorHints.onArrowTypeCycled(nextArrowType);
-          } else if (shape === "arrow" || shape === "line") {
-            this.cursorHints.onToolShortcut(
-              shape,
-              /^\d$/.test(event.key) ? "digit" : "letter",
-            );
-          }
-
-          if (
-            shape === "bucketfill" &&
-            this.state.activeTool.type === "bucketfill"
-          ) {
-            this.bucketFill.cycleBackgroundColor();
-          } else if (
-            shape === "lasso" &&
-            this.state.activeTool.type === "laser"
-          ) {
-            this.setActiveTool({
-              type: this.state.preferredSelectionTool.type,
-            });
-          } else {
-            this.setActiveTool({ type: shape }, { toggle: true });
-          }
-
-          event.stopPropagation();
-
-          return;
-        } else if (event.key === KEYS.Q) {
-          this.toggleLock("keyboard");
-          event.stopPropagation();
-          return;
-        }
       }
 
       if (this.state.viewModeEnabled) {
@@ -5559,13 +5474,6 @@ class App extends React.Component<AppProps, AppState> {
         }
       }
 
-      if (
-        event[KEYS.CTRL_OR_CMD] &&
-        (event.key === KEYS.BACKSPACE || event.key === KEYS.DELETE)
-      ) {
-        this.updateEditorAtom(activeConfirmDialogAtom, "clearCanvas");
-      }
-
       // eye dropper
       // -----------------------------------------------------------------------
       const lowerCased = event.key.toLocaleLowerCase();
@@ -5585,6 +5493,7 @@ class App extends React.Component<AppProps, AppState> {
 
   private onKeyUp = withBatchedUpdates((event: KeyboardEvent) => {
     this.modifiers.sync(event);
+    this.commands.handleKeyUp(event);
     if (!this.isInteractionEnabled()) {
       return;
     }

@@ -56,8 +56,6 @@ import type {
   ExcalidrawTextContainer,
 } from "@excalidraw/element/types";
 
-import { actionSaveFileToDisk, actionSaveToActiveFile } from "../actions";
-
 import {
   parseClipboard,
   parseDataTransferEvent,
@@ -851,34 +849,36 @@ export const textWysiwyg = ({
   }
 
   editable.onkeydown = (event) => {
-    if (!event.shiftKey && actionZoomIn.keyTest(event)) {
+    // a host command with Ctrl or Cmd (e.g. save) ends the editing first
+    const hostCommand =
+      event.ctrlKey || event.metaKey
+        ? app.commands.findHostCommand(event)
+        : null;
+
+    if (!event.shiftKey && app.commands.matches("zoomIn", event)) {
       event.preventDefault();
       app.actionManager.executeAction(actionZoomIn);
       updateWysiwygStyle();
-    } else if (!event.shiftKey && actionZoomOut.keyTest(event)) {
+    } else if (!event.shiftKey && app.commands.matches("zoomOut", event)) {
       event.preventDefault();
       app.actionManager.executeAction(actionZoomOut);
       updateWysiwygStyle();
-    } else if (!event.shiftKey && actionResetZoom.keyTest(event)) {
+    } else if (!event.shiftKey && app.commands.matches("resetZoom", event)) {
       event.preventDefault();
       app.actionManager.executeAction(actionResetZoom);
       updateWysiwygStyle();
-    } else if (actionDecreaseFontSize.keyTest(event)) {
+    } else if (app.commands.matches("decreaseFontSize", event)) {
       app.actionManager.executeAction(actionDecreaseFontSize);
-    } else if (actionIncreaseFontSize.keyTest(event)) {
+    } else if (app.commands.matches("increaseFontSize", event)) {
       app.actionManager.executeAction(actionIncreaseFontSize);
     } else if (event.key === KEYS.ESCAPE) {
       event.preventDefault();
       submittedViaKeyboard = true;
       handleSubmit();
-    } else if (actionSaveToActiveFile.keyTest(event)) {
+    } else if (hostCommand) {
       event.preventDefault();
       handleSubmit();
-      app.actionManager.executeAction(actionSaveToActiveFile, "keyboard");
-    } else if (actionSaveFileToDisk.keyTest(event)) {
-      event.preventDefault();
-      handleSubmit();
-      app.actionManager.executeAction(actionSaveFileToDisk, "keyboard");
+      app.commands.execute(hostCommand, "keyboard");
     } else if (event.key === KEYS.ENTER && event[KEYS.CTRL_OR_CMD]) {
       event.preventDefault();
       if (event.isComposing || event.keyCode === 229) {

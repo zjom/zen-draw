@@ -25,7 +25,6 @@ import {
   actionCopyElementLink,
   actionLinkToElement,
 } from "../../actions/actionElementLink";
-import { getShortcutFromShortcutName } from "../../actions/shortcuts";
 import { trackEvent } from "../../analytics";
 import { useUIAppState } from "../../context/ui-appState";
 import { deburr } from "../../deburr";
@@ -54,7 +53,7 @@ import {
   historyCommandIcon,
 } from "../icons";
 
-import { TOOLS, getToolLetter } from "../Tools";
+import { TOOLS } from "../Tools";
 import { canChangeBackgroundColor, canChangeStrokeColor } from "../Actions";
 import { useStableCallback } from "../../hooks/useStableCallback";
 import { activeConfirmDialogAtom } from "../ActiveConfirmDialog";
@@ -77,8 +76,14 @@ import "./CommandPalette.scss";
 
 import type { CommandPaletteItem } from "./types";
 import type { ToolbarToolType } from "../Tools";
-import type { AppProps, AppState, LibraryItem, UIAppState } from "../../types";
-import type { ShortcutName } from "../../actions/shortcuts";
+import type {
+  AppClassProperties,
+  AppProps,
+  AppState,
+  LibraryItem,
+  UIAppState,
+} from "../../types";
+import type { HostCommandId } from "../../keymap";
 import type { TranslationKeys } from "../../i18n";
 import type { Action } from "../../actions/types";
 
@@ -138,14 +143,10 @@ const CommandShortcutHint = ({
   );
 };
 
-const isCommandPaletteToggleShortcut = (event: KeyboardEvent) => {
-  return (
-    !event.altKey &&
-    event[KEYS.CTRL_OR_CMD] &&
-    ((event.shiftKey && event.key.toLowerCase() === KEYS.P) ||
-      event.key === KEYS.SLASH)
-  );
-};
+const isCommandPaletteToggleShortcut = (
+  app: AppClassProperties,
+  event: KeyboardEvent,
+) => app.commands.matches("ui.commandPalette", event);
 
 type CommandPaletteProps = {
   customCommandPaletteItems?: CommandPaletteItem[];
@@ -153,12 +154,13 @@ type CommandPaletteProps = {
 
 export const CommandPalette = Object.assign(
   (props: CommandPaletteProps) => {
+    const app = useApp();
     const uiAppState = useUIAppState();
     const setAppState = useExcalidrawSetAppState();
 
     useEffect(() => {
       const commandPaletteShortcut = (event: KeyboardEvent) => {
-        if (isCommandPaletteToggleShortcut(event)) {
+        if (isCommandPaletteToggleShortcut(app, event)) {
           event.preventDefault();
           event.stopPropagation();
           setAppState((appState) => {
@@ -184,7 +186,7 @@ export const CommandPalette = Object.assign(
         window.removeEventListener(EVENT.KEYDOWN, commandPaletteShortcut, {
           capture: true,
         });
-    }, [setAppState]);
+    }, [app, setAppState]);
 
     if (uiAppState.openDialog?.name !== "commandPalette") {
       return null;
@@ -294,7 +296,7 @@ function CommandPaletteInner({
         label: getActionLabel(action),
         icon: getActionIcon(action),
         category,
-        shortcut: getShortcutFromShortcutName(action.name as ShortcutName),
+        shortcut: app.commands.getShortcut(action.name),
         keywords: action.keywords,
         predicate: action.predicate,
         viewMode: action.viewMode,
@@ -390,9 +392,7 @@ function CommandPaletteInner({
         {
           label: getActionLabel(actionClearCanvas),
           icon: getActionIcon(actionClearCanvas),
-          shortcut: getShortcutFromShortcutName(
-            actionClearCanvas.name as ShortcutName,
-          ),
+          shortcut: app.commands.getShortcut(actionClearCanvas.name),
           category: DEFAULT_CATEGORIES.editor,
           keywords: ["delete", "destroy"],
           viewMode: false,
@@ -404,7 +404,7 @@ function CommandPaletteInner({
           label: t("buttons.exportImage"),
           category: DEFAULT_CATEGORIES.export,
           icon: ExportImageIcon,
-          shortcut: getShortcutFromShortcutName("imageExport"),
+          shortcut: app.commands.getShortcut("ui.imageExport"),
           keywords: [
             "export",
             "image",
@@ -530,7 +530,7 @@ function CommandPaletteInner({
               return acc;
             }
 
-            const shortcut = getToolLetter(value) || config.numericKey;
+            const shortcut = app.commands.getShortcut(`tool.${value}`);
 
             const command: CommandPaletteItem = {
               label: t(`toolBar.${value}`),
@@ -554,7 +554,7 @@ function CommandPaletteInner({
           label: t("toolBar.lock"),
           category: DEFAULT_CATEGORIES.tools,
           icon: uiAppState.activeTool.locked ? LockedIcon : UnlockedIcon,
-          shortcut: KEYS.Q.toLocaleUpperCase(),
+          shortcut: app.commands.getShortcut("ui.toolLock"),
           viewMode: false,
           perform: () => {
             app.toggleLock();
@@ -604,7 +604,21 @@ function CommandPaletteInner({
         // },
       ];
 
+      const hostCommands: CommandPaletteItem[] = Object.entries(
+        appProps.commands ?? {},
+      )
+        .filter(([, command]) => command?.run)
+        .map(([id, command]) => ({
+          label: command.label,
+          category: DEFAULT_CATEGORIES.app,
+          shortcut: app.commands.getShortcut(id as HostCommandId),
+          perform: () => {
+            app.commands.execute(id as HostCommandId, "commandPalette");
+          },
+        }));
+
       const allCommands = [
+        ...hostCommands,
         ...commandsFromActions,
         ...additionalCommands,
         ...(customCommandPaletteItems || []),
@@ -693,7 +707,7 @@ function CommandPaletteInner({
   const handleKeyDown = useStableCallback((event: KeyboardEvent) => {
     const ignoreAlphanumerics =
       isWritableElement(event.target) ||
-      isCommandPaletteToggleShortcut(event) ||
+      isCommandPaletteToggleShortcut(app, event) ||
       event.key === KEYS.ESCAPE;
 
     if (

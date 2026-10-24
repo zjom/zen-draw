@@ -22,7 +22,6 @@ import {
 import { actionToggleViewMode } from "../../actions/actionToggleViewMode";
 import { resolveInputDevice } from "../../appState";
 
-import { getShortcutFromShortcutName } from "../../actions/shortcuts";
 import { trackEvent } from "../../analytics";
 import { useUIAppState } from "../../context/ui-appState";
 import { useSetAtom } from "../../editor-jotai";
@@ -102,7 +101,7 @@ export const LoadScene = () => {
       icon={LoadIcon}
       onSelect={handleSelect}
       data-testid="load-button"
-      shortcut={getShortcutFromShortcutName("loadScene")}
+      shortcut={actionManager.app.commands.getShortcut("loadScene")}
       aria-label={t("buttons.load")}
     >
       {t("buttons.load")}
@@ -121,7 +120,7 @@ export const SaveToActiveFile = () => {
 
   return (
     <DropdownMenuItem
-      shortcut={getShortcutFromShortcutName("saveScene")}
+      shortcut={actionManager.app.commands.getShortcut("saveToActiveFile")}
       data-testid="save-button"
       onSelect={() => actionManager.executeAction(actionSaveToActiveFile)}
       icon={save}
@@ -132,6 +131,7 @@ export const SaveToActiveFile = () => {
 SaveToActiveFile.displayName = "SaveToActiveFile";
 
 export const SaveAsImage = () => {
+  const actionManager = useExcalidrawActionManager();
   const setAppState = useExcalidrawSetAppState();
   const { t } = useI18n();
   return (
@@ -139,7 +139,7 @@ export const SaveAsImage = () => {
       icon={ExportImageIcon}
       data-testid="image-export-button"
       onSelect={() => setAppState({ openDialog: { name: "imageExport" } })}
-      shortcut={getShortcutFromShortcutName("imageExport")}
+      shortcut={actionManager.app.commands.getShortcut("ui.imageExport")}
       aria-label={t("buttons.exportImage")}
     >
       {t("buttons.exportImage")}
@@ -149,6 +149,7 @@ export const SaveAsImage = () => {
 SaveAsImage.displayName = "SaveAsImage";
 
 export const CommandPalette = (opts?: { className?: string }) => {
+  const actionManager = useExcalidrawActionManager();
   const setAppState = useExcalidrawSetAppState();
   const { t } = useI18n();
 
@@ -160,7 +161,7 @@ export const CommandPalette = (opts?: { className?: string }) => {
         trackEvent("command_palette", "open", "menu");
         setAppState({ openDialog: { name: "commandPalette" } });
       }}
-      shortcut={getShortcutFromShortcutName("commandPalette")}
+      shortcut={actionManager.app.commands.getShortcut("ui.commandPalette")}
       aria-label={t("commandPalette.title")}
       className={opts?.className}
     >
@@ -181,7 +182,7 @@ export const SearchMenu = (opts?: { className?: string }) => {
       onSelect={() => {
         actionManager.executeAction(actionToggleSearchMenu);
       }}
-      shortcut={getShortcutFromShortcutName("searchMenu")}
+      shortcut={actionManager.app.commands.getShortcut("searchMenu")}
       aria-label={t("search.title")}
       className={opts?.className}
     >
@@ -251,7 +252,7 @@ export const ToggleTheme = (
   const { t } = useI18n();
   const appState = useUIAppState();
   const actionManager = useExcalidrawActionManager();
-  const shortcut = getShortcutFromShortcutName("toggleTheme");
+  const shortcut = actionManager.app.commands.getShortcut("toggleTheme");
   const appProps = useAppProps();
 
   if (!actionManager.isActionEnabled(actionToggleTheme)) {
@@ -434,7 +435,7 @@ const PreferencesToggleToolLockItem = () => {
   return (
     <DropdownMenuItemCheckbox
       checked={appState.activeTool.locked}
-      shortcut={getShortcutFromShortcutName("toolLock")}
+      shortcut={app.commands.getShortcut("ui.toolLock")}
       onSelect={(event) => {
         app.toggleLock();
         event.preventDefault();
@@ -519,7 +520,7 @@ const PreferencesToggleSnapModeItem = () => {
   return (
     <DropdownMenuItemCheckbox
       checked={appState.objectsSnapModeEnabled}
-      shortcut={getShortcutFromShortcutName("objectsSnapMode")}
+      shortcut={actionManager.app.commands.getShortcut("objectsSnapMode")}
       onSelect={(event) => {
         actionManager.executeAction(actionToggleObjectsSnapMode);
         event.preventDefault();
@@ -589,7 +590,7 @@ export const PreferencesToggleGridModeItem = () => {
   return (
     <DropdownMenuItemCheckbox
       checked={appState.gridModeEnabled}
-      shortcut={getShortcutFromShortcutName("gridMode")}
+      shortcut={actionManager.app.commands.getShortcut("gridMode")}
       onSelect={(event) => {
         actionManager.executeAction(actionToggleGridMode);
         event.preventDefault();
@@ -607,7 +608,7 @@ export const PreferencesToggleZenModeItem = () => {
   return (
     <DropdownMenuItemCheckbox
       checked={appState.zenModeEnabled}
-      shortcut={getShortcutFromShortcutName("zenMode")}
+      shortcut={actionManager.app.commands.getShortcut("zenMode")}
       onSelect={(event) => {
         actionManager.executeAction(actionToggleZenMode);
         event.preventDefault();
@@ -628,7 +629,7 @@ const PreferencesToggleViewModeItem = () => {
   return (
     <DropdownMenuItemCheckbox
       checked={appState.viewModeEnabled}
-      shortcut={getShortcutFromShortcutName("viewMode")}
+      shortcut={actionManager.app.commands.getShortcut("viewMode")}
       onSelect={(event) => {
         actionManager.executeAction(actionToggleViewMode);
         event.preventDefault();
@@ -646,7 +647,7 @@ const PreferencesToggleElementPropertiesItem = () => {
   return (
     <DropdownMenuItemCheckbox
       checked={appState.stats.open}
-      shortcut={getShortcutFromShortcutName("stats")}
+      shortcut={actionManager.app.commands.getShortcut("stats")}
       onSelect={(event) => {
         actionManager.executeAction(actionToggleStats);
         event.preventDefault();

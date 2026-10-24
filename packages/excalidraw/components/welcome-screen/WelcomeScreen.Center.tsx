@@ -1,5 +1,4 @@
 import { actionLoadScene, actionShortcuts } from "../../actions";
-import { getShortcutFromShortcutName } from "../../actions/shortcuts";
 import { useTunnels } from "../../context/tunnels";
 import { useUIAppState } from "../../context/ui-appState";
 import { t, useI18n } from "../../i18n";
@@ -158,7 +157,7 @@ const MenuItemLoadScene = () => {
   return (
     <WelcomeScreenMenuItem
       onSelect={() => actionManager.executeAction(actionLoadScene)}
-      shortcut={getShortcutFromShortcutName("loadScene")}
+      shortcut={actionManager.app.commands.getShortcut("loadScene")}
       icon={LoadIcon}
     >
       {t("buttons.load")}

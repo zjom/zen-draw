@@ -26,7 +26,6 @@ import {
   checkpointHistory,
 } from "./test-utils";
 
-import type { ShortcutName } from "../actions/shortcuts";
 import type { ActionName } from "../actions/types";
 
 const checkpoint = (name: string) => {
@@ -87,7 +86,7 @@ describe("contextMenu element", () => {
       clientY: 1,
     });
     const contextMenu = UI.queryContextMenu();
-    const expectedShortcutNames: ShortcutName[] = [
+    const expectedShortcutNames: ActionName[] = [
       "paste",
       "selectAll",
       "gridMode",
@@ -212,7 +211,7 @@ describe("contextMenu element", () => {
     const contextMenu = UI.queryContextMenu();
     const contextMenuOptions =
       contextMenu?.querySelectorAll(".context-menu li");
-    const expectedShortcutNames: ShortcutName[] = [
+    const expectedShortcutNames: ActionName[] = [
       "cut",
       "copy",
       "paste",

@@ -180,6 +180,20 @@ export interface Action<TData = any> {
   PanelComponent?: React.FC<PanelComponentProps>;
   perform: ActionFn<TData>;
   keyPriority?: number;
+  /**
+   * The context test of the key combinations of the action in the effective
+   * keymap (see `keymap/`), e.g. "one or more elements are selected". A key
+   * combination runs the action only if the test passes.
+   */
+  keyCondition?: (
+    appState: AppState,
+    elements: readonly ExcalidrawElement[],
+    app: AppClassProperties,
+  ) => boolean;
+  /**
+   * Matches a fixed key (e.g. Escape) that is not in the keymap. Actions in
+   * the default keymap use `keyCondition` instead.
+   */
   keyTest?: (
     event: React.KeyboardEvent | KeyboardEvent,
     appState: AppState,

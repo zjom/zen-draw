@@ -1,13 +1,12 @@
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 
-import { KEYS, capitalizeString } from "@excalidraw/common";
+import { capitalizeString } from "@excalidraw/common";
 
 import type { PointerType } from "@excalidraw/element/types";
 
 import { trackEvent } from "../analytics";
 import { t } from "../i18n";
-import { getShortcutKey } from "../shortcut";
 
 import { IconButton } from "./IconButton";
 import { ToolPopover } from "./ToolPopover";
@@ -41,11 +40,6 @@ import type {
 
 export type ToolConfig = {
   icon: React.ReactNode;
-  /** letter shortcut(s) — the first one is shown in tooltips and badges */
-  letterKey?: string | readonly string[];
-  /** whether `letterKey` requires Shift to be held (e.g. Shift+X) */
-  shiftKey?: boolean;
-  numericKey?: string;
   /** whether the tool's shapes can be filled — fills the icon when active */
   fillable?: boolean;
   /**
@@ -61,85 +55,62 @@ const defineTools = <T extends Record<string, ToolConfig>>(tools: T) =>
   tools as { [K in keyof T]: ToolConfig };
 
 /**
- * Tool data — the single source of truth for tool buttons, keyboard
- * shortcuts (`findShapeByKey`), and the command palette. Toolbar placement
+ * Tool data — the single source of truth for tool buttons, the `tool.*`
+ * commands (their key combinations are in the keymap, see
+ * `keymap/defaultKeymap.ts`), and the command palette. Toolbar placement
  * is not defined here: toolbars compose the `*ToolButton` components below
  * manually, so entries without a toolbar slot (e.g. laser) are data-only.
  */
 export const TOOLS = defineTools({
   hand: {
     icon: handIcon,
-    letterKey: KEYS.H,
     toggle: true,
   },
   selection: {
     icon: SelectionIcon,
-    letterKey: KEYS.V,
-    numericKey: KEYS["1"],
     fillable: true,
   },
   rectangle: {
     icon: RectangleIcon,
-    letterKey: KEYS.R,
-    numericKey: KEYS["2"],
     fillable: true,
   },
   diamond: {
     icon: DiamondIcon,
-    letterKey: KEYS.D,
-    numericKey: KEYS["3"],
     fillable: true,
   },
   ellipse: {
     icon: EllipseIcon,
-    letterKey: KEYS.O,
-    numericKey: KEYS["4"],
     fillable: true,
   },
   arrow: {
     icon: ArrowIcon,
-    letterKey: KEYS.A,
-    numericKey: KEYS["5"],
     fillable: true,
   },
   line: {
     icon: LineIcon,
-    letterKey: KEYS.L,
-    numericKey: KEYS["6"],
     fillable: true,
   },
   freedraw: {
     icon: FreedrawIcon,
-    letterKey: [KEYS.P, KEYS.X],
-    numericKey: KEYS["7"],
   },
   text: {
     icon: TextIcon,
-    letterKey: KEYS.T,
-    numericKey: KEYS["8"],
   },
   stickynote: {
     icon: stickyNoteToolIcon,
-    letterKey: KEYS.N,
   },
   image: {
     icon: ImageIcon,
-    numericKey: KEYS["9"],
   },
   eraser: {
     icon: EraserIcon,
-    letterKey: KEYS.E,
-    numericKey: KEYS["0"],
     toggle: true,
   },
   frame: {
     icon: frameToolIcon,
-    letterKey: KEYS.F,
   },
   autoshape: {
     icon: drawShapeToolIcon,
-    letterKey: KEYS.X,
-    shiftKey: true,
     fillable: false,
   },
   embeddable: {
@@ -147,11 +118,9 @@ export const TOOLS = defineTools({
   },
   laser: {
     icon: laserPointerToolIcon,
-    letterKey: KEYS.K,
   },
   bucketfill: {
     icon: bucketFillIcon,
-    letterKey: KEYS.B,
   },
   lasso: {
     icon: LassoIcon,
@@ -169,58 +138,17 @@ export const TOGGLE_TOOLS: readonly (ToolType | "custom")[] = (
   Object.keys(TOOLS) as ToolbarToolType[]
 ).filter((type) => TOOLS[type].toggle);
 
-export const getToolLetter = (type: ToolbarToolType) => {
-  const { letterKey, shiftKey } = TOOLS[type];
-  if (!letterKey) {
-    return letterKey;
-  }
-  const letter = capitalizeString(
-    typeof letterKey === "string" ? letterKey : letterKey[0],
-  );
-  return shiftKey ? getShortcutKey(`Shift+${letter}`) : letter;
-};
+/** the label of the first key combination of the tool, e.g. "R" */
+export const getToolLetter = (
+  app: AppClassProperties,
+  type: ToolbarToolType,
+): string | undefined => app.commands.getShortcut(`tool.${type}`) || undefined;
 
 /** human-readable shortcut hint, e.g. "R or 2", used in tooltips & aria */
-export const getToolShortcut = (type: ToolbarToolType) => {
-  const letter = getToolLetter(type);
-  const { numericKey } = TOOLS[type];
-  return letter && numericKey != null
-    ? `${letter} ${t("helpDialog.or")} ${numericKey}`
-    : `${letter || numericKey}`;
-};
-
-export const findShapeByKey = (
-  key: string,
+export const getToolShortcut = (
   app: AppClassProperties,
-  shiftKey: boolean = false,
-) => {
-  // CapsLock-insensitive: the caller excludes every modifier but shift, and
-  // shift is matched explicitly below, so a capital letter on its own means
-  // CapsLock
-  const lowerKey = key.toLowerCase();
-
-  for (const type of Object.keys(TOOLS) as ToolbarToolType[]) {
-    const { letterKey, numericKey, shiftKey: requiresShift } = TOOLS[type];
-    // shift-bound tools require shift; plain-bound ones require its absence
-    if (shiftKey !== Boolean(requiresShift)) {
-      continue;
-    }
-    if (
-      (numericKey != null && key === numericKey) ||
-      (letterKey &&
-        (typeof letterKey === "string"
-          ? letterKey === lowerKey
-          : letterKey.includes(lowerKey)))
-    ) {
-      // the selection shortcut activates whichever selection tool the user
-      // prefers (selection or lasso)
-      return type === "selection"
-        ? app.state.preferredSelectionTool.type
-        : type;
-    }
-  }
-  return null;
-};
+  type: ToolbarToolType,
+) => app.commands.getShortcuts(`tool.${type}`).join(` ${t("helpDialog.or")} `);
 
 /**
  * Whether a toolbar entry activating the given tool renders disabled — true
@@ -278,7 +206,7 @@ const createToolButton = (
     hideShortcut,
   }: ToolButtonComponentProps) => {
     const label = capitalizeString(t(`toolBar.${type}`));
-    const shortcut = hideShortcut ? null : getToolShortcut(shortcutType);
+    const shortcut = hideShortcut ? null : getToolShortcut(app, shortcutType);
 
     return (
       <IconButton
@@ -291,7 +219,7 @@ const createToolButton = (
         keyBindingLabel={
           hideKeyBinding || hideShortcut
             ? undefined
-            : getToolLetter(shortcutType) || TOOLS[shortcutType].numericKey
+            : getToolLetter(app, shortcutType)
         }
         aria-label={label}
         aria-keyshortcuts={shortcut ?? undefined}

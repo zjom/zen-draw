@@ -1,22 +1,23 @@
 import React from "react";
 
-import { isDarwin, isFirefox, isWindows } from "@excalidraw/common";
+import { isFirefox } from "@excalidraw/common";
 
 import { KEYS } from "@excalidraw/common";
 
 import { actionToggleTheme } from "../actions";
-import { getShortcutFromShortcutName } from "../actions/shortcuts";
 import { probablySupportsClipboardBlob } from "../clipboard";
 import { t } from "../i18n";
 import { getShortcutKey } from "../shortcut";
 
-import { useExcalidrawActionManager } from "./App";
+import { useApp, useExcalidrawActionManager } from "./App";
 import { Dialog } from "./Dialog";
 import { ExternalLinkIcon, GithubIcon, youtubeIcon } from "./icons";
 
 import "./HelpDialog.scss";
 
 import type { JSX } from "react";
+
+import type { CommandId } from "../keymap";
 
 const Header = () => (
   <div className="HelpDialog__header">
@@ -121,11 +122,28 @@ const Shortcut = ({
   );
 };
 
+/** the key combinations of a command in the effective keymap; nothing if
+ * the command has none */
+const CommandShortcut = ({
+  label,
+  command,
+}: {
+  label: string;
+  command: CommandId;
+}) => {
+  const app = useApp();
+  const shortcuts = app.commands.getShortcuts(command);
+  return shortcuts.length ? (
+    <Shortcut label={label} shortcuts={shortcuts} isOr={true} />
+  ) : null;
+};
+
 const ShortcutKey = (props: { children: React.ReactNode }) => (
   <kbd className="HelpDialog__key" {...props} />
 );
 
 export const HelpDialog = ({ onClose }: { onClose?: () => void }) => {
+  const app = useApp();
   const actionManager = useExcalidrawActionManager();
   const handleClose = React.useCallback(() => {
     if (onClose) {
@@ -146,48 +164,45 @@ export const HelpDialog = ({ onClose }: { onClose?: () => void }) => {
             className="HelpDialog__island--tools"
             caption={t("helpDialog.tools")}
           >
-            <Shortcut label={t("toolBar.hand")} shortcuts={[KEYS.H]} />
-            <Shortcut
+            <CommandShortcut label={t("toolBar.hand")} command="tool.hand" />
+            <CommandShortcut
               label={t("toolBar.selection")}
-              shortcuts={[KEYS.V, KEYS["1"]]}
+              command="tool.selection"
             />
-            <Shortcut
+            <CommandShortcut
               label={t("toolBar.rectangle")}
-              shortcuts={[KEYS.R, KEYS["2"]]}
+              command="tool.rectangle"
             />
-            <Shortcut
+            <CommandShortcut
               label={t("toolBar.diamond")}
-              shortcuts={[KEYS.D, KEYS["3"]]}
+              command="tool.diamond"
             />
-            <Shortcut
+            <CommandShortcut
               label={t("toolBar.ellipse")}
-              shortcuts={[KEYS.O, KEYS["4"]]}
+              command="tool.ellipse"
             />
-            <Shortcut
-              label={t("toolBar.arrow")}
-              shortcuts={[KEYS.A, KEYS["5"]]}
-            />
-            <Shortcut
-              label={t("toolBar.line")}
-              shortcuts={[KEYS.L, KEYS["6"]]}
-            />
-            <Shortcut
+            <CommandShortcut label={t("toolBar.arrow")} command="tool.arrow" />
+            <CommandShortcut label={t("toolBar.line")} command="tool.line" />
+            <CommandShortcut
               label={t("toolBar.freedraw")}
-              shortcuts={[KEYS.P, KEYS["7"]]}
+              command="tool.freedraw"
             />
-            <Shortcut
-              label={t("toolBar.text")}
-              shortcuts={[KEYS.T, KEYS["8"]]}
+            <CommandShortcut label={t("toolBar.text")} command="tool.text" />
+            <CommandShortcut
+              label={t("toolBar.stickynote")}
+              command="tool.stickynote"
             />
-            <Shortcut label={t("toolBar.stickynote")} shortcuts={[KEYS.N]} />
-            <Shortcut label={t("toolBar.image")} shortcuts={[KEYS["9"]]} />
-            <Shortcut
+            <CommandShortcut label={t("toolBar.image")} command="tool.image" />
+            <CommandShortcut
               label={t("toolBar.eraser")}
-              shortcuts={[KEYS.E, KEYS["0"]]}
+              command="tool.eraser"
             />
-            <Shortcut label={t("toolBar.frame")} shortcuts={[KEYS.F]} />
-            <Shortcut label={t("toolBar.laser")} shortcuts={[KEYS.K]} />
-            <Shortcut label={t("toolBar.bucketfill")} shortcuts={[KEYS.B]} />
+            <CommandShortcut label={t("toolBar.frame")} command="tool.frame" />
+            <CommandShortcut label={t("toolBar.laser")} command="tool.laser" />
+            <CommandShortcut
+              label={t("toolBar.bucketfill")}
+              command="tool.bucketfill"
+            />
             <Shortcut
               label={t("labels.eyeDropper")}
               shortcuts={[KEYS.I, "Shift+S", "Shift+G"]}
@@ -244,15 +259,12 @@ export const HelpDialog = ({ onClose }: { onClose?: () => void }) => {
               shortcuts={[getShortcutKey("Enter"), getShortcutKey("Escape")]}
               isOr={true}
             />
-            <Shortcut label={t("toolBar.lock")} shortcuts={[KEYS.Q]} />
+            <CommandShortcut label={t("toolBar.lock")} command="ui.toolLock" />
             <Shortcut
               label={t("helpDialog.preventBinding")}
               shortcuts={[getShortcutKey("CtrlOrCmd")]}
             />
-            <Shortcut
-              label={t("toolBar.link")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+K")]}
-            />
+            <CommandShortcut label={t("toolBar.link")} command="hyperlink" />
             <Shortcut
               label={t("toolBar.convertElementType")}
               shortcuts={["Tab", "Shift+Tab"]}
@@ -263,25 +275,19 @@ export const HelpDialog = ({ onClose }: { onClose?: () => void }) => {
             className="HelpDialog__island--view"
             caption={t("helpDialog.view")}
           >
-            <Shortcut
-              label={t("buttons.zoomIn")}
-              shortcuts={[getShortcutKey("CtrlOrCmd++")]}
-            />
-            <Shortcut
-              label={t("buttons.zoomOut")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+-")]}
-            />
-            <Shortcut
+            <CommandShortcut label={t("buttons.zoomIn")} command="zoomIn" />
+            <CommandShortcut label={t("buttons.zoomOut")} command="zoomOut" />
+            <CommandShortcut
               label={t("buttons.resetZoom")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+0")]}
+              command="resetZoom"
             />
-            <Shortcut
+            <CommandShortcut
               label={t("helpDialog.zoomToFit")}
-              shortcuts={["Shift+1"]}
+              command="zoomToFit"
             />
-            <Shortcut
+            <CommandShortcut
               label={t("helpDialog.zoomToSelection")}
-              shortcuts={["Shift+2"]}
+              command="zoomToFitSelectionInViewport"
             />
             <Shortcut
               label={t("helpDialog.movePageUpDown")}
@@ -291,46 +297,27 @@ export const HelpDialog = ({ onClose }: { onClose?: () => void }) => {
               label={t("helpDialog.movePageLeftRight")}
               shortcuts={["Shift+PgUp/PgDn"]}
             />
-            <Shortcut
-              label={t("buttons.zenMode")}
-              shortcuts={[getShortcutKey("Alt+Z")]}
-            />
-            <Shortcut
+            <CommandShortcut label={t("buttons.zenMode")} command="zenMode" />
+            <CommandShortcut
               label={t("buttons.objectsSnapMode")}
-              shortcuts={[getShortcutKey("Alt+S")]}
+              command="objectsSnapMode"
             />
-            <Shortcut
+            <CommandShortcut
               label={t("labels.toggleGrid")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+'")]}
+              command="gridMode"
             />
-            <Shortcut
-              label={t("labels.viewMode")}
-              shortcuts={[getShortcutKey("Alt+R")]}
-            />
+            <CommandShortcut label={t("labels.viewMode")} command="viewMode" />
             {actionManager.isActionEnabled(actionToggleTheme) && (
-              <Shortcut
+              <CommandShortcut
                 label={t("labels.toggleTheme")}
-                shortcuts={[getShortcutKey("Alt+Shift+D")]}
+                command="toggleTheme"
               />
             )}
-            <Shortcut
-              label={t("stats.fullTitle")}
-              shortcuts={[getShortcutKey("Alt+/")]}
-            />
-            <Shortcut
-              label={t("search.title")}
-              shortcuts={[getShortcutFromShortcutName("searchMenu")]}
-            />
-            <Shortcut
+            <CommandShortcut label={t("stats.fullTitle")} command="stats" />
+            <CommandShortcut label={t("search.title")} command="searchMenu" />
+            <CommandShortcut
               label={t("commandPalette.title")}
-              shortcuts={
-                isFirefox
-                  ? [getShortcutFromShortcutName("commandPalette")]
-                  : [
-                      getShortcutFromShortcutName("commandPalette"),
-                      getShortcutFromShortcutName("commandPalette", 1),
-                    ]
-              }
+              command="ui.commandPalette"
             />
           </ShortcutIsland>
           <ShortcutIsland
@@ -355,33 +342,24 @@ export const HelpDialog = ({ onClose }: { onClose?: () => void }) => {
               ]}
               isOr={true}
             />
-            <Shortcut
+            <CommandShortcut
               label={t("buttons.clearReset")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+Delete")]}
+              command="clearCanvas"
             />
-            <Shortcut
+            <CommandShortcut
               label={t("labels.delete")}
-              shortcuts={[getShortcutKey("Delete")]}
+              command="deleteSelectedElements"
             />
-            <Shortcut
-              label={t("labels.cut")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+X")]}
-            />
-            <Shortcut
-              label={t("labels.copy")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+C")]}
-            />
-            <Shortcut
-              label={t("labels.paste")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+V")]}
-            />
+            <CommandShortcut label={t("labels.cut")} command="cut" />
+            <CommandShortcut label={t("labels.copy")} command="copy" />
+            <CommandShortcut label={t("labels.paste")} command="paste" />
             <Shortcut
               label={t("labels.pasteAsPlaintext")}
               shortcuts={[getShortcutKey("CtrlOrCmd+Shift+V")]}
             />
-            <Shortcut
+            <CommandShortcut
               label={t("labels.selectAll")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+A")]}
+              command="selectAll"
             />
             <Shortcut
               label={t("labels.multiSelect")}
@@ -398,104 +376,75 @@ export const HelpDialog = ({ onClose }: { onClose?: () => void }) => {
             {/* firefox supports clipboard API under a flag, so we'll
                 show users what they can do in the error message */}
             {(probablySupportsClipboardBlob || isFirefox) && (
-              <Shortcut
+              <CommandShortcut
                 label={t("labels.copyAsPng")}
-                shortcuts={[getShortcutKey("Shift+Alt+C")]}
+                command="copyAsPng"
               />
             )}
-            <Shortcut
+            <CommandShortcut
               label={t("labels.copyStyles")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+Alt+C")]}
+              command="copyStyles"
             />
-            <Shortcut
+            <CommandShortcut
               label={t("labels.pasteStyles")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+Alt+V")]}
+              command="pasteStyles"
             />
-            <Shortcut
+            <CommandShortcut
               label={t("labels.sendToBack")}
-              shortcuts={[
-                isDarwin
-                  ? getShortcutKey("CtrlOrCmd+Alt+[")
-                  : getShortcutKey("CtrlOrCmd+Shift+["),
-              ]}
+              command="sendToBack"
             />
-            <Shortcut
+            <CommandShortcut
               label={t("labels.bringToFront")}
-              shortcuts={[
-                isDarwin
-                  ? getShortcutKey("CtrlOrCmd+Alt+]")
-                  : getShortcutKey("CtrlOrCmd+Shift+]"),
-              ]}
+              command="bringToFront"
             />
-            <Shortcut
+            <CommandShortcut
               label={t("labels.sendBackward")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+[")]}
+              command="sendBackward"
             />
-            <Shortcut
+            <CommandShortcut
               label={t("labels.bringForward")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+]")]}
+              command="bringForward"
             />
-            <Shortcut
-              label={t("labels.alignTop")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+Shift+Up")]}
-            />
-            <Shortcut
+            <CommandShortcut label={t("labels.alignTop")} command="alignTop" />
+            <CommandShortcut
               label={t("labels.alignBottom")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+Shift+Down")]}
+              command="alignBottom"
             />
-            <Shortcut
+            <CommandShortcut
               label={t("labels.alignLeft")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+Shift+Left")]}
+              command="alignLeft"
             />
-            <Shortcut
+            <CommandShortcut
               label={t("labels.alignRight")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+Shift+Right")]}
+              command="alignRight"
             />
             <Shortcut
               label={t("labels.duplicateSelection")}
               shortcuts={[
-                getShortcutKey("CtrlOrCmd+D"),
+                ...app.commands.getShortcuts("duplicateSelection"),
                 getShortcutKey(`Alt+${t("helpDialog.drag")}`),
               ]}
+              isOr={true}
             />
-            <Shortcut
+            <CommandShortcut
               label={t("helpDialog.toggleElementLock")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+Shift+L")]}
+              command="toggleElementLock"
             />
-            <Shortcut
-              label={t("buttons.undo")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+Z")]}
-            />
-            <Shortcut
-              label={t("buttons.redo")}
-              shortcuts={
-                isWindows
-                  ? [
-                      getShortcutKey("CtrlOrCmd+Y"),
-                      getShortcutKey("CtrlOrCmd+Shift+Z"),
-                    ]
-                  : [getShortcutKey("CtrlOrCmd+Shift+Z")]
-              }
-            />
-            <Shortcut
-              label={t("labels.group")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+G")]}
-            />
-            <Shortcut
-              label={t("labels.ungroup")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+Shift+G")]}
-            />
-            <Shortcut
+            <CommandShortcut label={t("buttons.undo")} command="undo" />
+            <CommandShortcut label={t("buttons.redo")} command="redo" />
+            <CommandShortcut label={t("labels.group")} command="group" />
+            <CommandShortcut label={t("labels.ungroup")} command="ungroup" />
+            <CommandShortcut
               label={t("labels.toggleWrap")}
-              shortcuts={[getShortcutKey("W")]}
+              command="toggleWrap"
             />
-            <Shortcut
+            <CommandShortcut
               label={t("labels.flipHorizontal")}
-              shortcuts={[getShortcutKey("Shift+H")]}
+              command="flipHorizontal"
             />
-            <Shortcut
+            <CommandShortcut
               label={t("labels.flipVertical")}
-              shortcuts={[getShortcutKey("Shift+V")]}
+              command="flipVertical"
             />
             <Shortcut
               label={t("labels.showStroke")}
@@ -509,13 +458,13 @@ export const HelpDialog = ({ onClose }: { onClose?: () => void }) => {
               label={t("labels.showFonts")}
               shortcuts={[getShortcutKey("Shift+F")]}
             />
-            <Shortcut
+            <CommandShortcut
               label={t("labels.decreaseFontSize")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+Shift+<")]}
+              command="decreaseFontSize"
             />
-            <Shortcut
+            <CommandShortcut
               label={t("labels.increaseFontSize")}
-              shortcuts={[getShortcutKey("CtrlOrCmd+Shift+>")]}
+              command="increaseFontSize"
             />
           </ShortcutIsland>
         </Section>

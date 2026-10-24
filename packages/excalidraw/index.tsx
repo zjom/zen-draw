@@ -116,6 +116,8 @@ const ExcalidrawBase = (props: ExcalidrawProps) => {
     viewportStatusFrame,
     currentUserControls,
     imageOptions,
+    keymap,
+    commands,
   } = props;
 
   const canvasActions = props.UIOptions?.canvasActions;
@@ -258,6 +260,8 @@ const ExcalidrawBase = (props: ExcalidrawProps) => {
           viewportStatusFrame={viewportStatusFrame}
           currentUserControls={currentUserControls}
           imageOptions={normalizedImageOptions}
+          keymap={keymap}
+          commands={commands}
         >
           {children}
         </App>
@@ -279,6 +283,7 @@ const areEqual = (prevProps: ExcalidrawProps, nextProps: ExcalidrawProps) => {
     interaction: prevInteraction,
     ui: prevUI,
     activeTool: prevActiveTool,
+    keymap: prevKeymap,
     ...prev
   } = prevProps;
   const {
@@ -288,6 +293,7 @@ const areEqual = (prevProps: ExcalidrawProps, nextProps: ExcalidrawProps) => {
     interaction: nextInteraction,
     ui: nextUI,
     activeTool: nextActiveTool,
+    keymap: nextKeymap,
     ...next
   } = nextProps;
 
@@ -300,6 +306,15 @@ const areEqual = (prevProps: ExcalidrawProps, nextProps: ExcalidrawProps) => {
         (nextActiveTool?.type === "custom" ? nextActiveTool.customType : null));
 
   if (!isActiveToolSame) {
+    return false;
+  }
+
+  // `keymap` is plain data: compare it by value so that hosts inlining the
+  // object don't bust the memo every render
+  if (
+    prevKeymap !== nextKeymap &&
+    JSON.stringify(prevKeymap) !== JSON.stringify(nextKeymap)
+  ) {
     return false;
   }
 
@@ -556,3 +571,19 @@ export function useExcalidrawStateValue(
 export { _useOnAppStateChange as useOnExcalidrawStateChange };
 
 export { applyDarkModeFilter, getStrokeWidthByKey };
+
+export {
+  formatKeyCombination,
+  getDefaultKeymap,
+  parseKeyCombination,
+  splitKeyCombinations,
+} from "./keymap";
+export type {
+  CommandId,
+  HostCommand,
+  HostCommands,
+  KeyCombination,
+  Keymap,
+  KeymapConflict,
+  KeymapOverrides,
+} from "./keymap";

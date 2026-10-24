@@ -4,7 +4,7 @@ import { isFrameLikeElement } from "@excalidraw/element";
 
 import { updateFrameMembershipOfSelectedElements } from "@excalidraw/element";
 
-import { KEYS, arrayToMap } from "@excalidraw/common";
+import { arrayToMap } from "@excalidraw/common";
 
 import { alignElements } from "@excalidraw/element";
 
@@ -29,8 +29,6 @@ import {
 import { t } from "../i18n";
 
 import { isSomeElementSelected } from "../scene";
-
-import { getShortcutKey } from "../shortcut";
 
 import { register } from "./register";
 
@@ -93,16 +91,14 @@ export const actionAlignTop = register({
       captureUpdate: CaptureUpdateAction.IMMEDIATELY,
     };
   },
-  keyTest: (event) =>
-    event[KEYS.CTRL_OR_CMD] && event.shiftKey && event.key === KEYS.ARROW_UP,
   PanelComponent: ({ elements, appState, updateData, app }) => (
     <IconButton
       hidden={!alignActionsPredicate(appState, app)}
       type="button"
       icon={AlignTopIcon}
       onClick={() => updateData(null)}
-      title={`${t("labels.alignTop")} — ${getShortcutKey(
-        "CtrlOrCmd+Shift+Up",
+      title={`${t("labels.alignTop")} — ${app.commands.getShortcut(
+        "alignTop",
       )}`}
       aria-label={t("labels.alignTop")}
       visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}
@@ -127,16 +123,14 @@ export const actionAlignBottom = register({
       captureUpdate: CaptureUpdateAction.IMMEDIATELY,
     };
   },
-  keyTest: (event) =>
-    event[KEYS.CTRL_OR_CMD] && event.shiftKey && event.key === KEYS.ARROW_DOWN,
   PanelComponent: ({ elements, appState, updateData, app }) => (
     <IconButton
       hidden={!alignActionsPredicate(appState, app)}
       type="button"
       icon={AlignBottomIcon}
       onClick={() => updateData(null)}
-      title={`${t("labels.alignBottom")} — ${getShortcutKey(
-        "CtrlOrCmd+Shift+Down",
+      title={`${t("labels.alignBottom")} — ${app.commands.getShortcut(
+        "alignBottom",
       )}`}
       aria-label={t("labels.alignBottom")}
       visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}
@@ -161,16 +155,14 @@ export const actionAlignLeft = register({
       captureUpdate: CaptureUpdateAction.IMMEDIATELY,
     };
   },
-  keyTest: (event) =>
-    event[KEYS.CTRL_OR_CMD] && event.shiftKey && event.key === KEYS.ARROW_LEFT,
   PanelComponent: ({ elements, appState, updateData, app }) => (
     <IconButton
       hidden={!alignActionsPredicate(appState, app)}
       type="button"
       icon={AlignLeftIcon}
       onClick={() => updateData(null)}
-      title={`${t("labels.alignLeft")} — ${getShortcutKey(
-        "CtrlOrCmd+Shift+Left",
+      title={`${t("labels.alignLeft")} — ${app.commands.getShortcut(
+        "alignLeft",
       )}`}
       aria-label={t("labels.alignLeft")}
       visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}
@@ -195,16 +187,14 @@ export const actionAlignRight = register({
       captureUpdate: CaptureUpdateAction.IMMEDIATELY,
     };
   },
-  keyTest: (event) =>
-    event[KEYS.CTRL_OR_CMD] && event.shiftKey && event.key === KEYS.ARROW_RIGHT,
   PanelComponent: ({ elements, appState, updateData, app }) => (
     <IconButton
       hidden={!alignActionsPredicate(appState, app)}
       type="button"
       icon={AlignRightIcon}
       onClick={() => updateData(null)}
-      title={`${t("labels.alignRight")} — ${getShortcutKey(
-        "CtrlOrCmd+Shift+Right",
+      title={`${t("labels.alignRight")} — ${app.commands.getShortcut(
+        "alignRight",
       )}`}
       aria-label={t("labels.alignRight")}
       visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}

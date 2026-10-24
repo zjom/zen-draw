@@ -65,6 +65,14 @@ import type { ContextMenuItems } from "./components/ContextMenu";
 import type { SnapLine } from "./snapping";
 import type { ImportedDataState } from "./data/types";
 import type { SetViewportOptions } from "./viewport";
+import type {
+  CommandId,
+  HostCommands,
+  KeyCombination,
+  Keymap,
+  KeymapConflict,
+  KeymapOverrides,
+} from "./keymap/types";
 
 import type { Language } from "./i18n";
 import type { isOverScrollBars } from "./scene/scrollbars";
@@ -842,6 +850,23 @@ export type ElementRenderOffsets = ReadonlyMap<
 export interface ExcalidrawProps {
   className?: string;
   /**
+   * Overrides of the default keymap, by command ID. An override replaces all
+   * default key combinations of the command; `null` removes them. A key
+   * combination that an override takes from a different command is removed
+   * from the different command (see `ExcalidrawImperativeAPI.keymap`).
+   *
+   * ```tsx
+   * <Excalidraw keymap={{ "tool.freedraw": "d", "tool.diamond": null }} />
+   * ```
+   */
+  keymap?: KeymapOverrides;
+  /**
+   * Commands of the host. The key combinations, the command palette and
+   * `ExcalidrawImperativeAPI.commands` can run them. Memoize the object:
+   * the editor resolves the keymap again when the object changes.
+   */
+  commands?: HostCommands;
+  /**
    * Document that owns Excalidraw's mounted DOM.
    *
    * Set only when it differs from the global `document`, such as when code
@@ -1227,6 +1252,7 @@ export type AppClassProperties = {
   activeResizeHandle: App["activeResizeHandle"];
   selectionTool: App["selectionTool"];
   wrap: App["wrap"];
+  commands: App["commands"];
   modifiers: App["modifiers"];
   isToolLocked: App["isToolLocked"];
   getEffectiveGridSize: App["getEffectiveGridSize"];
@@ -1421,6 +1447,19 @@ export interface ExcalidrawImperativeAPI {
     typeof App
   >["setElementRenderOverrides"];
   registerAction: (action: Action) => void;
+  commands: {
+    /** runs a command. Returns false if the command does not exist or is a
+     * press command */
+    execute: (id: CommandId) => boolean;
+    list: () => { id: CommandId; label: string; keys: KeyCombination[] }[];
+  };
+  keymap: {
+    /** the effective keymap */
+    get: () => Keymap;
+    /** the key combinations that the host took from other commands, or that
+     * more than one override uses */
+    conflicts: () => KeymapConflict[];
+  };
   refresh: InstanceType<typeof App>["refresh"];
   setToast: InstanceType<typeof App>["setToast"];
   addFiles: (data: BinaryFileData[]) => void;

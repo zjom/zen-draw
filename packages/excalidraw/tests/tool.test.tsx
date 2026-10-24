@@ -9,13 +9,11 @@ import {
 
 import { Excalidraw } from "../index";
 
-import { findShapeByKey } from "../components/Tools";
-
 import { API } from "./helpers/api";
 import { Pointer } from "./helpers/ui";
 import { act, fireEvent, GlobalTestState, render } from "./test-utils";
 
-import type { AppClassProperties, ExcalidrawImperativeAPI } from "../types";
+import type { ExcalidrawImperativeAPI } from "../types";
 
 describe("setActiveTool()", () => {
   const h = window.h;
@@ -74,57 +72,6 @@ describe("setActiveTool()", () => {
     expect(h.state.activeTool.customType).toBe("comment");
   });
 });
-describe("findShapeByKey()", () => {
-  const appWithPreferredTool = (
-    preferredSelectionTool: "selection" | "lasso",
-  ) =>
-    ({
-      state: {
-        preferredSelectionTool: {
-          type: preferredSelectionTool,
-        },
-      },
-    } as AppClassProperties);
-
-  it("selection shortcuts activate selection when it's preferred", () => {
-    const app = appWithPreferredTool("selection");
-
-    expect(findShapeByKey("v", app)).toBe("selection");
-    expect(findShapeByKey("1", app)).toBe("selection");
-  });
-
-  it("selection shortcuts activate lasso when it's preferred", () => {
-    const app = appWithPreferredTool("lasso");
-
-    expect(findShapeByKey("v", app)).toBe("lasso");
-    expect(findShapeByKey("1", app)).toBe("lasso");
-  });
-
-  it("letter shortcuts are CapsLock-insensitive", () => {
-    const app = appWithPreferredTool("selection");
-
-    expect(findShapeByKey("V", app)).toBe("selection");
-    expect(findShapeByKey("R", app)).toBe("rectangle");
-    expect(findShapeByKey("X", app)).toBe("freedraw");
-  });
-
-  it("matches shift-bound tools only when shift is held", () => {
-    const app = appWithPreferredTool("selection");
-
-    expect(findShapeByKey("X", app, true)).toBe("autoshape");
-    expect(findShapeByKey("x", app, true)).toBe("autoshape");
-    // Pressing "X" while CapsLock is active (no shift) stays freedraw
-    expect(findShapeByKey("X", app, false)).toBe("freedraw");
-  });
-
-  it("does not match plain-bound tools when shift is held", () => {
-    const app = appWithPreferredTool("selection");
-
-    expect(findShapeByKey("R", app, true)).toBeNull();
-    expect(findShapeByKey("V", app, true)).toBeNull();
-  });
-});
-
 describe("props.activeTool (forced tool)", () => {
   const h = window.h;
   const mouse = new Pointer("mouse");
