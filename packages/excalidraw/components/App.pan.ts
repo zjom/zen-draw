@@ -20,7 +20,8 @@ const SECONDARY_BUTTON_PAN_THRESHOLD = 5; // px
  * A secondary-button session is a drag only once the pointer travels past
  * the drag threshold; released before that, it is a right-click. The drag
  * opens a ring if the ring can open — the style ring (see `AppStyleRing`)
- * if it starts on the selection, else the tool ring (see `AppToolRing`) —
+ * if it starts on the selection or with Shift held, else the tool ring (see
+ * `AppToolRing`) —
  * and pans the canvas otherwise (e.g. in view mode). The
  * platform's `contextmenu` event opens the menu for a right-click where it
  * follows the release (Windows), as it always has; where it comes with the
@@ -37,8 +38,8 @@ export class AppPan {
     nativeMenuSeen: boolean;
     /** the ring the drag opened, which follows the pointer itself */
     ring: AppRing | null;
-    /** the drag started on the selection */
-    onSelection: boolean;
+    /** the drag started on the selection, or with Shift held */
+    styleRing: boolean;
   } | null = null;
   /** the platform fires `contextmenu` on mouseup (Windows) or on mousedown
    * (macOS, Linux); the one belonging to a secondary-button session is not a
@@ -135,7 +136,7 @@ export class AppPan {
           engaged: false,
           nativeMenuSeen: false,
           ring: null,
-          onSelection: app.styleRing.isOnSelection(event),
+          styleRing: event.shiftKey || app.styleRing.isOnSelection(event),
         }
       : null;
 
@@ -172,7 +173,7 @@ export class AppPan {
         this.secondary.engaged = true;
         const start = { x: startX, y: startY };
         const ring =
-          this.secondary.onSelection && app.styleRing.open(start)
+          this.secondary.styleRing && app.styleRing.open(start)
             ? app.styleRing
             : app.toolRing.open(start)
             ? app.toolRing

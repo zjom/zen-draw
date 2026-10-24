@@ -31,6 +31,7 @@ zen-draw has no toolbar or menus:
 
 - Drag with the right mouse button to open the tool ring at the pointer. Release in the direction of a tool to select it; hold Shift on release to lock the tool. Drag past the last slice ("more") for the other tools. Escape closes the ring.
 - Drag with the right mouse button on the selection to open the style ring. It shows the properties of the selected elements (colors, opacity, stroke, fill, text, arrowheads, layers). Drag past a property, or release on it, to open its values. A color opens the color picker. `S` and `G` open the color picker of the stroke and of the background at the pointer.
+- Hold Shift and drag with the right mouse button anywhere to open the style ring. If nothing is selected, the style ring changes the defaults of new elements: the properties of the active tool, or of all tools if the selection tool is active. A dashed circle in the center of the ring shows this mode. The `ui.styleRing` command also opens the style ring when nothing is selected.
 - A right-click without a drag opens the context menu.
 - `Ctrl/Cmd+/` opens the command palette (Open, Save, Mermaid to diagram, library, and every other command).
 - `?` shows the keyboard shortcuts.

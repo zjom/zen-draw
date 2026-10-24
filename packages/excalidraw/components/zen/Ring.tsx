@@ -9,6 +9,7 @@ import "./Ring.scss";
 
 import type { UIAppState } from "../../types";
 import type { AppRing, RingState } from "../App.ring";
+import type { AppStyleRing } from "../App.styleRing";
 
 const SIZE = RING_RADIUS * 2;
 
@@ -32,6 +33,11 @@ const getSlicePath = (start: number, end: number) => {
     "Z",
   ].join(" ");
 };
+
+const getActiveToolIcon = ({ activeTool }: UIAppState) =>
+  activeTool.type in TOOLS
+    ? TOOLS[activeTool.type as keyof typeof TOOLS].icon
+    : null;
 
 const useRingState = (ring: AppRing) =>
   useSyncExternalStore((onChange) => ring.onChange.on(onChange), ring.getState);
@@ -126,11 +132,6 @@ export const ToolRing = ({
   if (!state) {
     return null;
   }
-  const { activeTool } = appState;
-  const activeIcon =
-    activeTool.type in TOOLS
-      ? TOOLS[activeTool.type as keyof typeof TOOLS].icon
-      : null;
   return (
     <RingView
       appState={appState}
@@ -138,7 +139,7 @@ export const ToolRing = ({
       testId="tool-ring"
       center={
         <div className="Ring__center" aria-label={t("zen.activeTool")}>
-          {activeIcon}
+          {getActiveToolIcon(appState)}
         </div>
       }
     />
@@ -149,16 +150,33 @@ export const StyleRing = ({
   ring,
   appState,
 }: {
-  ring: AppRing;
+  ring: AppStyleRing;
   appState: UIAppState;
 }) => {
   const state = useRingState(ring);
-  return state ? (
+  if (!state) {
+    return null;
+  }
+  // with nothing selected, the center shows the tool whose defaults change
+  const editsDefaults = ring.editsDefaults();
+  return (
     <RingView
       appState={appState}
       state={state}
       testId="style-ring"
-      center={<div className="Ring__center" aria-label={t("zen.styleRing")} />}
+      center={
+        editsDefaults ? (
+          <div
+            className="Ring__center Ring__center--defaults"
+            aria-label={t("zen.defaults")}
+            title={t("zen.defaults")}
+          >
+            {getActiveToolIcon(appState)}
+          </div>
+        ) : (
+          <div className="Ring__center" aria-label={t("zen.styleRing")} />
+        )
+      }
     />
-  ) : null;
+  );
 };

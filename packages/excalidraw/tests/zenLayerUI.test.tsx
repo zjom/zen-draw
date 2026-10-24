@@ -506,7 +506,7 @@ describe("ZenLayerUI", () => {
       release(subCenter);
     });
 
-    it("opens with ui.styleRing only if elements are selected", async () => {
+    it("opens with ui.styleRing", async () => {
       await renderEditor();
       fireEvent.pointerMove(canvas(), {
         clientX: CENTER.x,
@@ -515,14 +515,106 @@ describe("ZenLayerUI", () => {
       act(() => {
         h.app.api.commands.execute("ui.styleRing");
       });
-      expect(queryStyleRing()).toBe(null);
-
-      selectRectangle({ x: 0, y: 0 });
-      act(() => {
-        h.app.api.commands.execute("ui.styleRing");
-      });
       expect(h.app.styleRing.getState()?.sticky).toBe(true);
       expect(h.app.styleRing.getState()?.center).toEqual(CENTER);
+    });
+
+    it("opens on a secondary-button drag with Shift off the selection", async () => {
+      await renderEditor();
+      selectRectangle({ x: 0, y: 0 });
+      fireEvent.pointerDown(canvas(), {
+        ...secondary(CENTER.x, CENTER.y),
+        shiftKey: true,
+      });
+      fireEvent.pointerMove(canvas(), secondary(CENTER.x + 20, CENTER.y));
+      expect(queryStyleRing()).not.toBe(null);
+      expect(queryRing()).toBe(null);
+      // the selection, not the defaults
+      expect(h.app.styleRing.editsDefaults()).toBe(false);
+      release({ x: CENTER.x + 20, y: CENTER.y });
+    });
+
+    describe("with nothing selected", () => {
+      const openWithShift = () => {
+        fireEvent.pointerDown(canvas(), {
+          ...secondary(CENTER.x, CENTER.y),
+          shiftKey: true,
+        });
+        fireEvent.pointerMove(canvas(), secondary(CENTER.x + 20, CENTER.y));
+      };
+
+      it("shows the properties of the active tool", async () => {
+        await renderEditor();
+        Keyboard.keyPress("a");
+        openWithShift();
+        expect(container().querySelector(".Ring__center--defaults")).not.toBe(
+          null,
+        );
+        expect(sliceIds()).toEqual([
+          "strokeColor",
+          "opacity",
+          "strokeWidth",
+          "strokeStyle",
+          "sloppiness",
+          "startArrowhead",
+          "endArrowhead",
+          "arrowType",
+        ]);
+        release({ x: CENTER.x + 20, y: CENTER.y });
+      });
+
+      it("shows the properties of all tools for the selection tool", async () => {
+        await renderEditor();
+        openWithShift();
+        const ids = sliceIds()!;
+        expect(ids[7]).toBe("more");
+        const subCenter = towards(CENTER, 7, 8, RING_RADIUS + 10);
+        fireEvent.pointerMove(canvas(), secondary(subCenter.x, subCenter.y));
+        // no layers: they apply to elements only
+        expect([...ids.slice(0, 7), ...sliceIds()!]).toEqual([
+          "strokeColor",
+          "backgroundColor",
+          "opacity",
+          "strokeWidth",
+          "strokeStyle",
+          "sloppiness",
+          "edges",
+          "fontFamily",
+          "fontSize",
+          "textAlign",
+          "startArrowhead",
+          "endArrowhead",
+          "arrowType",
+        ]);
+        release(subCenter);
+      });
+
+      it("changes the defaults of new elements", async () => {
+        await renderEditor();
+        Keyboard.keyPress("r");
+        openWithShift();
+        const count = sliceIds()!.length;
+        const subCenter = towards(
+          CENTER,
+          indexOf("strokeWidth"),
+          count,
+          RING_RADIUS + 10,
+        );
+        fireEvent.pointerMove(canvas(), secondary(subCenter.x, subCenter.y));
+        const state = h.app.styleRing.getState()!;
+        // the current default
+        expect(state.slices.map((slice) => !!slice.active)).toEqual([
+          false,
+          true,
+          false,
+        ]);
+        const target = towards(state.center, 2, 3);
+        fireEvent.pointerMove(canvas(), secondary(target.x, target.y));
+        release(target);
+
+        expect(h.state.currentItemStrokeWidthKey).toBe("bold");
+        expect(h.elements).toEqual([]);
+      });
     });
   });
 });

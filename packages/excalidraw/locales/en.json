@@ -787,6 +787,7 @@
     "styleRing": "Style ring",
     "moreProperties": "More properties",
     "startArrowhead": "Start arrowhead",
-    "endArrowhead": "End arrowhead"
+    "endArrowhead": "End arrowhead",
+    "defaults": "Defaults of new elements"
   }
 }

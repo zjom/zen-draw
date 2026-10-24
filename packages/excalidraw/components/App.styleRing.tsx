@@ -97,7 +97,10 @@ import {
   sharpArrowIcon,
 } from "./icons";
 import { getShapeActionPredicates } from "./shapeActionPredicates";
+
 import { isLegacyLayerUI } from "./zen/legacyLayerUI";
+
+import type { ShapeActionPredicates } from "./shapeActionPredicates";
 
 import type { Action } from "../actions/types";
 import type { RingSlice } from "./App.ring";
@@ -105,6 +108,26 @@ import type { Primitive } from "../types";
 
 /** the opacity values of the opacity sub-ring */
 const OPACITY_VALUES = [100, 90, 75, 50, 25, 10];
+
+/** the style properties of the predicates; if none applies to the active
+ * tool, the tool draws no elements */
+const STYLE_PREDICATES = [
+  "strokeColor",
+  "backgroundColor",
+  "fill",
+  "strokeWidth",
+  "strokeStyle",
+  "sloppiness",
+  "roundness",
+  "arrowType",
+  "arrowheads",
+  "text",
+  "textAlign",
+] as const;
+
+/** with nothing selected and a tool that draws no elements, the style ring
+ * shows the properties of these tools together */
+const DEFAULTS_TOOLS = ["rectangle", "arrow", "text"] as const;
 
 export type StyleRingColorPickerType = "elementStroke" | "elementBackground";
 
@@ -128,10 +151,12 @@ const swatch = (color: string | null, theme: Theme) => (
 
 /**
  * The style ring: a ring of the properties that apply to the selected
- * elements (see `AppRing`). A property opens a sub-ring of its values; a
- * color opens the color picker at the slice. A secondary-button drag that
- * starts on the selection opens it. The `ui.styleRing` command opens it
- * from the keyboard.
+ * elements (see `AppRing`). With nothing selected, it changes the defaults
+ * of new elements (`appState.currentItem*`): the properties of the active
+ * tool, or of all tools if the active tool draws no elements. A property
+ * opens a sub-ring of its values; a color opens the color picker at the
+ * slice. A secondary-button drag that starts on the selection or with Shift
+ * held opens it. The `ui.styleRing` command opens it from the keyboard.
  */
 export class AppStyleRing extends AppRing {
   /** where the color picker opens, in client coordinates. Unset, it opens
@@ -142,8 +167,12 @@ export class AppStyleRing extends AppRing {
     !isLegacyLayerUI() &&
     this.app.isInteractionEnabled() &&
     !this.app.state.viewModeEnabled &&
-    !this.app.state.editingTextElement &&
-    this.app.scene.getSelectedElements(this.app.state).length > 0;
+    !this.app.state.editingTextElement;
+
+  /** nothing is selected: the style ring changes the defaults of new
+   * elements */
+  editsDefaults = () =>
+    this.app.scene.getSelectedElements(this.app.state).length === 0;
 
   /** whether a secondary-button drag that starts at the point (client
    * coordinates) starts on the selection */
@@ -206,17 +235,19 @@ export class AppStyleRing extends AppRing {
     this.app.actionManager.executeAction(action, "ui", value);
   };
 
-  /** the common value of the selected elements, or null if they differ */
+  /** the common value of the selected elements, or null if they differ.
+   * With nothing selected, the default of new elements */
   private getValue = <T extends Primitive>(
     getValue: (element: ExcalidrawElement) => T,
     predicate: true | ((element: ExcalidrawElement) => boolean),
+    defaultValue: T,
   ) =>
     getFormValue<T | null>(
       this.app.scene.getElementsIncludingDeleted(),
       this.app,
       getValue,
       predicate,
-      null,
+      (hasSelection) => (hasSelection ? null : defaultValue),
     );
 
   /** a property with a sub-ring of its values */
@@ -303,6 +334,11 @@ export class AppStyleRing extends AppRing {
               )
             : null,
         isLinearElement,
+        getArrowheadForPicker(
+          position === "start"
+            ? this.app.state.currentItemStartArrowhead
+            : this.app.state.currentItemEndArrowhead,
+        ),
       ),
       options,
       // `null` removes the arrowhead (as in the properties panel)
@@ -321,12 +357,33 @@ export class AppStyleRing extends AppRing {
     const elements = app.scene.getElementsIncludingDeleted();
     const elementsMap = app.scene.getNonDeletedElementsMap();
     const targetElements = getTargetElements(elementsMap, appState);
-    const applies = getShapeActionPredicates(
-      appState,
-      targetElements,
-      elementsMap,
-      app,
-    );
+    const getPredicates = (toolType?: typeof DEFAULTS_TOOLS[number]) =>
+      getShapeActionPredicates(
+        toolType
+          ? {
+              ...appState,
+              activeTool: {
+                ...appState.activeTool,
+                type: toolType,
+                customType: null,
+              },
+            }
+          : appState,
+        targetElements,
+        elementsMap,
+        app,
+      );
+    let applies = getPredicates();
+    const editsDefaults = !targetElements.length;
+    if (editsDefaults && !STYLE_PREDICATES.some((key) => applies[key])) {
+      const all = DEFAULTS_TOOLS.map((type) => getPredicates(type));
+      applies = Object.fromEntries(
+        Object.keys(applies).map((key) => [
+          key,
+          all.some((predicates) => predicates[key as keyof typeof predicates]),
+        ]),
+      ) as ShapeActionPredicates;
+    }
     const properties: RingSlice[] = [];
 
     if (applies.strokeColor) {
@@ -335,7 +392,11 @@ export class AppStyleRing extends AppRing {
         this.colorProperty(
           "elementStroke",
           target.kind === "sticky" ? t("labels.textColor") : t("labels.stroke"),
-          this.getValue((element) => element.strokeColor, true),
+          this.getValue(
+            (element) => element.strokeColor,
+            true,
+            target.currentValue,
+          ),
         ),
       );
     }
@@ -349,12 +410,18 @@ export class AppStyleRing extends AppRing {
               getColorTargetElement(element, "backgroundColor", elementsMap)
                 .backgroundColor,
             true,
+            resolveColorTarget(appState, elements, "backgroundColor")
+              .currentValue,
           ),
         ),
       );
     }
     if (applies.opacity) {
-      const opacity = this.getValue((element) => element.opacity, true);
+      const opacity = this.getValue(
+        (element) => element.opacity,
+        true,
+        appState.currentItemOpacity,
+      );
       properties.push({
         ...this.property(
           "opacity",
@@ -383,6 +450,7 @@ export class AppStyleRing extends AppRing {
                   element.strokeWidth,
               ) ?? null,
             (element) => element.hasOwnProperty("strokeWidth"),
+            appState.currentItemStrokeWidthKey,
           ),
           [
             {
@@ -413,6 +481,7 @@ export class AppStyleRing extends AppRing {
           this.getValue(
             (element) => element.strokeStyle,
             (element) => element.hasOwnProperty("strokeStyle"),
+            appState.currentItemStrokeStyle,
           ),
           [
             {
@@ -443,6 +512,7 @@ export class AppStyleRing extends AppRing {
           this.getValue(
             (element) => element.fillStyle,
             (element) => hasFillStyle(element.type),
+            appState.currentItemFillStyle,
           ),
           [
             {
@@ -469,6 +539,7 @@ export class AppStyleRing extends AppRing {
           this.getValue(
             (element) => element.roughness,
             (element) => element.hasOwnProperty("roughness"),
+            appState.currentItemRoughness,
           ),
           [
             {
@@ -496,6 +567,7 @@ export class AppStyleRing extends AppRing {
             (element) => (element.roundness ? "round" : "sharp"),
             (element) =>
               !isArrowElement(element) && element.hasOwnProperty("roundness"),
+            appState.currentItemRoundness,
           ),
           [
             { value: "sharp", label: t("labels.sharp"), icon: EdgeSharpIcon },
@@ -513,6 +585,7 @@ export class AppStyleRing extends AppRing {
           this.getValue(
             (element) => this.getText(element)?.fontFamily ?? null,
             this.hasText,
+            appState.currentItemFontFamily,
           ),
           DEFAULT_FONTS.map((font) => ({
             value: font.value,
@@ -528,7 +601,11 @@ export class AppStyleRing extends AppRing {
         this.property(
           "fontSize",
           t("labels.fontSize"),
-          this.getValue(this.getFontSize, this.hasText),
+          this.getValue(
+            this.getFontSize,
+            this.hasText,
+            appState.currentItemFontSize,
+          ),
           [
             {
               value: FONT_SIZES.sm,
@@ -563,6 +640,7 @@ export class AppStyleRing extends AppRing {
           this.getValue(
             (element) => this.getText(element)?.textAlign ?? null,
             this.hasText,
+            appState.currentItemTextAlign,
           ),
           [
             { value: "left", label: t("labels.left"), icon: TextAlignLeftIcon },
@@ -602,6 +680,7 @@ export class AppStyleRing extends AppRing {
                   : ARROW_TYPE.sharp
                 : null,
             isArrowElement,
+            appState.currentItemArrowType,
           ),
           [
             {
@@ -624,7 +703,8 @@ export class AppStyleRing extends AppRing {
         ),
       );
     }
-    if (applies.layers) {
+    // the layers apply to elements only
+    if (applies.layers && !editsDefaults) {
       const layerActions = [
         [actionSendToBack, t("labels.sendToBack"), SendToBackIcon],
         [actionSendBackward, t("labels.sendBackward"), SendBackwardIcon],
