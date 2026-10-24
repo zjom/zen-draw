@@ -103,7 +103,7 @@ describe("hitElementItself cache", () => {
     const elementsMap = arrayToMap([element]);
     const point = pointFrom<GlobalPoint>(100.5, 50);
 
-    const distanceSpy = jest.spyOn(distance, "distanceToElement");
+    const distanceSpy = vi.spyOn(distance, "distanceToElement");
 
     expect(
       hitElementItself({
@@ -142,7 +142,7 @@ describe("hitElementItself cache", () => {
     const elementsMap = arrayToMap([element]);
     const point = pointFrom<GlobalPoint>(105, 50);
 
-    const distanceSpy = jest.spyOn(distance, "distanceToElement");
+    const distanceSpy = vi.spyOn(distance, "distanceToElement");
 
     expect(
       hitElementItself({
@@ -180,7 +180,7 @@ describe("hitElementItself cache", () => {
     const elementsMap = arrayToMap([element]);
     const point = pointFrom<GlobalPoint>(100.5, 50);
 
-    const distanceSpy = jest.spyOn(distance, "distanceToElement");
+    const distanceSpy = vi.spyOn(distance, "distanceToElement");
 
     expect(
       hitElementItself({
@@ -224,7 +224,7 @@ describe("hitElementItself cache", () => {
     const elementsMap = arrayToMap([element]);
     const point = pointFrom<GlobalPoint>(50, 50);
 
-    const distanceSpy = jest.spyOn(distance, "distanceToElement");
+    const distanceSpy = vi.spyOn(distance, "distanceToElement");
 
     expect(
       hitElementItself({

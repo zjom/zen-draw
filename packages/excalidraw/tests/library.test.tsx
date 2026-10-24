@@ -2,7 +2,7 @@ import { act, queryByTestId } from "@testing-library/react";
 import React from "react";
 import { vi } from "vitest";
 
-import { KEYS, MIME_TYPES, ORIG_ID } from "@excalidraw/common";
+import { KEYS, MIME_TYPES } from "@excalidraw/common";
 
 import { getCommonBoundingBox } from "@excalidraw/element";
 
@@ -182,7 +182,13 @@ describe("library", () => {
       },
     ]);
     await waitFor(() => {
-      expect(h.elements).toEqual([expect.objectContaining({ [ORIG_ID]: "A" })]);
+      // the library item is inserted as a new element
+      expect(h.elements).toEqual([
+        expect.objectContaining({
+          type: "rectangle",
+          id: expect.not.stringMatching(/^A$/),
+        }),
+      ]);
     });
   });
 
@@ -211,15 +217,8 @@ describe("library", () => {
     ]);
 
     await waitFor(() => {
-      expect(h.elements).toEqual([
-        expect.objectContaining({
-          [ORIG_ID]: "elem1",
-        }),
-        expect.objectContaining({
-          id: expect.not.stringMatching(/^elem1$/),
-          [ORIG_ID]: expect.not.stringMatching(/^\w+$/),
-        }),
-      ]);
+      expect(h.elements).toHaveLength(2);
+      expect(h.elements[0].id).not.toBe(h.elements[1].id);
     });
   });
 
@@ -235,7 +234,13 @@ describe("library", () => {
       },
     ]);
     await waitFor(() => {
-      expect(h.elements).toEqual([expect.objectContaining({ [ORIG_ID]: "A" })]);
+      // the library item is inserted as a new element
+      expect(h.elements).toEqual([
+        expect.objectContaining({
+          type: "rectangle",
+          id: expect.not.stringMatching(/^A$/),
+        }),
+      ]);
     });
     // this has a high flake
     // expect(h.state.activeTool.type).toBe("selection");

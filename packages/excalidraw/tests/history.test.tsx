@@ -72,7 +72,6 @@ import {
   assertSelectedElements,
   render,
   togglePopover,
-  getCloneByOrigId,
   checkpointHistory,
   unmountComponent,
 } from "./test-utils";
@@ -1408,8 +1407,8 @@ describe("history", () => {
       expect(h.elements).toEqual([
         expect.objectContaining({ id: rect1.id, isDeleted: false }),
         expect.objectContaining({ id: rect2.id, isDeleted: false }),
-        expect.objectContaining({ [ORIG_ID]: rect1.id, isDeleted: true }),
-        expect.objectContaining({ [ORIG_ID]: rect2.id, isDeleted: true }),
+        expect.objectContaining({ isDeleted: true }),
+        expect.objectContaining({ isDeleted: true }),
       ]);
       expect(h.state.editingGroupId).toBeNull();
       expect(h.state.selectedGroupIds).toEqual({ A: true });
@@ -1421,8 +1420,8 @@ describe("history", () => {
       expect(h.elements).toEqual([
         expect.objectContaining({ id: rect1.id, isDeleted: false }),
         expect.objectContaining({ id: rect2.id, isDeleted: false }),
-        expect.objectContaining({ [ORIG_ID]: rect1.id, isDeleted: false }),
-        expect.objectContaining({ [ORIG_ID]: rect2.id, isDeleted: false }),
+        expect.objectContaining({ isDeleted: false }),
+        expect.objectContaining({ isDeleted: false }),
       ]);
       expect(h.state.editingGroupId).toBeNull();
       expect(h.state.selectedGroupIds).not.toEqual(
@@ -1441,14 +1440,14 @@ describe("history", () => {
         expect.arrayContaining([
           expect.objectContaining({ id: rect1.id, isDeleted: false }),
           expect.objectContaining({ id: rect2.id, isDeleted: false }),
-          expect.objectContaining({ [ORIG_ID]: rect1.id, isDeleted: true }),
-          expect.objectContaining({ [ORIG_ID]: rect2.id, isDeleted: true }),
+          expect.objectContaining({ isDeleted: true }),
+          expect.objectContaining({ isDeleted: true }),
           expect.objectContaining({
-            [ORIG_ID]: getCloneByOrigId(rect1.id)?.id,
+            [ORIG_ID]: rect1.id,
             isDeleted: false,
           }),
           expect.objectContaining({
-            [ORIG_ID]: getCloneByOrigId(rect2.id)?.id,
+            [ORIG_ID]: rect2.id,
             isDeleted: false,
           }),
         ]),

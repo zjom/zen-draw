@@ -5,6 +5,17 @@ import { vi } from "vitest";
 import type { parseMermaidToExcalidraw } from "@excalidraw/mermaid-to-excalidraw";
 import type { throttleRAF as throttleRAFType } from "@excalidraw/common";
 
+// Makes the module namespace spyable for `mockMermaidToExcalidraw`. Vitest
+// hoists `vi.mock` to the top of the module, so the call is placed there.
+vi.mock("@excalidraw/mermaid-to-excalidraw", async (importActual) => {
+  const module = (await importActual()) as any;
+
+  return {
+    __esModule: true,
+    ...module,
+  };
+});
+
 type ThrottledFn<T extends unknown[]> = ((...args: T) => void) & {
   flush: () => void;
   cancel: () => void;
@@ -27,14 +38,6 @@ export const mockMermaidToExcalidraw = (opts: {
   parseMermaidToExcalidraw: typeof parseMermaidToExcalidraw;
   mockRef?: boolean;
 }) => {
-  vi.mock("@excalidraw/mermaid-to-excalidraw", async (importActual) => {
-    const module = (await importActual()) as any;
-
-    return {
-      __esModule: true,
-      ...module,
-    };
-  });
   const parseMermaidToExcalidrawSpy = vi.spyOn(
     MermaidToExcalidraw,
     "parseMermaidToExcalidraw",
