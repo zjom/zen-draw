@@ -56,7 +56,6 @@
   "prettier": "@excalidraw/prettier-config",
   "scripts": {
     "build-node": "node ./scripts/build-node.js",
-    "build:app:docker": "pnpm --dir ./excalidraw-app run build:app:docker",
     "build:app": "pnpm --dir ./excalidraw-app run build:app",
     "build:common": "pnpm --dir ./packages/common run build:esm",
     "build:element": "pnpm --dir ./packages/element run build:esm",
@@ -90,10 +89,6 @@
     "locales-coverage:description": "node scripts/locales-coverage-description.js",
     "prepare": "husky install",
     "prettier": "prettier \"**/*.{css,scss,json,md,html,yml}\" --ignore-path=.eslintignore",
-    "release": "node scripts/release.js",
-    "release:test": "node scripts/release.js --tag=test",
-    "release:next": "node scripts/release.js --tag=next",
-    "release:latest": "node scripts/release.js --tag=latest",
     "rm:build": "rimraf --glob excalidraw-app/build excalidraw-app/dist excalidraw-app/dev-dist packages/*/dist packages/*/build examples/*/build examples/*/dist zen-draw/dist",
     "rm:node_modules": "rimraf --glob node_modules excalidraw-app/node_modules packages/*/node_modules examples/*/node_modules zen-draw/node_modules",
     "clean-install": "pnpm run rm:node_modules && pnpm install"

@@ -415,7 +415,7 @@ Delete `excalidraw-app/` when all these conditions are true:
 
 1. The `pnpm zen-draw:dev` command starts zen-draw. You can use zen-draw to test changes to the editor manually.
 2. No file in `packages/` imports a file from `excalidraw-app/`. At this time, `packages/excalidraw/tests/test-utils.ts` (line 20) imports `excalidraw-app/app_constants`.
-3. No file in `.github/workflows/`, no `Dockerfile` file and no `vercel.json` file builds `excalidraw-app/`.
+3. No file in `.github/workflows/` builds `excalidraw-app/`.
 4. No test in the `pnpm test:update` command runs a test file from `excalidraw-app/`.
 5. The `packages/excalidraw/vite-env.d.ts` file does not refer to the types of `vite-plugin-pwa` or of `vite-plugin-svgr`. At this time, lines 2 to 4 of the file refer to these types.
 
