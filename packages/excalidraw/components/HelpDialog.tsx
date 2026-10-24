@@ -11,7 +11,6 @@ import { getShortcutKey } from "../shortcut";
 
 import { useApp, useExcalidrawActionManager } from "./App";
 import { Dialog } from "./Dialog";
-import { ExternalLinkIcon, GithubIcon, youtubeIcon } from "./icons";
 
 import "./HelpDialog.scss";
 
