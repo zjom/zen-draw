@@ -779,5 +779,10 @@
     "spacebar": "Space",
     "delete": "Delete",
     "mmb": "Scroll wheel"
+  },
+  "zen": {
+    "toolRing": "Tool ring",
+    "more": "More tools",
+    "activeTool": "Active tool"
   }
 }

@@ -7,6 +7,7 @@ import { configure } from "@testing-library/react";
 import { vi } from "vitest";
 
 import polyfill from "./packages/excalidraw/polyfill";
+import { setLegacyLayerUI } from "./packages/excalidraw/components/zen/legacyLayerUI";
 import { mockThrottleRAF } from "./packages/excalidraw/tests/helpers/mocks";
 import { yellow } from "./packages/excalidraw/tests/helpers/colorize";
 import {
@@ -147,3 +148,7 @@ console.error = (...args) => {
     _consoleError(...args);
   }
 };
+
+// the upstream tests drive the editor through the upstream UI (toolbar,
+// menus, properties panel); the tests of ZenLayerUI turn this off
+setLegacyLayerUI(true);

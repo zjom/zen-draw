@@ -394,6 +394,9 @@ import {
 import { AppSelectionTool } from "./App.selectionTool";
 import { AppWrap } from "./App.wrap";
 import { AppCommands } from "./App.commands";
+import { AppToolRing } from "./App.toolRing";
+import ZenLayerUI from "./zen/ZenLayerUI";
+import { isLegacyLayerUI } from "./zen/legacyLayerUI";
 import BraveMeasureTextError from "./BraveMeasureTextError";
 import { ContextMenu, CONTEXT_MENU_SEPARATOR } from "./ContextMenu";
 import { activeEyeDropperAtom } from "./EyeDropper";
@@ -686,6 +689,7 @@ class App extends React.Component<AppProps, AppState> {
   public selectionTool: AppSelectionTool = new AppSelectionTool(this);
   public wrap: AppWrap = new AppWrap(this);
   public commands: AppCommands = new AppCommands(this);
+  public toolRing: AppToolRing = new AppToolRing(this);
 
   bindModeHandler: ReturnType<typeof setTimeout> | null = null;
 
@@ -2451,47 +2455,68 @@ class App extends React.Component<AppProps, AppState> {
                         <ExcalidrawActionManagerContext.Provider
                           value={this.actionManager}
                         >
-                          <LayerUI
-                            canvas={this.canvas}
-                            appState={this.state}
-                            defaultUIEnabled={this.isDefaultUIEnabled()}
-                            zoomUIEnabled={this.isUIControlEnabled("zoom")}
-                            scrollBackToContentUIEnabled={this.isUIControlEnabled(
-                              "scrollBackToContent",
-                            )}
-                            files={this.files}
-                            setAppState={this.setAppState}
-                            actionManager={this.actionManager}
-                            elements={this.scene.getNonDeletedElements()}
-                            onLockToggle={this.toggleLock}
-                            onPenModeToggle={this.togglePenMode}
-                            langCode={getLanguage().code}
-                            renderTopLeftUI={renderTopLeftUI}
-                            renderTopRightUI={renderTopRightUI}
-                            renderCustomStats={renderCustomStats}
-                            showExitZenModeBtn={
-                              typeof this.props?.zenModeEnabled ===
-                                "undefined" && this.state.zenModeEnabled
-                            }
-                            UIOptions={this.props.UIOptions}
-                            onExportImage={this.onExportImage}
-                            renderWelcomeScreen={
-                              !this.state.isLoading &&
-                              this.state.showWelcomeScreen &&
-                              this.state.activeTool.type ===
-                                this.state.preferredSelectionTool.type &&
-                              !this.state.zenModeEnabled &&
-                              !this.scene.getElementsIncludingDeleted().length
-                            }
-                            app={this}
-                            isCollaborating={this.props.isCollaborating}
-                            generateLinkForSelection={
-                              this.props.generateLinkForSelection
-                            }
-                            currentUserControls={this.props.currentUserControls}
-                          >
-                            {this.props.children}
-                          </LayerUI>
+                          {!isLegacyLayerUI() ? (
+                            <ZenLayerUI
+                              appState={this.state}
+                              files={this.files}
+                              setAppState={this.setAppState}
+                              actionManager={this.actionManager}
+                              elements={this.scene.getNonDeletedElements()}
+                              UIOptions={this.props.UIOptions}
+                              onExportImage={this.onExportImage}
+                              app={this}
+                              generateLinkForSelection={
+                                this.props.generateLinkForSelection
+                              }
+                              toolIndicator={this.props.toolIndicator !== false}
+                            >
+                              {this.props.children}
+                            </ZenLayerUI>
+                          ) : (
+                            <LayerUI
+                              canvas={this.canvas}
+                              appState={this.state}
+                              defaultUIEnabled={this.isDefaultUIEnabled()}
+                              zoomUIEnabled={this.isUIControlEnabled("zoom")}
+                              scrollBackToContentUIEnabled={this.isUIControlEnabled(
+                                "scrollBackToContent",
+                              )}
+                              files={this.files}
+                              setAppState={this.setAppState}
+                              actionManager={this.actionManager}
+                              elements={this.scene.getNonDeletedElements()}
+                              onLockToggle={this.toggleLock}
+                              onPenModeToggle={this.togglePenMode}
+                              langCode={getLanguage().code}
+                              renderTopLeftUI={renderTopLeftUI}
+                              renderTopRightUI={renderTopRightUI}
+                              renderCustomStats={renderCustomStats}
+                              showExitZenModeBtn={
+                                typeof this.props?.zenModeEnabled ===
+                                  "undefined" && this.state.zenModeEnabled
+                              }
+                              UIOptions={this.props.UIOptions}
+                              onExportImage={this.onExportImage}
+                              renderWelcomeScreen={
+                                !this.state.isLoading &&
+                                this.state.showWelcomeScreen &&
+                                this.state.activeTool.type ===
+                                  this.state.preferredSelectionTool.type &&
+                                !this.state.zenModeEnabled &&
+                                !this.scene.getElementsIncludingDeleted().length
+                              }
+                              app={this}
+                              isCollaborating={this.props.isCollaborating}
+                              generateLinkForSelection={
+                                this.props.generateLinkForSelection
+                              }
+                              currentUserControls={
+                                this.props.currentUserControls
+                              }
+                            >
+                              {this.props.children}
+                            </LayerUI>
+                          )}
 
                           <div className="excalidraw-textEditorContainer" />
                           <div className="excalidraw-contextMenuContainer" />
@@ -3890,6 +3915,7 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   public componentWillUnmount() {
+    this.toolRing.close();
     // we're recreating the api object reference so that the
     // <ExcalidrawAPIContext.Provider/> picks up on it
     this.api = { ...this.api, isDestroyed: true };

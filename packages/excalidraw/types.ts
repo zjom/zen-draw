@@ -73,6 +73,7 @@ import type {
   KeymapConflict,
   KeymapOverrides,
 } from "./keymap/types";
+import type { ToolRingConfig } from "./components/App.toolRing";
 
 import type { Language } from "./i18n";
 import type { isOverScrollBars } from "./scene/scrollbars";
@@ -867,6 +868,18 @@ export interface ExcalidrawProps {
    */
   commands?: HostCommands;
   /**
+   * The commands of the tool ring, which a secondary-button drag opens at
+   * the pointer. At most 8 `items`, and at most 8 `more` commands in the
+   * sub-ring of the "more" slice.
+   */
+  toolRing?: ToolRingConfig;
+  /**
+   * Whether the icon of the active tool shows in a corner of the canvas.
+   *
+   * @default true
+   */
+  toolIndicator?: boolean;
+  /**
    * Document that owns Excalidraw's mounted DOM.
    *
    * Set only when it differs from the global `document`, such as when code
@@ -1253,6 +1266,7 @@ export type AppClassProperties = {
   selectionTool: App["selectionTool"];
   wrap: App["wrap"];
   commands: App["commands"];
+  toolRing: App["toolRing"];
   modifiers: App["modifiers"];
   isToolLocked: App["isToolLocked"];
   getEffectiveGridSize: App["getEffectiveGridSize"];

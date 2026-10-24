@@ -19,7 +19,8 @@ export type ActionSource =
   | "keyboard"
   | "contextMenu"
   | "api"
-  | "commandPalette";
+  | "commandPalette"
+  | "toolRing";
 
 /** if false, the action should be prevented */
 export type ActionResult =

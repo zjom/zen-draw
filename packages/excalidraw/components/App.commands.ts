@@ -30,7 +30,7 @@ import type {
 import type { ToolbarToolType } from "./Tools";
 import type App from "./App";
 
-export type CommandSource = "keyboard" | "commandPalette" | "api";
+export type CommandSource = "keyboard" | "commandPalette" | "toolRing" | "api";
 
 type BuiltinCommand = {
   label: () => string;
@@ -41,6 +41,10 @@ type BuiltinCommand = {
     source: CommandSource,
     event?: KeyboardEvent | React.KeyboardEvent,
   ) => void;
+  /** press command: called on keydown instead of `run` */
+  onPress?: () => void;
+  /** press command: called on keyup, and on window blur */
+  onRelease?: () => void;
 };
 
 const TOOL_COMMAND_PREFIX = "tool.";
@@ -72,7 +76,7 @@ export class AppCommands {
     signature: string;
   } | null = null;
   /** press commands whose key is down, by `event.code` */
-  private pressed = new Map<string, HostCommandId>();
+  private pressed = new Map<string, CommandId>();
 
   private readonly uiCommands: Record<UICommandId, BuiltinCommand> = {
     "ui.commandPalette": {
@@ -84,6 +88,20 @@ export class AppCommands {
               ? null
               : { name: "commandPalette" },
         }));
+      },
+    },
+    "ui.toolRing": {
+      label: () => t("zen.toolRing"),
+      keyCondition: () => this.app.toolRing.canOpen(),
+      // from the command palette or the API: a sticky ring at the pointer
+      run: () => {
+        this.app.toolRing.openAtPointer({ sticky: true });
+      },
+      onPress: () => {
+        this.app.toolRing.openAtPointer();
+      },
+      onRelease: () => {
+        this.app.toolRing.release({ keepOpenInDeadZone: true });
       },
     },
     "ui.imageExport": {
@@ -197,6 +215,18 @@ export class AppCommands {
       return this.getHostCommands()[id]?.label ?? id;
     }
     return this.getBuiltinCommand(id)?.label() ?? id;
+  };
+
+  /** the icon of a tool or an action, if it has one */
+  getIcon = (id: CommandId): React.ReactNode => {
+    const toolType = this.getToolType(id);
+    if (toolType) {
+      return TOOLS[toolType].icon;
+    }
+    const action = this.getAction(id);
+    return typeof action?.icon === "function"
+      ? action.icon(this.app.state, this.app.scene.getNonDeletedElements())
+      : action?.icon ?? null;
   };
 
   list = () =>
@@ -388,18 +418,23 @@ export class AppCommands {
     }
     const [id] = ids;
 
-    if (isHostCommandId(id)) {
-      const command = this.getHostCommands()[id]!;
+    const command = isHostCommandId(id)
+      ? this.getHostCommands()[id]!
+      : this.getBuiltinCommand(id)!;
+    if (command.onPress || command.onRelease) {
       event.preventDefault();
       event.stopPropagation();
-      if (command.onPress || command.onRelease) {
-        if (!event.repeat && !this.pressed.has(event.code)) {
-          this.pressed.set(event.code, id);
-          command.onPress?.();
-        }
-      } else {
-        command.run?.();
+      if (!event.repeat && !this.pressed.has(event.code)) {
+        this.pressed.set(event.code, id);
+        command.onPress?.();
       }
+      return true;
+    }
+
+    if (isHostCommandId(id)) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.getHostCommands()[id]!.run?.();
       return true;
     }
 
@@ -420,7 +455,7 @@ export class AppCommands {
       return false;
     }
     this.pressed.delete(event.code);
-    this.getHostCommands()[id]?.onRelease?.();
+    this.release(id);
     return true;
   };
 
@@ -429,8 +464,15 @@ export class AppCommands {
     const ids = [...this.pressed.values()];
     this.pressed.clear();
     for (const id of ids) {
-      this.getHostCommands()[id]?.onRelease?.();
+      this.release(id);
     }
+  };
+
+  private release = (id: CommandId) => {
+    const command = isHostCommandId(id)
+      ? this.getHostCommands()[id]
+      : this.getBuiltinCommand(id);
+    command?.onRelease?.();
   };
 
   // ---------------------------------------------------------------------------

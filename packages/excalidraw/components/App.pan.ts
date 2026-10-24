@@ -16,8 +16,10 @@ const SECONDARY_BUTTON_PAN_THRESHOLD = 5; // px
  * window listeners and teardown; wheel input is gated on it (see
  * `AppWheel`).
  *
- * A secondary-button session is a pan only once the pointer travels past
- * the drag threshold; released before that, it is a right-click. The
+ * A secondary-button session is a drag only once the pointer travels past
+ * the drag threshold; released before that, it is a right-click. The drag
+ * opens the tool ring (see `AppToolRing`) if the ring can open, and pans
+ * the canvas otherwise (e.g. in view mode). The
  * platform's `contextmenu` event opens the menu for a right-click where it
  * follows the release (Windows), as it always has; where it comes with the
  * press (macOS, Linux) it is swallowed — a drag cannot be told from a
@@ -28,8 +30,12 @@ export class AppPan {
   private spaceHeld = false;
   private active = false;
   /** the secondary-button session, while one is active */
-  private secondary: { engaged: boolean; nativeMenuSeen: boolean } | null =
-    null;
+  private secondary: {
+    engaged: boolean;
+    nativeMenuSeen: boolean;
+    /** the drag opened the tool ring, which follows the pointer itself */
+    toolRing: boolean;
+  } | null = null;
   /** the platform fires `contextmenu` on mouseup (Windows) or on mousedown
    * (macOS, Linux); the one belonging to a secondary-button session is not a
    * new click, whichever side of the session it lands on */
@@ -121,7 +127,7 @@ export class AppPan {
     }
     this.active = true;
     this.secondary = isSecondary
-      ? { engaged: false, nativeMenuSeen: false }
+      ? { engaged: false, nativeMenuSeen: false, toolRing: false }
       : null;
 
     // due to event.preventDefault below, container wouldn't get focus
@@ -155,10 +161,19 @@ export class AppPan {
           return;
         }
         this.secondary.engaged = true;
+        if (app.toolRing.open({ x: startX, y: startY })) {
+          this.secondary.toolRing = true;
+          app.toolRing.move(event);
+          return;
+        }
         app.cursor.set(CURSOR_TYPE.GRABBING);
         // pans from here on; the threshold distance is not caught up
         lastX = event.clientX;
         lastY = event.clientY;
+        return;
+      }
+
+      if (this.secondary?.toolRing) {
         return;
       }
 
@@ -256,6 +271,14 @@ export class AppPan {
         app.ownerWindow.removeEventListener(EVENT.POINTER_UP, teardown);
         app.ownerWindow.removeEventListener(EVENT.BLUR, teardown);
         onPointerMove.flush();
+
+        if (secondary?.toolRing) {
+          if (upEvent && "clientX" in upEvent) {
+            app.toolRing.release({ shiftKey: upEvent.shiftKey });
+          } else {
+            app.toolRing.close();
+          }
+        }
 
         // released without a drag: a right-click. Where the platform's
         // `contextmenu` came with the press it was swallowed, so the menu

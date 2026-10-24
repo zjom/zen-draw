@@ -118,6 +118,8 @@ const ExcalidrawBase = (props: ExcalidrawProps) => {
     imageOptions,
     keymap,
     commands,
+    toolRing,
+    toolIndicator,
   } = props;
 
   const canvasActions = props.UIOptions?.canvasActions;
@@ -262,6 +264,8 @@ const ExcalidrawBase = (props: ExcalidrawProps) => {
           imageOptions={normalizedImageOptions}
           keymap={keymap}
           commands={commands}
+          toolRing={toolRing}
+          toolIndicator={toolIndicator}
         >
           {children}
         </App>
@@ -284,6 +288,7 @@ const areEqual = (prevProps: ExcalidrawProps, nextProps: ExcalidrawProps) => {
     ui: prevUI,
     activeTool: prevActiveTool,
     keymap: prevKeymap,
+    toolRing: prevToolRing,
     ...prev
   } = prevProps;
   const {
@@ -294,6 +299,7 @@ const areEqual = (prevProps: ExcalidrawProps, nextProps: ExcalidrawProps) => {
     ui: nextUI,
     activeTool: nextActiveTool,
     keymap: nextKeymap,
+    toolRing: nextToolRing,
     ...next
   } = nextProps;
 
@@ -314,6 +320,12 @@ const areEqual = (prevProps: ExcalidrawProps, nextProps: ExcalidrawProps) => {
   if (
     prevKeymap !== nextKeymap &&
     JSON.stringify(prevKeymap) !== JSON.stringify(nextKeymap)
+  ) {
+    return false;
+  }
+  if (
+    prevToolRing !== nextToolRing &&
+    JSON.stringify(prevToolRing) !== JSON.stringify(nextToolRing)
   ) {
     return false;
   }
@@ -578,6 +590,8 @@ export {
   parseKeyCombination,
   splitKeyCombinations,
 } from "./keymap";
+export { DEFAULT_TOOL_RING } from "./components/App.toolRing";
+export type { ToolRingConfig } from "./components/App.toolRing";
 export type {
   CommandId,
   HostCommand,
