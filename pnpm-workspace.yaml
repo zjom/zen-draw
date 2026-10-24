@@ -1,5 +1,4 @@
 packages:
-  - "excalidraw-app"
   - "packages/*"
   - "examples/*"
   - "zen-draw"

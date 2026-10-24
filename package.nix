@@ -27,7 +27,6 @@ rustPlatform.buildRustPackage (finalAttrs: {
       ./packages
       ./zen-draw
       # pnpm reads every workspace manifest, also for a filtered install.
-      ./excalidraw-app/package.json
       ./examples/with-nextjs/package.json
       ./examples/with-script-in-browser/package.json
     ];
@@ -47,7 +46,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     inherit (finalAttrs) pname version src pnpmWorkspaces;
     pnpm = pnpm_12;
     fetcherVersion = 4;
-    hash = "sha256-9DdAsKFsGa92aoZyHPP7zZfq6H2DM8VvDEyE9uH4pSc=";
+    hash = "sha256-+BSLxYsZmUa1MtUyf5uyODVoSSGQeQByQYgUL9trs54=";
   };
 
   nativeBuildInputs = [

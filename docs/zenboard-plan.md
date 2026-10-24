@@ -129,10 +129,10 @@ Phase 0 is on the `zenboard/phase-0` branch. These results are different from se
    - `typescript-native` is TypeScript 7. This package provides the `tsc` binary.
 2. zen-draw does not use the built packages. Vite aliases in `zen-draw/vite.config.ts` resolve `@excalidraw/*` to the source in `packages/`. Vite bundles the fonts from the source.
 3. The library source imports `@excalidraw/utils`, but no package declares this dependency. The Nix build therefore also installs the dependencies of `@excalidraw/utils` (`pnpmWorkspaces` in `package.nix`).
-4. All packages use React 19.0.0. The Radix problem that made zen-draw use React 18 did not occur in the builds or in the tests. The problem can occur only at runtime. A manual test of zen-draw is necessary.
+4. All packages use React 19.0.0. The Radix problem that made zen-draw use React 18 did not occur in the builds, in the tests or in a manual test of zen-draw.
 5. Vitest 5 showed that some `ORIG_ID` assertions in the tests always passed. Vitest 3 ignored symbol keys in `expect.objectContaining()`. The commit of the Vite 8 upgrade removes or corrects these assertions.
 6. Known problem: after the `pnpm build:packages` command, the `pnpm test:typecheck` command fails in `MermaidToExcalidraw.test.tsx`. The type declarations of `@excalidraw/mermaid-to-excalidraw` import `@excalidraw/excalidraw/element/transform`. This import resolves only after a package build. This problem also occurs on the `master` branch.
-7. Condition 1 of section 10.3 needs a manual test: the `pnpm zen-draw:dev` command must start zen-draw.
+7. A manual test confirmed condition 1 of section 10.3. `excalidraw-app/` is deleted (section 10.4).
 
 ## 5. Phase 1: keymap and commands
 
@@ -418,6 +418,17 @@ Delete `excalidraw-app/` when all these conditions are true:
 3. No file in `.github/workflows/` builds `excalidraw-app/`.
 4. No test in the `pnpm test:update` command runs a test file from `excalidraw-app/`.
 5. The `packages/excalidraw/vite-env.d.ts` file does not refer to the types of `vite-plugin-pwa` or of `vite-plugin-svgr`. At this time, lines 2 to 4 of the file refer to these types.
+
+### 10.4 Result
+
+The deletion is done. The deletion also removed these items:
+
+1. The `firebase-project/` directory and the root `.codesandbox/` directory.
+2. The files in `public/`, except `Virgil.woff2` and `Cascadia.woff2`. The `packages/excalidraw/index-node.ts` file uses these two fonts.
+3. The `localStorageData` option of the `render` test helper. No test used this option.
+4. The root dependencies that only `excalidraw-app/` used: `vite-plugin-pwa`, `vite-plugin-svgr`, `vite-plugin-ejs`, `ejs`, `vite-plugin-checker`, `@vitejs/plugin-react` and `http-server`.
+
+The `.env.development` file and the `.env.production` file stay, because `scripts/buildPackage.js` reads these files.
 
 ## 11. Risks
 

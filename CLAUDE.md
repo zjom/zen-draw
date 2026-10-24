@@ -2,10 +2,9 @@
 
 ## Project Structure
 
-Excalidraw is a **monorepo** with a clear separation between the core library and the application:
+zenboard is a fork of Excalidraw. It is a **monorepo** with a clear separation between the core library and the application:
 
 - **`packages/excalidraw/`** - Main React component library published to npm as `@excalidraw/excalidraw`
-- **`excalidraw-app/`** - Full-featured web application (excalidraw.com) that uses the library
 - **`packages/`** - Core packages: `@excalidraw/common`, `@excalidraw/element`, `@excalidraw/math`, `@excalidraw/utils`
 - **`examples/`** - Integration examples (NextJS, browser script)
 - **`zen-draw/`** - Desktop whiteboard (Tauri) that is the primary consumer of the library. It builds against the source in `packages/` (see `zen-draw/vite.config.ts`)
@@ -14,7 +13,7 @@ Excalidraw is a **monorepo** with a clear separation between the core library an
 ## Development Workflow
 
 1. **Package Development**: Work in `packages/*` for editor features
-2. **App Development**: Work in `excalidraw-app/` for app-specific features
+2. **App Development**: Work in `zen-draw/` for app-specific features. Run it with `pnpm zen-draw:dev`
 3. **Testing**: Always run `pnpm test:update` before committing
 4. **Type Safety**: Use `pnpm test:typecheck` to verify TypeScript
 
