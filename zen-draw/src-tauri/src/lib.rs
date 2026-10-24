@@ -77,34 +77,87 @@ struct LoadedConfig {
     config: Config,
 }
 
-/// `$XDG_CONFIG_HOME/zen-draw`, falling back to `~/.config/zen-draw`.
-/// Deliberately the same on every OS rather than the platform-native config dir.
+const CONFIG_FILE_ENV: &str = "ZENDRAW_CONFIG_FILE";
+const CONFIG_FILE_FLAG: &str = "--config-file";
+
+/// The parsed command line: `zen-draw [--config-file <path>] [file]`.
+#[derive(Debug, Default, PartialEq)]
+struct Args {
+    config_file: Option<PathBuf>,
+    /// The first non-flag argument, so `zen-draw foo.excalidraw` opens a file.
+    file: Option<String>,
+}
+
+impl Args {
+    fn parse(args: impl IntoIterator<Item = String>) -> Result<Args, String> {
+        let mut parsed = Args::default();
+        let mut args = args.into_iter();
+        while let Some(arg) = args.next() {
+            if arg == CONFIG_FILE_FLAG {
+                let value = args
+                    .next()
+                    .ok_or(format!("{CONFIG_FILE_FLAG} needs a path"))?;
+                parsed.config_file = Some(value.into());
+            } else if let Some(value) = arg.strip_prefix("--config-file=") {
+                parsed.config_file = Some(value.into());
+            } else if !arg.starts_with('-') && parsed.file.is_none() {
+                parsed.file = Some(arg);
+            }
+        }
+        Ok(parsed)
+    }
+
+    fn from_env() -> Result<Args, String> {
+        Args::parse(std::env::args().skip(1))
+    }
+}
+
+/// The platform config dir joined with `zen-draw`: `$XDG_CONFIG_HOME` or `~/.config` on Linux,
+/// `~/Library/Application Support` on macOS and `%APPDATA%` on Windows.
 fn config_dir() -> Option<PathBuf> {
-    std::env::var_os("XDG_CONFIG_HOME")
-        .map(PathBuf::from)
-        // The XDG spec says relative paths must be ignored.
-        .filter(|p| p.is_absolute())
-        .or_else(|| std::env::home_dir().map(|h| h.join(".config")))
-        .map(|d| d.join(APP_DIR))
+    dirs::config_dir().map(|d| d.join(APP_DIR))
+}
+
+/// The config file and whether it was given explicitly.
+/// `--config-file` takes precedence over `$ZENDRAW_CONFIG_FILE`, which takes precedence over the config dir.
+fn config_path(args: &Args) -> Option<(PathBuf, bool)> {
+    args.config_file
+        .clone()
+        .or_else(|| {
+            std::env::var_os(CONFIG_FILE_ENV)
+                .filter(|v| !v.is_empty())
+                .map(PathBuf::from)
+        })
+        .map(|p| (p, true))
+        .or_else(|| config_dir().map(|d| (d.join(CONFIG_FILE), false)))
 }
 
 #[tauri::command]
 fn load_config() -> Result<LoadedConfig, String> {
-    let Some(path) = config_dir().map(|d| d.join(CONFIG_FILE)) else {
-        return Ok(LoadedConfig { path: None, config: Config::default() });
+    let args = Args::from_env()?;
+    let Some((path, explicit)) = config_path(&args) else {
+        return Ok(LoadedConfig {
+            path: None,
+            config: Config::default(),
+        });
     };
+    let path = std::path::absolute(&path).unwrap_or(path);
     let config = match fs::read_to_string(&path) {
         Ok(text) => toml::from_str(&text).map_err(|e| format!("{}: {e}", path.display()))?,
-        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Config::default(),
+        // A missing file in the config dir means no config, but a file asked for by name must exist.
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound && !explicit => Config::default(),
         Err(e) => return Err(format!("{}: {e}", path.display())),
     };
-    Ok(LoadedConfig { path: Some(path.display().to_string()), config })
+    Ok(LoadedConfig {
+        path: Some(path.display().to_string()),
+        config,
+    })
 }
 
-/// The first non-flag CLI argument, so `zen-draw foo.excalidraw` opens a file.
+/// A bad command line is reported by `load_config`.
 #[tauri::command]
 fn initial_file() -> Option<String> {
-    std::env::args().skip(1).find(|a| !a.starts_with('-'))
+    Args::from_env().ok()?.file
 }
 
 #[tauri::command]
@@ -129,4 +182,52 @@ pub fn run() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn parse(args: &[&str]) -> Result<Args, String> {
+        Args::parse(args.iter().map(|a| a.to_string()))
+    }
+
+    #[test]
+    fn parses_config_file_flag() {
+        let expected = Args {
+            config_file: Some("c.toml".into()),
+            file: Some("a.excalidraw".into()),
+        };
+        assert_eq!(
+            parse(&["--config-file", "c.toml", "a.excalidraw"]),
+            Ok(expected)
+        );
+        let expected = Args {
+            config_file: Some("c.toml".into()),
+            file: Some("a.excalidraw".into()),
+        };
+        assert_eq!(
+            parse(&["a.excalidraw", "--config-file=c.toml"]),
+            Ok(expected)
+        );
+    }
+
+    #[test]
+    fn config_file_value_is_not_the_file() {
+        assert_eq!(parse(&["--config-file", "c.toml"]).unwrap().file, None);
+    }
+
+    #[test]
+    fn config_file_flag_needs_a_value() {
+        assert!(parse(&["--config-file"]).is_err());
+    }
+
+    #[test]
+    fn flag_wins_over_default() {
+        let args = Args {
+            config_file: Some("c.toml".into()),
+            file: None,
+        };
+        assert_eq!(config_path(&args), Some(("c.toml".into(), true)));
+    }
 }

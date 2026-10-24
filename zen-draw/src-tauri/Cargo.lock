@@ -4422,6 +4422,7 @@ dependencies = [
 name = "zen-draw"
 version = "0.1.0"
 dependencies = [
+ "dirs",
  "serde",
  "tauri",
  "tauri-build",

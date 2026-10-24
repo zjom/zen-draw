@@ -1,5 +1,8 @@
-# Copy to $XDG_CONFIG_HOME/zen-draw/config.toml
-# (or ~/.config/zen-draw/config.toml if XDG_CONFIG_HOME is unset; same on every OS).
+# Copy to config.toml in the zen-draw config directory:
+#   Linux    $XDG_CONFIG_HOME/zen-draw (or ~/.config/zen-draw)
+#   macOS    ~/Library/Application Support/zen-draw
+#   Windows  %APPDATA%\zen-draw
+# or point --config-file or ZENDRAW_CONFIG_FILE at it (flag > env > config directory).
 
 # [keys] maps a command ID to key combinations. A key combination replaces all
 # default key combinations of the command, and is removed from any other command

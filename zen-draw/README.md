@@ -1,6 +1,6 @@
 # zen-draw
 
-A minimal offline whiteboard: zenboard (the Excalidraw fork in this repository) in a [Tauri](https://tauri.app) shell, with keyboard shortcuts configured from `$XDG_CONFIG_HOME`.
+A minimal offline whiteboard: zenboard (the Excalidraw fork in this repository) in a [Tauri](https://tauri.app) shell, with keyboard shortcuts configured from a TOML file.
 
 zen-draw builds against the source in `../packages`, so a change to the editor shows up in zen-draw without a package build.
 
@@ -40,7 +40,17 @@ A right-drag does not pan the canvas. Pan with the middle mouse button, with Spa
 
 ## Configuration
 
-`$XDG_CONFIG_HOME/zen-draw/config.toml`, falling back to `~/.config/zen-draw/config.toml`. The same path is used on Linux, macOS and Windows. See [`config.example.toml`](config.example.toml).
+zen-draw reads `config.toml` from the platform config directory:
+
+| OS | Path |
+| --- | --- |
+| Linux | `$XDG_CONFIG_HOME/zen-draw/config.toml`, falling back to `~/.config/zen-draw/config.toml` |
+| macOS | `~/Library/Application Support/zen-draw/config.toml` |
+| Windows | `%APPDATA%\zen-draw\config.toml` |
+
+To use a different file, run `zen-draw --config-file <path>` or set `ZENDRAW_CONFIG_FILE=<path>`. The flag takes precedence over the environment variable, and the environment variable takes precedence over the config directory. A file given with the flag or the environment variable must exist.
+
+See [`config.example.toml`](config.example.toml).
 
 The `[keys]` table maps command IDs to key combinations, for example `"tool.freedraw" = "d"`. The IDs are `tool.<name>`, the zenboard action names (for example `undo`), `ui.<name>` and `host.open`, `host.save`, `host.saveAs`. An empty string removes the key combinations of a command.
 
