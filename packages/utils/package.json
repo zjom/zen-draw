@@ -63,7 +63,7 @@
     "cross-env": "7.0.3",
     "fonteditor-core": "2.4.0",
     "jest-diff": "29.7.0",
-    "typescript": "5.9.3",
+    "typescript": "7.0.2",
     "wawoff2": "2.0.1",
     "which": "4.0.0"
   },

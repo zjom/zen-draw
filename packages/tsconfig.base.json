@@ -10,6 +10,7 @@
     "resolveJsonModule": true,
     "jsx": "react-jsx",
     "emitDeclarationOnly": true,
+    "types": ["node"],
     "paths": {
       "@excalidraw/common": ["./common/src/index.ts"],
       "@excalidraw/common/*": ["./common/src/*"],
