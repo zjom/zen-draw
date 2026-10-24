@@ -2,15 +2,9 @@ import React from "react";
 
 import type { NonDeletedExcalidrawElement } from "@excalidraw/element/types";
 
-import { actionSaveFileToDisk } from "../actions/actionExport";
-
-import { nativeFileSystemSupported } from "../data/filesystem";
 import { t } from "../i18n";
 
-import { Card } from "./Card";
 import { Dialog } from "./Dialog";
-import { IconButton } from "./IconButton";
-import { exportToFileIcon } from "./icons";
 
 import "./ExportDialog.scss";
 
@@ -45,27 +39,6 @@ const JSONExportModal = ({
   return (
     <div className="ExportDialog ExportDialog--json">
       <div className="ExportDialog-cards">
-        {exportOpts.saveFileToDisk && (
-          <Card color="lime">
-            <div className="Card-icon">{exportToFileIcon}</div>
-            <h2>{t("exportDialog.disk_title")}</h2>
-            <div className="Card-details">
-              {t("exportDialog.disk_details")}
-              {!nativeFileSystemSupported &&
-                actionManager.renderAction("changeProjectName")}
-            </div>
-            <IconButton
-              className="Card-button"
-              type="button"
-              title={t("exportDialog.disk_button")}
-              aria-label={t("exportDialog.disk_button")}
-              showAriaLabel={true}
-              onClick={() => {
-                actionManager.executeAction(actionSaveFileToDisk, "ui");
-              }}
-            />
-          </Card>
-        )}
         {exportOpts.renderCustomUI &&
           exportOpts.renderCustomUI(elements, appState, files, canvas)}
       </div>

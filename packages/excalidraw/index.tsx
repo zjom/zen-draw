@@ -128,12 +128,6 @@ const ExcalidrawBase = (props: ExcalidrawProps) => {
     },
   };
 
-  if (canvasActions?.export) {
-    UIOptions.canvasActions.export.saveFileToDisk =
-      canvasActions.export?.saveFileToDisk ??
-      DEFAULT_UI_OPTIONS.canvasActions.export.saveFileToDisk;
-  }
-
   if (
     UIOptions.canvasActions.toggleTheme === null &&
     (theme == null || onThemeChange)
@@ -384,10 +378,8 @@ const areEqual = (prevProps: ExcalidrawProps, nextProps: ExcalidrawProps) => {
           prevUIOptions?.canvasActions?.export &&
           nextUIOptions?.canvasActions?.export
         ) {
-          return (
-            prevUIOptions.canvasActions.export.saveFileToDisk ===
-            nextUIOptions.canvasActions.export.saveFileToDisk
-          );
+          // the export options are functions: compare their presence
+          return true;
         }
         return (
           prevUIOptions?.canvasActions?.[key] ===

@@ -39,9 +39,6 @@ export { actionDeselect } from "./actionDeselect";
 export {
   actionChangeProjectName,
   actionChangeExportBackground,
-  actionSaveToActiveFile,
-  actionSaveFileToDisk,
-  actionLoadScene,
 } from "./actionExport";
 
 export { actionCopyStyles, actionPasteStyles } from "./actionStyles";

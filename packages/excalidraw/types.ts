@@ -1114,7 +1114,6 @@ export type SceneData = {
 };
 
 export type ExportOpts = {
-  saveFileToDisk?: boolean;
   renderCustomUI?: (
     exportedElements: readonly NonDeletedExcalidrawElement[],
     appState: UIAppState,
@@ -1136,8 +1135,6 @@ export type CanvasActions = Partial<{
   changeViewBackgroundColor: boolean;
   clearCanvas: boolean;
   export: false | ExportOpts;
-  loadScene: boolean;
-  saveToActiveFile: boolean;
   /**
    * defaults to true if `props.theme` is omitted or `props.onThemeChange`
    * is supplied (at which point the theme is considered as host-app controlled),

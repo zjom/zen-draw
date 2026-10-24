@@ -177,36 +177,6 @@ describe("<Excalidraw/>", () => {
         expect(queryByTestId(container, "image-export-button")).toBeNull();
       });
 
-      it("should hide load button when loadScene is false", async () => {
-        const { container } = await render(
-          <Excalidraw UIOptions={{ canvasActions: { loadScene: false } }} />,
-        );
-
-        expect(queryByTestId(container, "load-button")).toBeNull();
-      });
-
-      it("should hide save as button when saveFileToDisk is false", async () => {
-        const { container } = await render(
-          <Excalidraw
-            UIOptions={{ canvasActions: { export: { saveFileToDisk: false } } }}
-          />,
-        );
-        //open menu
-        toggleMenu(container);
-        expect(queryByTestId(container, "save-as-button")).toBeNull();
-      });
-
-      it("should hide save button when saveToActiveFile is false", async () => {
-        const { container } = await render(
-          <Excalidraw
-            UIOptions={{ canvasActions: { saveToActiveFile: false } }}
-          />,
-        );
-        //open menu
-        toggleMenu(container);
-        expect(queryByTestId(container, "save-button")).toBeNull();
-      });
-
       it("should hide the canvas background picker when changeViewBackgroundColor is false", async () => {
         const { container } = await render(
           <Excalidraw
@@ -242,28 +212,6 @@ describe("<Excalidraw/>", () => {
         //open menu
         toggleMenu(container);
         expect(queryByTestId(container, "toggle-dark-mode")).toBeNull();
-      });
-
-      it("should not render default items in custom menu even if passed if the prop in `canvasActions` is set to false", async () => {
-        const { container } = await render(
-          <Excalidraw UIOptions={{ canvasActions: { loadScene: false } }}>
-            <MainMenu>
-              <MainMenu.ItemCustom>
-                <button
-                  style={{ height: "2rem" }}
-                  onClick={() => window.alert("custom menu item")}
-                >
-                  custom item
-                </button>
-              </MainMenu.ItemCustom>
-              <MainMenu.DefaultItems.LoadScene />
-            </MainMenu>
-          </Excalidraw>,
-        );
-        //open menu
-        toggleMenu(container);
-        // load button shouldn't be rendered since `UIActions.canvasActions.loadScene` is `false`
-        expect(queryByTestId(container, "load-button")).toBeNull();
       });
     });
   });

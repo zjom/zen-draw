@@ -1,6 +1,5 @@
 import React from "react";
 
-import { actionSaveFileToDisk } from "../../actions";
 import { actionChangeExportEmbedScene } from "../../actions/actionExport";
 import { useI18n } from "../../i18n";
 import { useExcalidrawActionManager, useExcalidrawSetAppState } from "../App";
@@ -56,30 +55,12 @@ export const ExportToImage = () => {
   );
 };
 
-export const SaveToDisk = () => {
-  const { t } = useI18n();
-  const actionManager = useExcalidrawActionManager();
-
-  return (
-    <Action
-      title={t("overwriteConfirm.action.saveToDisk.title")}
-      actionLabel={t("overwriteConfirm.action.saveToDisk.button")}
-      onClick={() => {
-        actionManager.executeAction(actionSaveFileToDisk, "ui");
-      }}
-    >
-      {t("overwriteConfirm.action.saveToDisk.description")}
-    </Action>
-  );
-};
-
 const Actions = Object.assign(
   ({ children }: { children: React.ReactNode }) => {
     return <div className="OverwriteConfirm__Actions">{children}</div>;
   },
   {
     ExportToImage,
-    SaveToDisk,
   },
 );
 

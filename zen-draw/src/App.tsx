@@ -20,7 +20,7 @@ import type { AppConfig } from "./config";
 
 // File handling goes through Tauri (see document.ts), not Excalidraw's browser download/upload.
 const uiOptions: UIOptions = {
-  canvasActions: { loadScene: false, saveToActiveFile: false, export: false },
+  canvasActions: { export: false },
 };
 
 // Start in zen mode via initialData rather than the `zenModeEnabled` prop, which would lock it on.

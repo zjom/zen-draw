@@ -4,8 +4,6 @@ import type { Theme } from "@excalidraw/element/types";
 
 import {
   actionClearCanvas,
-  actionLoadScene,
-  actionSaveToActiveFile,
   actionShortcuts,
   actionToggleArrowBinding,
   actionToggleGridMode,
@@ -28,12 +26,9 @@ import { activeConfirmDialogAtom } from "../ActiveConfirmDialog";
 import {
   useExcalidrawSetAppState,
   useExcalidrawActionManager,
-  useExcalidrawElements,
   useAppProps,
   useApp,
 } from "../App";
-import { openConfirmModal } from "../OverwriteConfirm/OverwriteConfirmState";
-import Trans from "../Trans";
 import DropdownMenuItem from "../dropdownMenu/DropdownMenuItem";
 import DropdownMenuItemCheckbox from "../dropdownMenu/DropdownMenuItemCheckbox";
 import DropdownMenuItemContentRadio from "../dropdownMenu/DropdownMenuItemContentRadio";
@@ -52,9 +47,7 @@ import {
   ExportIcon,
   ExportImageIcon,
   HelpIcon,
-  LoadIcon,
   MoonIcon,
-  save,
   searchIcon,
   SunIcon,
   TrashIcon,
@@ -63,69 +56,6 @@ import {
 import "./DefaultItems.scss";
 
 import type { InputDevice } from "../../types";
-
-export const LoadScene = () => {
-  const { t } = useI18n();
-  const actionManager = useExcalidrawActionManager();
-  const elements = useExcalidrawElements();
-
-  if (!actionManager.isActionEnabled(actionLoadScene)) {
-    return null;
-  }
-
-  const handleSelect = async () => {
-    if (
-      !elements.length ||
-      (await openConfirmModal({
-        title: t("overwriteConfirm.modal.loadFromFile.title"),
-        actionLabel: t("overwriteConfirm.modal.loadFromFile.button"),
-        color: "warning",
-        description: (
-          <Trans
-            i18nKey="overwriteConfirm.modal.loadFromFile.description"
-            bold={(text) => <strong>{text}</strong>}
-            br={() => <br />}
-          />
-        ),
-      }))
-    ) {
-      actionManager.executeAction(actionLoadScene);
-    }
-  };
-
-  return (
-    <DropdownMenuItem
-      icon={LoadIcon}
-      onSelect={handleSelect}
-      data-testid="load-button"
-      shortcut={actionManager.app.commands.getShortcut("loadScene")}
-      aria-label={t("buttons.load")}
-    >
-      {t("buttons.load")}
-    </DropdownMenuItem>
-  );
-};
-LoadScene.displayName = "LoadScene";
-
-export const SaveToActiveFile = () => {
-  const { t } = useI18n();
-  const actionManager = useExcalidrawActionManager();
-
-  if (!actionManager.isActionEnabled(actionSaveToActiveFile)) {
-    return null;
-  }
-
-  return (
-    <DropdownMenuItem
-      shortcut={actionManager.app.commands.getShortcut("saveToActiveFile")}
-      data-testid="save-button"
-      onSelect={() => actionManager.executeAction(actionSaveToActiveFile)}
-      icon={save}
-      aria-label={`${t("buttons.save")}`}
-    >{`${t("buttons.save")}`}</DropdownMenuItem>
-  );
-};
-SaveToActiveFile.displayName = "SaveToActiveFile";
 
 export const SaveAsImage = () => {
   const actionManager = useExcalidrawActionManager();
