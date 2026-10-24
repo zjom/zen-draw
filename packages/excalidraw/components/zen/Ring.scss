@@ -1,5 +1,5 @@
 .excalidraw {
-  .ToolRing {
+  .Ring {
     position: absolute;
     z-index: var(--zIndex-ui-context-menu);
     pointer-events: none;
@@ -16,6 +16,10 @@
       fill: var(--island-bg-color);
       stroke: var(--default-border-color);
       stroke-width: 1px;
+
+      &--active {
+        fill: var(--color-primary-light);
+      }
 
       &--highlighted {
         fill: var(--color-primary);
@@ -42,9 +46,25 @@
       }
     }
 
-    &__initial {
+    &__text {
       font-weight: 600;
-      font-size: 1rem;
+      font-size: 0.75rem;
+      white-space: nowrap;
+    }
+
+    &__swatch {
+      width: 1.125rem;
+      height: 1.125rem;
+      border-radius: 50%;
+      border: 1px solid var(--default-border-color);
+      // transparent or mixed: a slash
+      background: linear-gradient(
+        to top right,
+        transparent calc(50% - 1px),
+        var(--color-danger, #e03131) calc(50% - 1px),
+        var(--color-danger, #e03131) calc(50% + 1px),
+        transparent calc(50% + 1px)
+      );
     }
 
     &__center {
@@ -81,6 +101,13 @@
       font-size: 0.75rem;
       white-space: nowrap;
     }
+  }
+
+  .StyleRingColorPicker__anchor {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
   }
 
   .ToolIndicator {

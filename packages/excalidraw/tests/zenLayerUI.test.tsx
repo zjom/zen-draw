@@ -2,13 +2,11 @@ import React from "react";
 import { vi } from "vitest";
 
 import { KEYS, POINTER_BUTTON } from "@excalidraw/common";
+import { CaptureUpdateAction } from "@excalidraw/element";
 
 import { Excalidraw } from "../index";
 import { setLegacyLayerUI } from "../components/zen/legacyLayerUI";
-import {
-  getToolRingSliceIndex,
-  TOOL_RING_RADIUS,
-} from "../components/App.toolRing";
+import { getRingSliceIndex, RING_RADIUS } from "../components/App.ring";
 
 import { API } from "./helpers/api";
 import { Keyboard } from "./helpers/ui";
@@ -71,19 +69,17 @@ const release = (point: { x: number; y: number }, shiftKey = false) => {
   });
 };
 
-describe("getToolRingSliceIndex()", () => {
+describe("getRingSliceIndex()", () => {
   it("returns the slice in the direction of the point", () => {
     const center = { x: 0, y: 0 };
-    expect(getToolRingSliceIndex(center, { x: 0, y: -50 }, 4)).toBe(0);
-    expect(getToolRingSliceIndex(center, { x: 50, y: 0 }, 4)).toBe(1);
-    expect(getToolRingSliceIndex(center, { x: 0, y: 500 }, 4)).toBe(2);
-    expect(getToolRingSliceIndex(center, { x: -50, y: -10 }, 4)).toBe(3);
+    expect(getRingSliceIndex(center, { x: 0, y: -50 }, 4)).toBe(0);
+    expect(getRingSliceIndex(center, { x: 50, y: 0 }, 4)).toBe(1);
+    expect(getRingSliceIndex(center, { x: 0, y: 500 }, 4)).toBe(2);
+    expect(getRingSliceIndex(center, { x: -50, y: -10 }, 4)).toBe(3);
   });
 
   it("returns null in the dead zone", () => {
-    expect(getToolRingSliceIndex({ x: 0, y: 0 }, { x: 10, y: 10 }, 4)).toBe(
-      null,
-    );
+    expect(getRingSliceIndex({ x: 0, y: 0 }, { x: 10, y: 10 }, 4)).toBe(null);
   });
 });
 
@@ -146,7 +142,7 @@ describe("ZenLayerUI", () => {
 
     it("selects by direction, not by distance", async () => {
       await renderEditor();
-      const target = towards(CENTER, 2, MAIN_SLICES, TOOL_RING_RADIUS * 2);
+      const target = towards(CENTER, 2, MAIN_SLICES, RING_RADIUS * 2);
       dragTo(target);
       release(target);
       expect(h.state.activeTool.type).toBe("ellipse");
@@ -185,7 +181,7 @@ describe("ZenLayerUI", () => {
       dragTo(towards(CENTER, 8, MAIN_SLICES));
       expect(h.app.toolRing.getState()?.level).toBe("main");
 
-      const subCenter = towards(CENTER, 8, MAIN_SLICES, TOOL_RING_RADIUS + 10);
+      const subCenter = towards(CENTER, 8, MAIN_SLICES, RING_RADIUS + 10);
       fireEvent.pointerMove(canvas(), secondary(subCenter.x, subCenter.y));
       const state = h.app.toolRing.getState()!;
       expect(state.level).toBe("more");
@@ -203,8 +199,8 @@ describe("ZenLayerUI", () => {
       fireEvent.pointerDown(canvas(), secondary(5, 5));
       fireEvent.pointerMove(canvas(), secondary(20, 20));
       const { center } = h.app.toolRing.getState()!;
-      expect(center.x).toBeGreaterThanOrEqual(TOOL_RING_RADIUS);
-      expect(center.y).toBeGreaterThanOrEqual(TOOL_RING_RADIUS);
+      expect(center.x).toBeGreaterThanOrEqual(RING_RADIUS);
+      expect(center.y).toBeGreaterThanOrEqual(RING_RADIUS);
       release({ x: 20, y: 20 });
     });
 
@@ -297,6 +293,236 @@ describe("ZenLayerUI", () => {
         });
         expect(h.state.activeTool.type).toBe("text");
       });
+    });
+  });
+  describe("style ring", () => {
+    const queryStyleRing = () =>
+      container().querySelector<HTMLElement>('[data-testid="style-ring"]');
+
+    /** a selected rectangle around the center */
+    const selectRectangle = (
+      opts: Partial<Parameters<typeof API.createElement>[0]> = {},
+    ) => {
+      const rectangle = API.createElement({
+        type: "rectangle",
+        x: CENTER.x - 50,
+        y: CENTER.y - 50,
+        width: 100,
+        height: 100,
+        ...opts,
+      });
+      // recorded, so that an undo restores the rectangle
+      API.updateScene({
+        elements: [rectangle],
+        captureUpdate: CaptureUpdateAction.IMMEDIATELY,
+      });
+      API.setSelectedElements([rectangle]);
+      return rectangle;
+    };
+
+    const sliceIds = () =>
+      h.app.styleRing.getState()?.slices.map((slice) => slice.id);
+
+    const indexOf = (id: string) => sliceIds()!.indexOf(id);
+
+    it("opens on a secondary-button drag on the selection", async () => {
+      await renderEditor();
+      selectRectangle();
+      dragTo({ x: CENTER.x + 20, y: CENTER.y });
+
+      expect(queryStyleRing()).not.toBe(null);
+      expect(queryRing()).toBe(null);
+      // only the properties of the rectangle (the background is
+      // transparent, so the fill style does not apply)
+      expect(sliceIds()).toEqual([
+        "strokeColor",
+        "backgroundColor",
+        "opacity",
+        "strokeWidth",
+        "strokeStyle",
+        "sloppiness",
+        "edges",
+        "layers",
+      ]);
+      release({ x: CENTER.x + 20, y: CENTER.y });
+      expect(queryStyleRing()).toBe(null);
+    });
+
+    it("opens the tool ring off the selection", async () => {
+      await renderEditor();
+      selectRectangle({ x: 0, y: 0 });
+      dragTo({ x: CENTER.x + 20, y: CENTER.y });
+      expect(queryStyleRing()).toBe(null);
+      expect(queryRing()).not.toBe(null);
+      release({ x: CENTER.x + 20, y: CENTER.y });
+    });
+
+    it("changes a property in one undo entry", async () => {
+      await renderEditor();
+      const rectangle = selectRectangle();
+      dragTo({ x: CENTER.x + 20, y: CENTER.y });
+      const count = sliceIds()!.length;
+      const index = indexOf("strokeWidth");
+
+      // past the outer edge: the sub-ring of the values
+      const subCenter = towards(CENTER, index, count, RING_RADIUS + 10);
+      fireEvent.pointerMove(canvas(), secondary(subCenter.x, subCenter.y));
+      const state = h.app.styleRing.getState()!;
+      expect(state.level).toBe("strokeWidth");
+      expect(sliceIds()).toEqual([
+        "strokeWidth.thin",
+        "strokeWidth.medium",
+        "strokeWidth.bold",
+      ]);
+      // the current value
+      expect(state.slices.map((slice) => !!slice.active)).toEqual([
+        false,
+        true,
+        false,
+      ]);
+
+      const undoCount = API.getUndoStack().length;
+      const target = towards(state.center, 2, 3);
+      fireEvent.pointerMove(canvas(), secondary(target.x, target.y));
+      release(target);
+
+      expect(queryStyleRing()).toBe(null);
+      expect(API.getElement(rectangle).strokeWidth).toBe(4);
+      expect(API.getUndoStack().length).toBe(undoCount + 1);
+
+      Keyboard.undo();
+      expect(API.getElement(rectangle).strokeWidth).toBe(2);
+    });
+
+    it("opens the sub-ring in place on a release on a property", async () => {
+      await renderEditor();
+      const rectangle = selectRectangle();
+      dragTo({ x: CENTER.x + 20, y: CENTER.y });
+      const target = towards(
+        CENTER,
+        indexOf("strokeStyle"),
+        sliceIds()!.length,
+      );
+      fireEvent.pointerMove(canvas(), secondary(target.x, target.y));
+      release(target);
+
+      const state = h.app.styleRing.getState()!;
+      expect(state.level).toBe("strokeStyle");
+      expect(state.sticky).toBe(true);
+      expect(state.center).toEqual(CENTER);
+
+      // a click picks a value
+      const dashed = towards(CENTER, 1, 3);
+      fireEvent.pointerDown(window, {
+        button: POINTER_BUTTON.MAIN,
+        clientX: dashed.x,
+        clientY: dashed.y,
+      });
+      expect(queryStyleRing()).toBe(null);
+      expect(API.getElement(rectangle).strokeStyle).toBe("dashed");
+    });
+
+    it("runs a layer action", async () => {
+      await renderEditor();
+      const back = API.createElement({ type: "ellipse", x: 0, y: 0 });
+      const rectangle = API.createElement({
+        type: "rectangle",
+        x: CENTER.x - 50,
+        y: CENTER.y - 50,
+        width: 100,
+        height: 100,
+      });
+      API.setElements([back, rectangle]);
+      API.setSelectedElements([rectangle]);
+
+      dragTo({ x: CENTER.x + 20, y: CENTER.y });
+      const target = towards(CENTER, indexOf("layers"), sliceIds()!.length);
+      fireEvent.pointerMove(canvas(), secondary(target.x, target.y));
+      release(target);
+      expect(sliceIds()?.[0]).toBe("layers.sendToBack");
+      fireEvent.keyDown(document, { key: "1", code: "Digit1" });
+      expect(h.elements.map((element) => element.id)).toEqual([
+        rectangle.id,
+        back.id,
+      ]);
+    });
+
+    it("opens the color picker at the color slice", async () => {
+      // radix popovers need a ResizeObserver
+      (global as any).ResizeObserver = class ResizeObserver {
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+      };
+      await renderEditor();
+      selectRectangle();
+      dragTo({ x: CENTER.x + 20, y: CENTER.y });
+      const target = towards(
+        CENTER,
+        indexOf("strokeColor"),
+        sliceIds()!.length,
+      );
+      fireEvent.pointerMove(canvas(), secondary(target.x, target.y));
+      release(target);
+
+      expect(queryStyleRing()).toBe(null);
+      expect(h.state.openPopup).toBe("elementStroke");
+      expect(document.querySelector(".StyleRingColorPicker__anchor")).not.toBe(
+        null,
+      );
+      expect(document.querySelector(".color-picker-content")).not.toBe(null);
+    });
+
+    it("opens the color picker at the pointer on the s key", async () => {
+      (global as any).ResizeObserver = class ResizeObserver {
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+      };
+      await renderEditor();
+      selectRectangle();
+      fireEvent.pointerMove(canvas(), {
+        clientX: CENTER.x,
+        clientY: CENTER.y,
+      });
+      Keyboard.keyPress("s");
+      expect(h.state.openPopup).toBe("elementStroke");
+      expect(h.app.styleRing.getColorPickerAnchor()).toEqual(CENTER);
+      expect(document.querySelector(".color-picker-content")).not.toBe(null);
+    });
+
+    it("puts the rest of more than 8 properties in a more slice", async () => {
+      await renderEditor();
+      // a background adds the fill style: 9 properties
+      selectRectangle({ backgroundColor: "#ffc9c9" });
+      dragTo({ x: CENTER.x + 20, y: CENTER.y });
+      const ids = sliceIds()!;
+      expect(ids).toHaveLength(8);
+      expect(ids[7]).toBe("more");
+
+      const subCenter = towards(CENTER, 7, 8, RING_RADIUS + 10);
+      fireEvent.pointerMove(canvas(), secondary(subCenter.x, subCenter.y));
+      expect(sliceIds()).toEqual(["edges", "layers"]);
+      release(subCenter);
+    });
+
+    it("opens with ui.styleRing only if elements are selected", async () => {
+      await renderEditor();
+      fireEvent.pointerMove(canvas(), {
+        clientX: CENTER.x,
+        clientY: CENTER.y,
+      });
+      act(() => {
+        h.app.api.commands.execute("ui.styleRing");
+      });
+      expect(queryStyleRing()).toBe(null);
+
+      selectRectangle({ x: 0, y: 0 });
+      act(() => {
+        h.app.api.commands.execute("ui.styleRing");
+      });
+      expect(h.app.styleRing.getState()?.sticky).toBe(true);
+      expect(h.app.styleRing.getState()?.center).toEqual(CENTER);
     });
   });
 });

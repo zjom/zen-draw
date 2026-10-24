@@ -394,6 +394,7 @@ import { AppSelectionTool } from "./App.selectionTool";
 import { AppWrap } from "./App.wrap";
 import { AppCommands } from "./App.commands";
 import { AppToolRing } from "./App.toolRing";
+import { AppStyleRing } from "./App.styleRing";
 import ZenLayerUI from "./zen/ZenLayerUI";
 import { isLegacyLayerUI } from "./zen/legacyLayerUI";
 import BraveMeasureTextError from "./BraveMeasureTextError";
@@ -689,6 +690,7 @@ class App extends React.Component<AppProps, AppState> {
   public wrap: AppWrap = new AppWrap(this);
   public commands: AppCommands = new AppCommands(this);
   public toolRing: AppToolRing = new AppToolRing(this);
+  public styleRing: AppStyleRing = new AppStyleRing(this);
 
   bindModeHandler: ReturnType<typeof setTimeout> | null = null;
 
@@ -3912,8 +3914,14 @@ class App extends React.Component<AppProps, AppState> {
     this.props.onExcalidrawAPI?.(this.api);
   }
 
-  public componentWillUnmount() {
+  /** closes the tool ring and the style ring */
+  public closeRings = () => {
     this.toolRing.close();
+    this.styleRing.close();
+  };
+
+  public componentWillUnmount() {
+    this.closeRings();
     // we're recreating the api object reference so that the
     // <ExcalidrawAPIContext.Provider/> picks up on it
     this.api = { ...this.api, isDestroyed: true };

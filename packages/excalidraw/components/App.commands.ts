@@ -104,6 +104,20 @@ export class AppCommands {
         this.app.toolRing.release({ keepOpenInDeadZone: true });
       },
     },
+    "ui.styleRing": {
+      label: () => t("zen.styleRing"),
+      keyCondition: () => this.app.styleRing.canOpen(),
+      // from the command palette or the API: a sticky ring at the pointer
+      run: () => {
+        this.app.styleRing.openAtPointer({ sticky: true });
+      },
+      onPress: () => {
+        this.app.styleRing.openAtPointer();
+      },
+      onRelease: () => {
+        this.app.styleRing.release({ keepOpenInDeadZone: true });
+      },
+    },
     "ui.imageExport": {
       label: () => t("buttons.exportImage"),
       run: () => {

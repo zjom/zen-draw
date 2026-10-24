@@ -6,6 +6,7 @@ import { withBatchedUpdates, withBatchedUpdatesThrottled } from "../reactUtils";
 import type React from "react";
 
 import type App from "./App";
+import type { AppRing } from "./App.ring";
 
 const SECONDARY_BUTTON_PAN_THRESHOLD = 5; // px
 
@@ -18,8 +19,9 @@ const SECONDARY_BUTTON_PAN_THRESHOLD = 5; // px
  *
  * A secondary-button session is a drag only once the pointer travels past
  * the drag threshold; released before that, it is a right-click. The drag
- * opens the tool ring (see `AppToolRing`) if the ring can open, and pans
- * the canvas otherwise (e.g. in view mode). The
+ * opens a ring if the ring can open — the style ring (see `AppStyleRing`)
+ * if it starts on the selection, else the tool ring (see `AppToolRing`) —
+ * and pans the canvas otherwise (e.g. in view mode). The
  * platform's `contextmenu` event opens the menu for a right-click where it
  * follows the release (Windows), as it always has; where it comes with the
  * press (macOS, Linux) it is swallowed — a drag cannot be told from a
@@ -33,8 +35,10 @@ export class AppPan {
   private secondary: {
     engaged: boolean;
     nativeMenuSeen: boolean;
-    /** the drag opened the tool ring, which follows the pointer itself */
-    toolRing: boolean;
+    /** the ring the drag opened, which follows the pointer itself */
+    ring: AppRing | null;
+    /** the drag started on the selection */
+    onSelection: boolean;
   } | null = null;
   /** the platform fires `contextmenu` on mouseup (Windows) or on mousedown
    * (macOS, Linux); the one belonging to a secondary-button session is not a
@@ -127,7 +131,12 @@ export class AppPan {
     }
     this.active = true;
     this.secondary = isSecondary
-      ? { engaged: false, nativeMenuSeen: false, toolRing: false }
+      ? {
+          engaged: false,
+          nativeMenuSeen: false,
+          ring: null,
+          onSelection: app.styleRing.isOnSelection(event),
+        }
       : null;
 
     // due to event.preventDefault below, container wouldn't get focus
@@ -161,9 +170,16 @@ export class AppPan {
           return;
         }
         this.secondary.engaged = true;
-        if (app.toolRing.open({ x: startX, y: startY })) {
-          this.secondary.toolRing = true;
-          app.toolRing.move(event);
+        const start = { x: startX, y: startY };
+        const ring =
+          this.secondary.onSelection && app.styleRing.open(start)
+            ? app.styleRing
+            : app.toolRing.open(start)
+            ? app.toolRing
+            : null;
+        if (ring) {
+          this.secondary.ring = ring;
+          ring.move(event);
           return;
         }
         app.cursor.set(CURSOR_TYPE.GRABBING);
@@ -173,7 +189,7 @@ export class AppPan {
         return;
       }
 
-      if (this.secondary?.toolRing) {
+      if (this.secondary?.ring) {
         return;
       }
 
@@ -272,11 +288,11 @@ export class AppPan {
         app.ownerWindow.removeEventListener(EVENT.BLUR, teardown);
         onPointerMove.flush();
 
-        if (secondary?.toolRing) {
+        if (secondary?.ring) {
           if (upEvent && "clientX" in upEvent) {
-            app.toolRing.release({ shiftKey: upEvent.shiftKey });
+            secondary.ring.release({ shiftKey: upEvent.shiftKey });
           } else {
-            app.toolRing.close();
+            secondary.ring.close();
           }
         }
 

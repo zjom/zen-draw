@@ -30,6 +30,7 @@ Open a file from the command line with `zen-draw drawing.excalidraw`, or with th
 zen-draw has no toolbar or menus:
 
 - Drag with the right mouse button to open the tool ring at the pointer. Release in the direction of a tool to select it; hold Shift on release to lock the tool. Drag past the last slice ("more") for the other tools. Escape closes the ring.
+- Drag with the right mouse button on the selection to open the style ring. It shows the properties of the selected elements (colors, opacity, stroke, fill, text, arrowheads, layers). Drag past a property, or release on it, to open its values. A color opens the color picker. `S` and `G` open the color picker of the stroke and of the background at the pointer.
 - A right-click without a drag opens the context menu.
 - `Ctrl/Cmd+/` opens the command palette (Open, Save, Mermaid to diagram, library, and every other command).
 - `?` shows the keyboard shortcuts.

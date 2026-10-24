@@ -1251,6 +1251,7 @@ export type AppClassProperties = {
   wrap: App["wrap"];
   commands: App["commands"];
   toolRing: App["toolRing"];
+  styleRing: App["styleRing"];
   modifiers: App["modifiers"];
   isToolLocked: App["isToolLocked"];
   getEffectiveGridSize: App["getEffectiveGridSize"];

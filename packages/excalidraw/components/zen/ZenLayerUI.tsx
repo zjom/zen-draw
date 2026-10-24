@@ -18,8 +18,10 @@ import { LoadingMessage } from "../LoadingMessage";
 import { TTDDialog } from "../TTDDialog/TTDDialog";
 import { Toast } from "../Toast";
 
+import { StyleRing, ToolRing } from "./Ring";
+import { StyleRingColorPicker } from "./StyleRingColorPicker";
 import { ToolIndicator } from "./ToolIndicator";
-import { ToolRing } from "./ToolRing";
+import { ZenEyeDropper } from "./ZenEyeDropper";
 
 import type { ActionManager } from "../../actions/manager";
 import type {
@@ -47,8 +49,9 @@ type ZenLayerUIProps = {
 /**
  * The UI above the canvas. Unlike `LayerUI`, it has no toolbar, menus,
  * footer or properties panel: a control shows only when the user asks for
- * it — the tool ring (secondary-button drag), the command palette, the
- * context menu (rendered by `App`) and the dialogs that these open.
+ * it — the tool ring and the style ring (secondary-button drag), the
+ * command palette, the context menu (rendered by `App`) and the dialogs
+ * that these open.
  */
 const ZenLayerUI = ({
   actionManager,
@@ -71,7 +74,22 @@ const ZenLayerUI = ({
       <TunnelsJotaiProvider>
         <TunnelsContext.Provider value={tunnels}>
           {children}
-          <ToolRing app={app} appState={appState} />
+          <ToolRing ring={app.toolRing} appState={appState} />
+          <StyleRing ring={app.styleRing} appState={appState} />
+          {(appState.openPopup === "elementStroke" ||
+            appState.openPopup === "elementBackground") && (
+            <StyleRingColorPicker
+              app={app}
+              appState={appState}
+              type={appState.openPopup}
+            />
+          )}
+          <ZenEyeDropper
+            app={app}
+            appState={appState}
+            elements={elements}
+            setAppState={setAppState}
+          />
           {toolIndicator && <ToolIndicator appState={appState} />}
           <CommandPalette />
           {appState.isLoading && <LoadingMessage delay={250} />}

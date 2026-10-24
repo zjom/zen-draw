@@ -783,6 +783,10 @@
   "zen": {
     "toolRing": "Tool ring",
     "more": "More tools",
-    "activeTool": "Active tool"
+    "activeTool": "Active tool",
+    "styleRing": "Style ring",
+    "moreProperties": "More properties",
+    "startArrowhead": "Start arrowhead",
+    "endArrowhead": "End arrowhead"
   }
 }

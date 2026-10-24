@@ -16,6 +16,7 @@
 #                eraser hand frame laser stickynote lasso bucketfill autoshape
 #   host.open host.save host.saveAs  (default mod+o, mod+s, mod+shift+s)
 #   ui.commandPalette ui.imageExport ui.toolLock
+#   ui.toolRing ui.styleRing  (no default; hold the key, point, release)
 #   editor actions by name, e.g. undo redo zoomIn zoomOut resetZoom group ungroup
 #   duplicateSelection deleteSelectedElements toggleTheme gridMode
 

@@ -69,7 +69,7 @@ interface ColorPickerProps {
   customizableTopPicks?: keyof AppState["colorTopPicks"];
 }
 
-const ColorPickerPopupContent = ({
+export const ColorPickerPopupContent = ({
   type,
   color,
   onChange,
