@@ -9,6 +9,17 @@ const CONFIG_FILE: &str = "config.toml";
 #[serde(default, deny_unknown_fields)]
 struct Config {
     keys: Keys,
+    ring: Ring,
+}
+
+/// The command ids of the tool ring (at most 8 each). A missing list keeps the default.
+#[derive(Debug, Default, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+struct Ring {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    items: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    more: Option<Vec<String>>,
 }
 
 /// Maps zenboard command ids (`tool.*`, action names, `ui.*`, `host.*`) to key combinations.

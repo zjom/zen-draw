@@ -1,6 +1,6 @@
 import { Excalidraw } from "@excalidraw/excalidraw";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { HostCommands } from "@excalidraw/excalidraw";
 import type {
@@ -8,13 +8,8 @@ import type {
   UIOptions,
 } from "@excalidraw/excalidraw/types";
 
-import "./App.css";
-
 import { DocumentController } from "./document";
-import { toKeymap } from "./shortcuts";
-import { syncToolHighlight } from "./toolHighlight";
-import { ToolIndicator } from "./ToolIndicator";
-import { syncZenMode } from "./zenMode";
+import { toKeymap, toToolRing } from "./shortcuts";
 
 import type { AppConfig } from "./config";
 
@@ -23,14 +18,11 @@ const uiOptions: UIOptions = {
   canvasActions: { export: false },
 };
 
-// Start in zen mode via initialData rather than the `zenModeEnabled` prop, which would lock it on.
-const initialData = { appState: { zenModeEnabled: true } };
-
 export function App({ config }: { config: AppConfig }) {
   const doc = useMemo(() => new DocumentController(), []);
   const [api, setApi] = useState<ExcalidrawImperativeAPI | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const keymap = useMemo(() => toKeymap(config), [config]);
+  const toolRing = useMemo(() => toToolRing(config), [config]);
   const commands = useMemo<HostCommands>(
     () => ({
       "host.open": { label: "Open", keys: "mod+o", run: () => void doc.open() },
@@ -45,32 +37,24 @@ export function App({ config }: { config: AppConfig }) {
   );
 
   useEffect(() => {
-    if (!api || !containerRef.current) {
+    if (!api) {
       return;
     }
-    const cleanups = [
-      doc.attach(api),
-      syncToolHighlight(api),
-      syncZenMode(api, containerRef.current),
-    ];
-    return () => cleanups.forEach((fn) => fn());
+    return doc.attach(api);
   }, [api, doc]);
 
   return (
-    <div ref={containerRef} style={{ position: "fixed", inset: 0 }}>
+    <div style={{ position: "fixed", inset: 0 }}>
       <Excalidraw
         onExcalidrawAPI={setApi}
         UIOptions={uiOptions}
-        initialData={initialData}
         keymap={keymap}
         commands={commands}
+        toolRing={toolRing}
         // the keymap also works when the focus is outside the canvas
         handleKeyboardGlobally
         theme="dark"
       ></Excalidraw>
-      {api && containerRef.current && (
-        <ToolIndicator api={api} container={containerRef.current} />
-      )}
     </div>
   );
 }

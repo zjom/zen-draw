@@ -23,3 +23,13 @@
 # "tool.freedraw" = "d"
 # "tool.laser" = ""
 # "host.saveAs" = "mod+alt+s"
+
+# [ring] sets the tool ring, which a right-drag opens at the pointer. Release in the
+# direction of a slice to run its command; hold Shift on release to lock a tool.
+# "items" (at most 8) are the slices; "more" (at most 8) is the sub-ring of the last
+# slice. A missing list keeps the default.
+[ring]
+# items = ["tool.selection", "tool.rectangle", "tool.ellipse", "tool.diamond",
+#          "tool.arrow", "tool.line", "tool.freedraw", "tool.text"]
+# more = ["tool.eraser", "tool.hand", "tool.frame", "tool.image",
+#         "tool.laser", "tool.stickynote", "tool.lasso", "tool.bucketfill"]

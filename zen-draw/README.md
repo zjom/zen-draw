@@ -25,6 +25,17 @@ The flake also exposes `overlays.default`. After a change to `pnpm-lock.yaml`, u
 
 Open a file from the command line with `zen-draw drawing.excalidraw`, or with the commands Open / Save / Save as (default `Ctrl/Cmd+O`, `+S`, `+Shift+S`, also in the command palette, `Ctrl/Cmd+/`).
 
+## Use
+
+zen-draw has no toolbar or menus:
+
+- Drag with the right mouse button to open the tool ring at the pointer. Release in the direction of a tool to select it; hold Shift on release to lock the tool. Drag past the last slice ("more") for the other tools. Escape closes the ring.
+- A right-click without a drag opens the context menu.
+- `Ctrl/Cmd+/` opens the command palette (Open, Save, Mermaid to diagram, library, and every other command).
+- `?` shows the keyboard shortcuts.
+
+A right-drag does not pan the canvas. Pan with the middle mouse button, with Space and a left-drag, with the hand tool (`H`) or with the mouse wheel.
+
 ## Configuration
 
 `$XDG_CONFIG_HOME/zen-draw/config.toml`, falling back to `~/.config/zen-draw/config.toml`. The same path is used on Linux, macOS and Windows. See [`config.example.toml`](config.example.toml).
