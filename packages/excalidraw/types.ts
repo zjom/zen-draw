@@ -1484,6 +1484,18 @@ export interface ExcalidrawImperativeAPI {
   onIncrement: (
     callback: (event: DurableIncrement | EphemeralIncrement) => void,
   ) => UnsubscribeCallback;
+  /** the document of the editor (see `AppDocument`) */
+  scene: {
+    /** restores the data, adds the files, resets the history, marks the
+     * scene as saved */
+    load: InstanceType<typeof App>["document"]["load"];
+    /** returns the contents of an `.excalidraw` file */
+    serialize: () => string;
+    /** whether the scene changed after the last `load` or `markSaved` */
+    isDirty: () => boolean;
+    markSaved: () => void;
+  };
+  onDirtyChange: (callback: (dirty: boolean) => void) => UnsubscribeCallback;
   onPointerDown: (
     callback: (
       activeTool: AppState["activeTool"],

@@ -1,10 +1,3 @@
-import {
-  CaptureUpdateAction,
-  hashElementsVersion,
-  loadFromBlob,
-  serializeAsJSON,
-} from "@excalidraw/excalidraw";
-
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { ask, message, open, save } from "@tauri-apps/plugin-dialog";
@@ -17,9 +10,6 @@ const FILTERS = [{ name: "Excalidraw", extensions: ["excalidraw"] }];
 export class DocumentController {
   private api: ExcalidrawImperativeAPI | null = null;
   private path: string | null = null;
-  private dirty = false;
-  /** Scene version at the last load/save; any other version counts as unsaved. */
-  private savedVersion = 0;
 
   /** Call once the Excalidraw API is available; returns the cleanup function. */
   attach(api: ExcalidrawImperativeAPI): () => void {
@@ -27,16 +17,7 @@ export class DocumentController {
     let disposed = false;
     const cleanups: (() => void)[] = [];
 
-    this.savedVersion = hashElementsVersion(
-      api.getSceneElementsIncludingDeleted(),
-    );
-    cleanups.push(
-      api.onChange((elements) => {
-        if (hashElementsVersion(elements) !== this.savedVersion) {
-          this.markDirty();
-        }
-      }),
-    );
+    cleanups.push(api.onDirtyChange(() => this.updateTitle()));
 
     void getCurrentWindow()
       .onCloseRequested(async (event) => {
@@ -98,28 +79,7 @@ export class DocumentController {
     }
     try {
       const json = await invoke<string>("read_file", { path });
-      const scene = await loadFromBlob(
-        new Blob([json], { type: "application/json" }),
-        null,
-        null,
-      );
-      const { viewBackgroundColor, gridSize, gridStep, gridModeEnabled } =
-        scene.appState;
-      api.addFiles(Object.values(scene.files));
-      api.updateScene({
-        elements: scene.elements,
-        appState: { viewBackgroundColor, gridSize, gridStep, gridModeEnabled },
-        captureUpdate: CaptureUpdateAction.NEVER,
-      });
-      api.history.clear();
-      const elements = api.getSceneElements();
-      if (elements.length) {
-        api.setViewport({
-          target: elements,
-          fit: "scale-down",
-          animation: false,
-        });
-      }
+      await api.scene.load(json);
       this.markSaved(path);
     } catch (e) {
       await message(String(e), { title: "Could not open file", kind: "error" });
@@ -132,13 +92,7 @@ export class DocumentController {
       return;
     }
     try {
-      const elements = api.getSceneElementsIncludingDeleted();
-      const contents = serializeAsJSON(
-        elements,
-        api.getAppState(),
-        api.getFiles(),
-        "local",
-      );
+      const contents = api.scene.serialize();
       await invoke("write_file", { path, contents });
       this.markSaved(path);
     } catch (e) {
@@ -147,7 +101,7 @@ export class DocumentController {
   }
 
   private async confirmDiscard(): Promise<boolean> {
-    if (!this.dirty) {
+    if (!this.api?.scene.isDirty()) {
       return true;
     }
     return ask("You have unsaved changes. Discard them?", {
@@ -160,25 +114,14 @@ export class DocumentController {
 
   private markSaved(path: string) {
     this.path = path;
-    this.dirty = false;
-    this.savedVersion = hashElementsVersion(
-      this.api?.getSceneElementsIncludingDeleted() ?? [],
-    );
-    this.updateTitle();
-  }
-
-  private markDirty() {
-    if (this.dirty) {
-      return;
-    }
-    this.dirty = true;
+    this.api?.scene.markSaved();
     this.updateTitle();
   }
 
   private updateTitle() {
     const name = this.path?.split(/[\\/]/).pop() ?? "Untitled";
     void getCurrentWindow().setTitle(
-      `${this.dirty ? "• " : ""}${name} — zen-draw`,
+      `${this.api?.scene.isDirty() ? "• " : ""}${name} — zen-draw`,
     );
   }
 }

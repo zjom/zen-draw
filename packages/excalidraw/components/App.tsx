@@ -395,6 +395,7 @@ import { AppWrap } from "./App.wrap";
 import { AppCommands } from "./App.commands";
 import { AppToolRing } from "./App.toolRing";
 import { AppStyleRing } from "./App.styleRing";
+import { AppDocument } from "./App.document";
 import ZenLayerUI from "./zen/ZenLayerUI";
 import { isLegacyLayerUI } from "./zen/legacyLayerUI";
 import BraveMeasureTextError from "./BraveMeasureTextError";
@@ -691,6 +692,9 @@ class App extends React.Component<AppProps, AppState> {
   public commands: AppCommands = new AppCommands(this);
   public toolRing: AppToolRing = new AppToolRing(this);
   public styleRing: AppStyleRing = new AppStyleRing(this);
+  public document: AppDocument = new AppDocument(this, {
+    resetHistory: () => this.resetHistory(),
+  });
 
   bindModeHandler: ReturnType<typeof setTimeout> | null = null;
 
@@ -823,6 +827,13 @@ class App extends React.Component<AppProps, AppState> {
       toggleSidebar: this.toggleSidebar,
       onChange: (cb) => this.onChangeEmitter.on(cb),
       onIncrement: (cb) => this.store.onStoreIncrementEmitter.on(cb),
+      onDirtyChange: this.document.subscribe,
+      scene: {
+        load: this.document.load,
+        serialize: this.document.serialize,
+        isDirty: this.document.isDirty,
+        markSaved: this.document.markSaved,
+      },
       onPointerDown: (cb) => this.onPointerDownEmitter.on(cb),
       onPointerUp: (cb) => this.onPointerUpEmitter.on(cb),
       onScrollChange: (cb) => this.onScrollChangeEmitter.on(cb),
@@ -3859,6 +3870,7 @@ class App extends React.Component<AppProps, AppState> {
 
     this.store.onDurableIncrementEmitter.on((increment) => {
       this.history.record(increment.delta);
+      this.document.onDurableIncrement(increment);
     });
 
     // per. optimmisation, only subscribe if there is the `onIncrement` prop registered, to avoid unnecessary computation
@@ -4309,6 +4321,7 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   componentDidUpdate(prevProps: AppProps, prevState: AppState) {
+    this.document.onStateUpdate(prevState);
     const renderOverridesUpdatePending = this.renderOverridesUpdatePending;
     this.renderOverridesUpdatePending = false;
     // Only a requested visual update can skip the document pipeline. Real
