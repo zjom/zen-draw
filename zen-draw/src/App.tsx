@@ -11,6 +11,7 @@ import type {
 } from "@excalidraw/excalidraw/types";
 
 import { DocumentController } from "./document";
+import { showWindow } from "./window";
 import { toKeymap, toToolRing } from "./shortcuts";
 
 import type { AppConfig, ThemeMode } from "./config";
@@ -67,6 +68,15 @@ export function App({ config }: { config: AppConfig }) {
     }
     return doc.attach(api);
   }, [api, doc]);
+
+  // the window starts hidden (see tauri.conf.json) so it never shows the
+  // unstyled page; show it once the editor has painted
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+    requestAnimationFrame(() => requestAnimationFrame(() => void showWindow()));
+  }, [api]);
 
   return (
     <div style={{ position: "fixed", inset: 0 }}>
